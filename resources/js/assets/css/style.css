@@ -1,0 +1,17 @@
+.wrapper-login label {
+    font-weight: 500;
+  }
+  .link-box a {
+    text-decoration: none;
+    color: #0096ef;
+    font-weight: 500;
+  }
+  .link-box a:hover {
+    text-decoration: underline;
+  }
+  .wrapper-login .v-text-field--filled > .v-input__control > .v-input__slot,
+  .v-text-field--full-width > .v-input__control > .v-input__slot,
+  .v-text-field--outlined > .v-input__control > .v-input__slot {
+    align-items: stretch;
+    min-height: 41px;
+  }

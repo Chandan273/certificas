@@ -1,0 +1,136 @@
+<template>
+  <v-app>
+    <v-navigation-drawer v-model="drawer" :rail="rail" permanent>
+      <v-list class="sidebar-logo pt-2 pb-2">
+        <v-list-item class="justify-center">
+          <router-link to="/" class="text-center mainPrimary">
+            <h1 v-if="rail == true">C</h1>
+            <h1 v-if="rail == false">Certificas</h1>
+          </router-link>
+        </v-list-item>
+      </v-list>
+      <v-list density="compact" nav v-if="userRole == 'superadmin'">
+        <template v-for="(items, i) in adminItems" :key="i">
+          <v-list-item
+            :prepend-icon="items.icon"
+            :title="items.title"
+            :class="{ active: isActive }"
+            :value="items.title"
+            :to="items.to"
+          ></v-list-item>
+        </template>
+      </v-list>
+      <v-list density="compact" nav v-else>
+        <template v-for="(items, i) in companyItems" :key="i">
+          <v-list-item
+            :prepend-icon="items.icon"
+            :title="items.title"
+            :class="{ active: isActive }"
+            :value="items.title"
+            :to="items.to"
+          ></v-list-item>
+        </template>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-app-bar class="Certificas" elevation="1">
+      <v-app-bar-nav-icon
+        slot="start"
+        variant="text"
+        @click="rail = !rail"
+        icon="mdi-format-align-left mainPrimary"
+      ></v-app-bar-nav-icon>
+      <v-spacer />
+      <!-- profile dropdown  -->
+      <v-menu class="profile-dropdown-menu">
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" class="px-0 px-1" :ripple="false">
+            <div class="nav-profile d-flex">
+              <v-icon size="30" class="mr-1 mainPrimary">mdi-account-circle</v-icon>
+            </div>
+            &nbsp;
+            <span class="mainPrimary text-capitalize">{{ user.username }}</span>
+            <v-icon class="mainPrimary">mdi-chevron-down</v-icon>
+          </v-btn>
+        </template>
+        <v-list class="profile-dropdown">
+          <!-- <v-list-item router to="/">
+                        <v-list-item-title>
+                            <v-icon class="mr-2">mdi-account</v-icon>
+                            Profile
+                        </v-list-item-title>
+                    </v-list-item> -->
+          <v-list-item @click="logout()">
+            <v-list-item-title>
+              <v-icon class="mr-2">mdi-logout</v-icon>
+              Logout
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </v-app-bar>
+    <v-main>
+      <v-container>
+        <slot></slot>
+      </v-container>
+    </v-main>
+  </v-app>
+</template>
+<script>
+import Auth from "../Auth.js";
+import axios from "axios";
+
+export default {
+  name: "adminLayout",
+  components: {},
+  data: () => ({
+    user: JSON.parse(localStorage.getItem("user")),
+    userRole: localStorage.getItem("role"),
+    drawer: true,
+    miniVariant: false,
+    rail: false,
+    group: null,
+    isActive: true,
+    closeOnContentClick: true,
+    adminItems: [
+      //   { title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/Dashboard' },
+      { title: "Tenants", icon: "mdi-account", to: "/tenants" },
+      { title: "Customers", icon: "mdi-account-multiple", to: "/customers" },
+      { title: "Course", icon: "mdi-school", to: "/course" },
+      { title: "Students", icon: "mdi-library", to: "/students" },
+      { title: "Certificates", icon: "mdi-file-document", to: "/certificates" },
+      // { title: 'Services', icon: 'mdi-account-wrench', to: '/Services' },
+    ],
+    companyItems: [
+      { title: "Customers", icon: "mdi-account-multiple", to: "/customers" },
+      { title: "Course", icon: "mdi-school", to: "/course" },
+      { title: "Students", icon: "mdi-library", to: "/students" },
+      { title: "Certificates", icon: "mdi-file-document", to: "/certificates" },
+      // { title: 'Services', icon: 'mdi-account-wrench', to: '/Services' },
+    ],
+  }),
+  methods: {
+    async logout() {
+      axios
+        .post("/api/logout")
+        .then(({ data }) => {
+          if (data) {
+            Auth.logout(); //reset local storage
+            localStorage.clear();
+            this.$router.push("/login");
+          }
+        })
+        .catch((error) => {
+          console.log("Error => ", error);
+        });
+    },
+  },
+  mounted() {},
+  watch: {
+    group() {
+      this.drawer = false;
+    },
+  },
+};
+</script>
+<style></style>
