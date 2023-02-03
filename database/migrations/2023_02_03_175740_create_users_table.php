@@ -13,11 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('certificate_layouts', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('tenant_id');
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
+            $table->string('username')->unique()->nullable();
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->string('language',10)->nullable();
+            $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -28,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('certificate_layouts');
+        Schema::dropIfExists('users');
     }
 };

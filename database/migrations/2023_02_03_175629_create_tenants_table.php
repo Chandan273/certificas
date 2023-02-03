@@ -13,7 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::create('tenants', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique()->nullable();
+            $table->date('paid_untill')->nullable();
+            $table->timestamps();
             $table->softDeletes();
         });
     }
@@ -25,8 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('tenants');
     }
 };

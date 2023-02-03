@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\LoginService;
+use App\Services\AuthService;
 use App\Services\RegisterService;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function login(LoginService $loginService, Request $request )
+    public function login(Request $request )
     {
         $requestData = $request->all();
         $validator = Validator::make($requestData,[
@@ -22,18 +22,18 @@ class AuthController extends Controller
             return response()->json(['status'=>'false', 'error'=>$validator->errors()], 422);
         }
 
-        return $loginService->login($request);
+        return AuthService::login($request);
     }
 
-    public function logout(LoginService $loginService, Request $request)
+    public function logout(Request $request)
     {
-        return $loginService->logout($request);
+        return AuthService::logout($request);
     }
 
 
-    public function register(RegisterService $registerService, Request $request )
+    public function register(Request $request )
     {
-        return $registerService->register($request);
+        return RegisterService::register($request);
     }
 
     public function userInfo()
