@@ -15,6 +15,8 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('tenant_id');
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
             $table->string('number',50)->nullable();
             $table->string('name')->nullable();
             $table->string('contact')->nullable();
@@ -28,6 +30,7 @@ return new class extends Migration
             $table->string('country',2)->nullable();
             $table->json('info')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

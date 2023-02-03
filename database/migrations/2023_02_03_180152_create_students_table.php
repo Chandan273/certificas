@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('birth_place')->nullable();
             $table->json('info')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

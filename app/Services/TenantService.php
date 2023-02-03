@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Tenant;
+use App\Models\Certificate_layout;
 use Carbon\Carbon;
 use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
@@ -15,11 +16,11 @@ class TenantService
     /**
      * Display a listing for all users.
      */
-    static public function allTenants(Request $request)
+    public static function allTenants(Request $request)
     {
         try {
             $totalCount = 0;
-            $tenants = Tenant::with('user');
+            $tenants = User::with('tenant')->role('company');
 
             if($request->has('requireTotalCount')){
                 $totalCount = $tenants->count();
@@ -36,8 +37,6 @@ class TenantService
                 }
 
             }
-            // ->orderBy('id', 'ASC')->get();
-            //->paginate(5);
 
             $tenants = $tenants->get();
 
@@ -68,25 +67,30 @@ class TenantService
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function createTenant($input)
+    public static function createTenant(Request $request)
     {
         try {
 
             $password = Str::random(8);
 
-            $user = User::create([
-                'username' => $input->username,
-                'email' => $input->email,
-                'password' => \Hash::make($password),
-            ]);
-
             $tenant = Tenant::create([
-                'user_id' => $user->id,
-                'name' => $input->company_name,
-                'paid_untill' => $input->paid_untill
+                'name' => $request->name,
+                'paid_untill' => date('Y-m-d', strtotime($request->paid_untill))
             ]);
 
-            $user->assignRole('company');
+            $user = User::create([
+                'tenant_id' => $tenant->id,
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => \Hash::make($password),
+            ]);  
+            
+            $certificate_layout = Certificate_layout::create([
+                'tenant_id' => $tenant->id
+            ]);
+
+            $role = Role::findOrCreate('company');
+            $user->assignRole($role);
 
             $mailData = ["username"=>$user->username, "password"=>$password];
 
@@ -138,17 +142,18 @@ class TenantService
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function updateTenant($input)
+    public static function updateTenant(Request $request)
     {
         try {
-            $user = User::where('id', $input->id)->first();
-            $user->username = $input->username;
-            $user->email = $input->email;
-            $user->save();
-
-            $tenant = Tenant::where('user_id', $input->id)->first();
-            $tenant->name = $input->company_name;
+            $tenant = Tenant::where('id', $request->id)->first();
+            $tenant->name = $request->name;
+            $tenant->paid_untill = $request->paid_untill;
             $tenant->save();
+
+            $user = User::where('tenant_id', $request->id)->first();
+            $user->username = $request->username;
+            $user->email = $request->email;
+            $user->save();
 
             return $respone = response()->json(
                 ['success' => true,  'user' => $user, 'message' => 'Tenant has been updated successfully'],
@@ -167,13 +172,14 @@ class TenantService
     /**
      * Delete teanat customer from storage.
      */
-    public function destroyTenant($input)
+    public static function destroyTenant(Request $request)
     {
         try {
 
-            $user = User::where('id', $input->id)->first();
-            Tenant::where('user_id', $input->id)->delete();
-            $user->delete();
+            Tenant::where('id', $request->id)->delete();
+            User::where('tenant_id', $request->id)->delete();
+            Certificate_layout::where('tenant_id', $request->id)->delete();
+
             return $respone = response()->json(
                 [
                     'success' => true,

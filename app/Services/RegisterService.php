@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Models\Tenant;
 
 class RegisterService {
-    public function register($input) {
+    public static function register($input) {
 
         $tenant = Tenant::create([
             'name' => $input->tenant['name'],

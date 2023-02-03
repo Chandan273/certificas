@@ -5,10 +5,11 @@ namespace App\Services;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Tenant;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
-class LoginService {
-    public function login($input) {
+class AuthService {
+    public static function login($input) {
 
         try{
             $data = [
@@ -34,7 +35,7 @@ class LoginService {
 
     }
 
-    public function logout ($request)
+    public static function logout ($request)
     {
         try{
             $token = $request->user()->token();

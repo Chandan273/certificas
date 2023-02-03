@@ -18,8 +18,7 @@ class UserController extends Controller
      */
     public function allTenants(Request $request)
     {
-        $allTenants = TenantService::allTenants($request);
-        return $allTenants;
+        return TenantService::allTenants($request);
     }
 
     /**
@@ -28,20 +27,20 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function createTenant(TenantService $tenantService, Request $request)
+    public function createTenant(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'company_name' => 'required',
+            'name' => 'required',
             'username' => 'required',
             'email' => 'required|email|unique:users',
+            'paid_untill' => 'required',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
-        $createTenant = $tenantService->createTenant($request);
-        return $createTenant;
+        return TenantService::createTenant($request);
     }
 
     /**
@@ -63,20 +62,20 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateTenants(TenantService $tenantService, Request $request)
+    public function updateTenants(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'company_name' => 'required',
+            'name' => 'required',
             'username' => 'required',
             'email' => 'required',
+            'paid_untill' => 'required',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
-        $updateCustomer = $tenantService->updateTenant($request);
-        return $updateCustomer;
+        return TenantService::updateTenant($request);
     }
 
     /**
@@ -86,7 +85,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroyTenant(TenantService $tenantService, Request $request)
+    public function destroyTenant(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
@@ -96,8 +95,7 @@ class UserController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);
         }
 
-        $destroyTenant = $tenantService->destroyTenant($request);
-        return $destroyTenant;
+        return TenantService::destroyTenant($request);
     }
 
 }
