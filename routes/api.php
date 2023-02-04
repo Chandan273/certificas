@@ -22,14 +22,14 @@ Route::group(['middleware'=>'guest'], function(){
 Route::middleware("auth:api")->group(function(){
     Route::post('/logout', [App\Http\Controllers\Api\AuthController::class, 'logout']);
     Route::get("userinfo", [App\Http\Controllers\Api\AuthController::class, 'userInfo']);
-    Route::get("all-tenants", [App\Http\Controllers\Api\UserController::class, 'allTenants']);
     Route::post("createrole", [App\Http\Controllers\Api\RoleController::class, 'store']);
     Route::get("allroles", [App\Http\Controllers\Api\RoleController::class, 'show']);
+    Route::get("all-tenants", [App\Http\Controllers\Api\UserController::class, 'allTenants']);
     Route::post("create-tenant", [App\Http\Controllers\Api\UserController::class, 'createTenant']);
     Route::post('update-tenant', [App\Http\Controllers\Api\UserController::class, 'updateTenants']);
     Route::post('delete-tenant', [App\Http\Controllers\Api\UserController::class, 'destroyTenant']);
-    Route::post('createcustomer', [App\Http\Controllers\Api\CustomerController::class, 'createCustomer']);
-    Route::post('getcustomer', [App\Http\Controllers\Api\CustomerController::class, 'getCustomer']);
-    Route::post('updatecustomer', [App\Http\Controllers\Api\CustomerController::class, 'updateCustomer']);
-    Route::post('findcustomer', [App\Http\Controllers\Api\UserController::class, 'findCustomer']);
+    Route::get("all-customers", [App\Http\Controllers\Api\CustomerController::class, 'allCustomers']);
+    Route::post("create-customer", [App\Http\Controllers\Api\CustomerController::class, 'createCustomer']);
+    Route::post('update-customer', [App\Http\Controllers\Api\CustomerController::class, 'updateCustomer']);
+    Route::post('delete-customer', [App\Http\Controllers\Api\CustomerController::class, 'destroyCustomer']);
 });

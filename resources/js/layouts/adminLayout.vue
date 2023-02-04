@@ -93,20 +93,13 @@ export default {
     isActive: true,
     closeOnContentClick: true,
     adminItems: [
-      //   { title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/Dashboard' },
       { title: "Tenants", icon: "mdi-account", to: "/tenants" },
-      { title: "Customers", icon: "mdi-account-multiple", to: "/customers" },
-      { title: "Course", icon: "mdi-school", to: "/course" },
-      { title: "Students", icon: "mdi-library", to: "/students" },
-      { title: "Certificates", icon: "mdi-file-document", to: "/certificates" },
-      // { title: 'Services', icon: 'mdi-account-wrench', to: '/Services' },
     ],
     companyItems: [
       { title: "Customers", icon: "mdi-account-multiple", to: "/customers" },
-      { title: "Course", icon: "mdi-school", to: "/course" },
+      { title: "Courses", icon: "mdi-school", to: "/courses" },
       { title: "Students", icon: "mdi-library", to: "/students" },
       { title: "Certificates", icon: "mdi-file-document", to: "/certificates" },
-      // { title: 'Services', icon: 'mdi-account-wrench', to: '/Services' },
     ],
   }),
   methods: {
