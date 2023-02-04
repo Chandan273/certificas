@@ -65,7 +65,7 @@ function isNotEmpty(value) {
 }
 
 export default {
-  name: "tenant",
+  name: "tenants",
   components: {
     AdminLayout,
     DxPopup,

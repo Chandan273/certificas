@@ -1,154 +1,229 @@
 <template>
-    <AdminLayout>
-      <div>
-        <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
-        <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 widget-card">
-          <DataAddRemoveTable
-            :tableTitle="tableTitle"
-            :dataSource="dataSource"
-            :dataType="dataType"
+  <AdminLayout>
+    <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
+    <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 widget-card">
+    <DxDataGrid
+      :data-source="dataSource"
+      :show-borders="true"
+      key-expr="id"
+    >
+      <DxPaging :enabled="false"/>
+      <DxEditing
+        :allow-updating="true"
+        :allow-adding="true"
+        :allow-deleting="true"
+        mode="popup"
+      >
+        <DxPopup
+          :show-title="true"
+          :width="700"
+          :height="600"
+          title="Customer Info"
+        />
+        <DxForm>
+          <DxItem
+            :col-count="2"
+            :col-span="2"
+            item-type="group"
           >
-            <DxPopup :show-title="true" :width="600" :height="525" title="Customers Info" />
-  
-            <DxForm>
-              <DxItem :col-count="2" :col-span="2" item-type="group">
-                <DxItem :col-count="1" :col-span="1" data-field="Number" />
-                <DxItem :col-count="1" :col-span="1" data-field="Name" />
-                <DxItem :col-count="1" :col-span="1" data-field="Contact" />
-                <DxItem :col-count="1" :col-span="1" data-field="OrgID" />
-                <DxItem :col-count="1" :col-span="1" data-field="Email" />
-                <DxItem :col-count="1" :col-span="1" data-field="Website" />
-                <DxItem :col-count="1" :col-span="1" data-field="Phone" />
-                <DxItem
-                  :col-span="2"
-                  :editor-options="{ height: 100 }"
-                  data-field="address"
-                  editor-type="dxTextArea"
-                />
-              </DxItem>
-            </DxForm>
-          </DataAddRemoveTable>
-        </div>
-      </div>
-    </AdminLayout>
-  </template>
-  <script>
-  import AdminLayout from "../../layouts/adminLayout.vue";
-  import DataAddRemoveTable from "../../components/table/DataAddRemoveTable.vue";
-  import DxSelectBox from "devextreme-vue/select-box";
-  import { DxPopup, DxForm, DxItem } from "devextreme-vue/data-grid";
-  export default {
-    name: "Customer",
-    components: {
-      DataAddRemoveTable,
-      DxSelectBox,
-      AdminLayout,
-      DxPopup,
-      DxForm,
-      DxItem,
+            <DxItem data-field="number"/>
+            <DxItem data-field="name"/>
+            <DxItem data-field="contact"/>
+            <DxItem data-field="organisation_number"/>
+            <DxItem data-field="email"/>
+            <DxItem data-field="www" />
+
+          <DxItem
+            :col-count="2"
+            :col-span="2"
+            item-type="group"
+            caption="Customer Address"
+          >
+
+          <DxItem
+              :col-span="2"
+              :editor-options="{ height: 100 }"
+              data-field="address"
+              editor-type="dxTextArea"
+            />
+          </DxItem>
+
+            <DxItem data-field="phone"/>
+            <DxItem data-field="zip"/>
+            <DxItem data-field="city"/>
+            <DxItem data-field="country"/>
+          </DxItem>
+        </DxForm>
+      </DxEditing>
+
+      <DxColumn :width="70" data-field="number" />
+      <DxColumn data-field="name"/>
+      <DxColumn data-field="contact"/>
+      <DxColumn data-field="organisation_number"/>
+      <DxColumn data-field="email"/>
+      <DxColumn data-field="www" caption="Website"/>
+      <DxColumn :visible="false" data-field="phone" />
+      <DxColumn data-field="address" />
+      <DxColumn :visible="false" data-field="zip" />
+      <DxColumn :visible="false" data-field="city" />
+      <DxColumn :visible="false" data-field="country" />
+    </DxDataGrid>
+  </div>
+  </AdminLayout>
+</template>
+<script>
+import axios from "axios";
+
+import AdminLayout from "../../layouts/adminLayout.vue";
+import { DxTextArea } from "devextreme-vue/text-area";
+import {
+  DxPopup,
+  DxForm,
+  DxItem,
+  DxButton,
+  DxPosition,
+  DxToolbarItem,
+} from "devextreme-vue/data-grid";
+import {
+  DxDataGrid,
+  DxColumn,
+  DxPaging,
+  DxPager,
+  DxEditing,
+} from "devextreme-vue/data-grid";
+import CustomStore from "devextreme/data/custom_store";
+function isNotEmpty(value) {
+  return value !== undefined && value !== null && value !== "";
+}
+
+export default {
+  name: "customers",
+  components: {
+    AdminLayout,
+    DxPopup,
+    DxForm,
+    DxItem,
+    DxTextArea,
+    DxButton,
+    DxPosition,
+    DxToolbarItem,
+    DxDataGrid,
+    DxColumn,
+    DxPager,
+    DxPaging,
+    DxEditing,
+  },
+
+  props: {
+    showFilterRow: {
+      type: Boolean,
+      default: true,
     },
-    props: {
-      showFilterRow: {
-        type: Boolean,
-        default: true,
-      },
+  },
+  data() {
+    return {
+      breadcrumbsItems: [
+        {
+          text: "Admin",
+          disabled: true,
+          href: "dashboard",
+        },
+        {
+          text: "Customers",
+          disabled: false,
+          href: "/customers",
+        },
+      ],
+    };
+  },
+  computed: {
+    dataSource: () => {
+      return new CustomStore({
+        load: (loadOptions) => {
+          let params = {};
+          [
+            "skip",
+            "take",
+            "requireTotalCount",
+            "requireGroupCount",
+            "sort",
+            "filter",
+          ].forEach((i) => {
+            if (i in loadOptions && isNotEmpty(loadOptions[i])) {
+              params[i] = `${JSON.stringify(loadOptions[i])}`;
+            }
+          });
+
+          return axios
+            .get(`/api/all-customers`, { params })
+            .then(({ data }) => ({
+              data: data.data,
+              totalCount: data.totalCount,
+            }))
+            .catch((error) => {
+              throw new Error("Data Loading Error");
+            });
+        },
+        insert: (values) => {
+          const payload = {
+            number: values.number,
+            name: values.name,
+            contact: values.contact,
+            organisation_number: values.organisation_number,
+            email: values.email,
+            www: values.www,
+            phone: values.phone,
+            address: values.address,
+            zip: values.zip,
+            city: values.city,
+            country: values.country,
+          };
+
+          return axios
+            .post(`/api/create-customer`, payload)
+            .then((data) => { })
+            .catch((error) => {
+              throw new Error("Data Loading Error");
+            });
+        },
+        update: (key, values) => {
+          const payload = {
+            id: key.id,
+            tenant_id: key.tenant_id,
+            number: values.number ? values.number : key.number,
+            name: values.name ? values.name : key.name,
+            contact: values.contact ? values.contact : key.contact,
+            organisation_number: values.organisation_number ? values.organisation_number : key.organisation_number,
+            email: values.email ? values.email : key.email,
+            www: values.www ? values.www : key.www,
+            phone: values.phone ? values.phone : key.phone,
+            address: values.address ? values.address : key.address,            
+            zip: values.zip ? values.zip : key.zip,
+            city: values.city ? values.city : key.city,
+            country: values.country ? values.country : key.country,
+          };
+
+          return axios
+            .post(`/api/update-customer`, payload)
+            .then((data) => { })
+            .catch((error) => {
+              throw new Error("Data Loading Error");
+            });
+        },
+
+        remove: (key) => {
+          const payload = {
+            id: key.id,
+          };
+          return axios
+            .post(`/api/delete-customer`, payload)
+            .then((data) => { })
+            .catch((error) => {
+              throw new Error("Data Loading Error");
+          });
+        },
+      });
     },
-    data() {
-      return {
-        breadcrumbsItems: [
-          {
-            text: "Admin",
-            disabled: true,
-            href: "dashboard",
-          },
-          {
-            text: "Customer",
-            disabled: false,
-            href: "/customer",
-          },
-        ],
-        tableTitle: "Customer Details",
-        dataSource: [
-          {
-            Number: "6545463",
-            Name: "Jack",
-            Contact: "Bruce",
-            OrgID: "1131",
-            Email: "example@yopmail.com",
-            Website: "www.examp.com",
-            Phone: "912115451",
-          },
-          {
-            Number: "09876543",
-            Name: "Jack",
-            Contact: "912115451",
-            OrgID: "1131",
-            Email: "example@yopmail.com",
-            Website: "www.examp.com",
-            Phone: "912115451",
-          },
-          {
-            Number: "9898765",
-            Name: "Jack",
-            Contact: "912115451",
-            OrgID: "1131",
-            Email: "example@yopmail.com",
-            Website: "www.examp.com",
-            Phone: "912115451",
-          },
-          {
-            Number: "2342445",
-            Name: "Jack",
-            Contact: "912115451",
-            OrgID: "1131",
-            Email: "example@yopmail.com",
-            Website: "www.examp.com",
-            Phone: "912115451",
-          },
-          {
-            Number: "876554451",
-            Name: "Jack",
-            Contact: "912115451",
-            OrgID: "1131",
-            Email: "example@yopmail.com",
-            Website: "www.examp.com",
-            Phone: "912115451",
-          },
-        ],
-  
-        dataType: [
-          {
-            key: "Number",
-            type: "",
-          },
-          {
-            key: "Name",
-            type: "",
-          },
-          {
-            key: "Contact",
-            type: "",
-          },
-          {
-            key: "OrgID",
-            type: "",
-            caption: "Organisation Number",
-          },
-          {
-            key: "Email",
-            type: "",
-          },
-          {
-            key: "Website",
-            type: "",
-          },
-          {
-            key: "Phone",
-            type: "",
-          },
-        ],
-      };
-    },
-  };
-  </script>
-  
+  },
+};
+</script>

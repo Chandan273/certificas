@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('zip',10)->nullable();
             $table->string('city')->nullable();
-            $table->string('country',2)->nullable();
+            $table->string('country')->nullable();
             $table->json('info')->nullable();
             $table->timestamps();
             $table->softDeletes();

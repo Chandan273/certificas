@@ -183,7 +183,7 @@ class TenantService
             return $respone = response()->json(
                 [
                     'success' => true,
-                    'message' => 'User has been deleted successfully!',
+                    'message' => 'Tenant has been deleted successfully!',
                 ],
                 200
             );
