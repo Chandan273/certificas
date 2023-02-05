@@ -31,7 +31,6 @@ class CustomerService{
                 "country" => $request->country,
                 "info" => null
             ]);
-            $customer->save();
 
             $response = response()->json(
                 ['success' => true, 'message' => "Customer Created Succesfully!"],

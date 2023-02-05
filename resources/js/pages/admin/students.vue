@@ -1,230 +1,203 @@
 <template>
-    <AdminLayout>
-      <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
-      <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 widget-card">
-      <DxDataGrid
-        :data-source="dataSource"
-        :show-borders="true"
-        key-expr="id"
-      >
-        <DxPaging :enabled="false"/>
-        <DxEditing
-          :allow-updating="true"
-          :allow-adding="true"
-          :allow-deleting="true"
-          mode="popup"
-        >
-          <DxPopup
-            :show-title="true"
-            :width="700"
-            :height="600"
-            title="Customer Info"
-          />
+  <AdminLayout>
+    <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
+    <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 widget-card">
+      <DxDataGrid :data-source="dataSource" :show-borders="true" key-expr="id">
+
+        <DxPaging :enabled="false" />
+
+        <DxToolbar>
+          <div class="dx-toolbar-section">
+            <DxButton icon="upload" @click="openFileDialog">
+              Select File
+            </DxButton>
+          </div>
+        </DxToolbar>
+
+        <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
+          <DxPopup :show-title="true" :width="700" :height="380" title="Student Info" />
           <DxForm>
-            <DxItem
-              :col-count="2"
-              :col-span="2"
-              item-type="group"
-            >
-              <DxItem data-field="number"/>
-              <DxItem data-field="name"/>
-              <DxItem data-field="contact"/>
-              <DxItem data-field="organisation_number"/>
-              <DxItem data-field="email"/>
-              <DxItem data-field="www" />
-  
-            <DxItem
-              :col-count="2"
-              :col-span="2"
-              item-type="group"
-              caption="Customer Address"
-            >
-  
-            <DxItem
-                :col-span="2"
-                :editor-options="{ height: 100 }"
-                data-field="address"
-                editor-type="dxTextArea"
-              />
+            <DxItem :col-count="2" :col-span="2" item-type="group">
+              <DxItem data-field="course_id" />
             </DxItem>
-  
-              <DxItem data-field="phone"/>
-              <DxItem data-field="zip"/>
-              <DxItem data-field="city"/>
-              <DxItem data-field="country"/>
+            <DxItem :col-count="2" :col-span="2" item-type="group">
+              <DxItem data-field="name" />
+              <DxItem data-field="email" />
+              <DxItem data-field="birth_date" />
+              <DxItem data-field="birth_place" />
             </DxItem>
           </DxForm>
         </DxEditing>
-  
-        <DxColumn :width="70" data-field="number" />
-        <DxColumn data-field="name"/>
-        <DxColumn data-field="contact"/>
-        <DxColumn data-field="organisation_number"/>
-        <DxColumn data-field="email"/>
-        <DxColumn data-field="www" caption="Website"/>
-        <DxColumn :visible="false" data-field="phone" />
-        <DxColumn data-field="address" />
-        <DxColumn :visible="false" data-field="zip" />
-        <DxColumn :visible="false" data-field="city" />
-        <DxColumn :visible="false" data-field="country" />
+
+        <DxColumn :visible="false" data-field="course_id" caption="Course">
+          <DxLookup :data-source="courses" value-expr="id" display-expr="name" />
+        </DxColumn>
+        <DxColumn data-field="name" />
+        <DxColumn data-field="email" />
+        <DxColumn data-field="birth_date" data-type="date" />
+        <DxColumn data-field="birth_place" />
       </DxDataGrid>
     </div>
-    </AdminLayout>
-  </template>
-  <script>
-  import axios from "axios";
-  
-  import AdminLayout from "../../layouts/adminLayout.vue";
-  import { DxTextArea } from "devextreme-vue/text-area";
-  import {
+  </AdminLayout>
+</template>
+<script>
+import axios from "axios";
+
+import AdminLayout from "../../layouts/adminLayout.vue";
+import DxToolbar from 'devextreme-vue/toolbar';
+import { DxTextArea } from "devextreme-vue/text-area";
+import {
+  DxPopup,
+  DxForm,
+  DxItem,
+  DxButton,
+  DxPosition,
+  DxToolbarItem,
+  DxDataGrid,
+  DxColumn,
+  DxPaging,
+  DxPager,
+  DxEditing,
+  DxLookup,
+} from "devextreme-vue/data-grid";
+import CustomStore from "devextreme/data/custom_store";
+function isNotEmpty(value) {
+  return value !== undefined && value !== null && value !== "";
+}
+
+export default {
+  name: "students",
+  components: {
+    AdminLayout,
     DxPopup,
     DxForm,
     DxItem,
+    DxTextArea,
     DxButton,
     DxPosition,
     DxToolbarItem,
-  } from "devextreme-vue/data-grid";
-  import {
     DxDataGrid,
     DxColumn,
-    DxPaging,
+    DxLookup,
     DxPager,
+    DxPaging,
     DxEditing,
-  } from "devextreme-vue/data-grid";
-  import CustomStore from "devextreme/data/custom_store";
-  function isNotEmpty(value) {
-    return value !== undefined && value !== null && value !== "";
+    DxToolbar,
+  },
+
+  props: {
+    showFilterRow: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  data() {
+    return {
+      courses: {},
+      breadcrumbsItems: [
+        {
+          text: "Admin",
+          disabled: true,
+          href: "dashboard",
+        },
+        {
+          text: "Students",
+          disabled: false,
+          href: "/students",
+        },
+      ],
+    };
+  },
+  computed: {
+    dataSource: () => {
+      return new CustomStore({
+        load: (loadOptions) => {
+          let params = {};
+          [
+            "skip",
+            "take",
+            "requireTotalCount",
+            "requireGroupCount",
+            "sort",
+            "filter",
+          ].forEach((i) => {
+            if (i in loadOptions && isNotEmpty(loadOptions[i])) {
+              params[i] = `${JSON.stringify(loadOptions[i])}`;
+            }
+          });
+
+          return axios
+            .get(`/api/all-students`, { params })
+            .then(({ data }) => ({
+              data: data.data,
+              totalCount: data.totalCount,
+            }))
+            .catch((error) => {
+              throw new Error("Data Loading Error");
+            });
+        },
+        insert: (values) => {
+          const payload = {
+            course_id: values.course_id,
+            name: values.name,
+            email: values.email,
+            birth_date: values.birth_date,
+            birth_place: values.birth_place,
+          };
+
+          return axios
+            .post(`/api/create-student`, payload)
+            .then((data) => { })
+            .catch((error) => {
+              throw new Error("Data Loading Error");
+            });
+        },
+        update: (key, values) => {
+          const payload = {
+            id: key.id,
+            course_id: values.course_id ? values.course_id : key.course_id,
+            name: values.name ? values.name : key.name,
+            email: values.email ? values.email : key.email,
+            birth_date: values.birth_date ? values.birth_date : key.birth_date,
+            birth_place: values.birth_place ? values.birth_place : key.birth_place,
+          };
+
+          return axios
+            .post(`/api/update-student`, payload)
+            .then((data) => { })
+            .catch((error) => {
+              throw new Error("Data Loading Error");
+            });
+        },
+        remove: (key) => {
+          const payload = {
+            id: key.id,
+          };
+          return axios
+            .post(`/api/delete-student`, payload)
+            .then((data) => {})
+            .catch((error) => {
+              throw new Error("Data Loading Error");
+            });
+        },
+      });
+    },
+  },
+  methods: {
+    async getData() {
+      try {
+        const { data } = await axios.get(`/api/all-courses`);
+        this.courses = data.data;
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    openFileDialog() {
+      // Add code to open the file dialog and select a file
+    }
+  },
+  mounted() {
+    this.getData();
   }
-  
-  export default {
-    name: "students",
-    components: {
-      AdminLayout,
-      DxPopup,
-      DxForm,
-      DxItem,
-      DxTextArea,
-      DxButton,
-      DxPosition,
-      DxToolbarItem,
-      DxDataGrid,
-      DxColumn,
-      DxPager,
-      DxPaging,
-      DxEditing,
-    },
-  
-    props: {
-      showFilterRow: {
-        type: Boolean,
-        default: true,
-      },
-    },
-    data() {
-      return {
-        breadcrumbsItems: [
-                {
-                    text: "Admin",
-                    disabled: true,
-                    href: "dashboard",
-                },
-                {
-                    text: "Students",
-                    disabled: false,
-                    href: "/students",
-                },
-            ],
-      };
-    },
-    computed: {
-      dataSource: () => {
-        return new CustomStore({
-          load: (loadOptions) => {
-            let params = {};
-            [
-              "skip",
-              "take",
-              "requireTotalCount",
-              "requireGroupCount",
-              "sort",
-              "filter",
-            ].forEach((i) => {
-              if (i in loadOptions && isNotEmpty(loadOptions[i])) {
-                params[i] = `${JSON.stringify(loadOptions[i])}`;
-              }
-            });
-  
-            return axios
-              .get(`/api/all-customers`, { params })
-              .then(({ data }) => ({
-                data: data.data,
-                totalCount: data.totalCount,
-              }))
-              .catch((error) => {
-                throw new Error("Data Loading Error");
-              });
-          },
-          insert: (values) => {
-            const payload = {
-              number: values.number,
-              name: values.name,
-              contact: values.contact,
-              organisation_number: values.organisation_number,
-              email: values.email,
-              www: values.www,
-              phone: values.phone,
-              address: values.address,
-              zip: values.zip,
-              city: values.city,
-              country: values.country,
-            };
-  
-            return axios
-              .post(`/api/create-customer`, payload)
-              .then((data) => { })
-              .catch((error) => {
-                throw new Error("Data Loading Error");
-              });
-          },
-          update: (key, values) => {
-            const payload = {
-              id: key.id,
-              tenant_id: key.tenant_id,
-              number: values.number ? values.number : key.number,
-              name: values.name ? values.name : key.name,
-              contact: values.contact ? values.contact : key.contact,
-              organisation_number: values.organisation_number ? values.organisation_number : key.organisation_number,
-              email: values.email ? values.email : key.email,
-              www: values.www ? values.www : key.www,
-              phone: values.phone ? values.phone : key.phone,
-              address: values.address ? values.address : key.address,            
-              zip: values.zip ? values.zip : key.zip,
-              city: values.city ? values.city : key.city,
-              country: values.country ? values.country : key.country,
-            };
-  
-            return axios
-              .post(`/api/update-customer`, payload)
-              .then((data) => { })
-              .catch((error) => {
-                throw new Error("Data Loading Error");
-              });
-          },
-  
-          remove: (key) => {
-            const payload = {
-              id: key.id,
-            };
-            return axios
-              .post(`/api/delete-customer`, payload)
-              .then((data) => { })
-              .catch((error) => {
-                throw new Error("Data Loading Error");
-            });
-          },
-        });
-      },
-    },
-  };
-  </script>
-  
+};
+</script>
