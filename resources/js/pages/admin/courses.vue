@@ -5,41 +5,30 @@
             <DxDataGrid :data-source="dataSource" :show-borders="true" key-expr="id">
                 <DxPaging :enabled="false" />
                 <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
-                    <DxPopup :show-title="true" :width="700" :height="600" title="Customer Info" />
+                    <DxPopup :show-title="true" :width="800" :height="380" title="Course Info" />
                     <DxForm>
+                        <DxItem :col-count="3" :col-span="2" item-type="group">
+                            <DxItem data-field="customer_id" :validation-rules="[{ type: 'required' }]" />
+                            <DxItem data-field="code" :validation-rules="[{ type: 'required' }]" />
+                            <DxItem data-field="name" :validation-rules="[{ type: 'required' }]" />
+                        </DxItem>
                         <DxItem :col-count="2" :col-span="2" item-type="group">
-                            <DxItem data-field="number" />
-                            <DxItem data-field="name" />
-                            <DxItem data-field="contact" />
-                            <DxItem data-field="organisation_number" />
-                            <DxItem data-field="email" />
-                            <DxItem data-field="www" />
-
-                            <DxItem :col-count="2" :col-span="2" item-type="group" caption="Customer Address">
-
-                                <DxItem :col-span="2" :editor-options="{ height: 100 }" data-field="address"
-                                    editor-type="dxTextArea" />
-                            </DxItem>
-
-                            <DxItem data-field="phone" />
-                            <DxItem data-field="zip" />
-                            <DxItem data-field="city" />
-                            <DxItem data-field="country" />
+                            <DxItem :col-span="2" :editor-options="{ height: 100 }" data-field="description"
+                                editor-type="dxTextArea" :validation-rules="[{ type: 'required' }]" />
+                            <DxItem data-field="date_from" />
+                            <DxItem data-field="date_untill" />
                         </DxItem>
                     </DxForm>
                 </DxEditing>
 
-                <DxColumn :width="70" data-field="number" />
+                <DxColumn :visible="false" data-field="customer_id" caption="Customer">
+                    <DxLookup :data-source="customers" value-expr="id" display-expr="name" />
+                </DxColumn>
+                <DxColumn :width="70" data-field="code" />
                 <DxColumn data-field="name" />
-                <DxColumn data-field="contact" />
-                <DxColumn data-field="organisation_number" />
-                <DxColumn data-field="email" />
-                <DxColumn data-field="www" caption="Website" />
-                <DxColumn :visible="false" data-field="phone" />
-                <DxColumn data-field="address" />
-                <DxColumn :visible="false" data-field="zip" />
-                <DxColumn :visible="false" data-field="city" />
-                <DxColumn :visible="false" data-field="country" />
+                <DxColumn data-field="description" />
+                <DxColumn data-field="date_from" data-type="date" />
+                <DxColumn data-field="date_untill" data-type="date" />
             </DxDataGrid>
         </div>
     </AdminLayout>
@@ -63,6 +52,7 @@ import {
     DxPaging,
     DxPager,
     DxEditing,
+    DxLookup,
 } from "devextreme-vue/data-grid";
 import CustomStore from "devextreme/data/custom_store";
 function isNotEmpty(value) {
@@ -82,6 +72,7 @@ export default {
         DxToolbarItem,
         DxDataGrid,
         DxColumn,
+        DxLookup,
         DxPager,
         DxPaging,
         DxEditing,
@@ -95,6 +86,7 @@ export default {
     },
     data() {
         return {
+            customers: {},
             breadcrumbsItems: [
                 {
                     text: "Admin",
@@ -128,7 +120,7 @@ export default {
                     });
 
                     return axios
-                        .get(`/api/all-customers`, { params })
+                        .get(`/api/all-courses`, { params })
                         .then(({ data }) => ({
                             data: data.data,
                             totalCount: data.totalCount,
@@ -139,21 +131,16 @@ export default {
                 },
                 insert: (values) => {
                     const payload = {
-                        number: values.number,
+                        customer_id: values.customer_id,
+                        code: values.code,
                         name: values.name,
-                        contact: values.contact,
-                        organisation_number: values.organisation_number,
-                        email: values.email,
-                        www: values.www,
-                        phone: values.phone,
-                        address: values.address,
-                        zip: values.zip,
-                        city: values.city,
-                        country: values.country,
+                        description: values.description,
+                        date_from: values.date_from,
+                        date_untill: values.date_untill,
                     };
 
                     return axios
-                        .post(`/api/create-customer`, payload)
+                        .post(`/api/create-course`, payload)
                         .then((data) => { })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
@@ -162,34 +149,27 @@ export default {
                 update: (key, values) => {
                     const payload = {
                         id: key.id,
-                        tenant_id: key.tenant_id,
-                        number: values.number ? values.number : key.number,
+                        code: values.code ? values.code : key.code,
                         name: values.name ? values.name : key.name,
-                        contact: values.contact ? values.contact : key.contact,
+                        description: values.description ? values.description : key.description,
                         organisation_number: values.organisation_number ? values.organisation_number : key.organisation_number,
-                        email: values.email ? values.email : key.email,
-                        www: values.www ? values.www : key.www,
-                        phone: values.phone ? values.phone : key.phone,
-                        address: values.address ? values.address : key.address,
-                        zip: values.zip ? values.zip : key.zip,
-                        city: values.city ? values.city : key.city,
-                        country: values.country ? values.country : key.country,
+                        date_from: values.date_from ? values.date_from : key.date_from,
+                        date_untill: values.date_untill ? values.date_untill : key.date_untill,
                     };
 
                     return axios
-                        .post(`/api/update-customer`, payload)
+                        .post(`/api/update-course`, payload)
                         .then((data) => { })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });
                 },
-
                 remove: (key) => {
                     const payload = {
                         id: key.id,
                     };
                     return axios
-                        .post(`/api/delete-customer`, payload)
+                        .post(`/api/delete-course`, payload)
                         .then((data) => { })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
@@ -198,5 +178,18 @@ export default {
             });
         },
     },
+    methods: {
+        async getData() {
+            try {
+                const { data } = await axios.get(`/api/all-customers`);
+                this.customers = data.data;
+            } catch (err) {
+                console.log(err)
+            }
+        }
+    },
+    mounted() {
+        this.getData();
+    }
 };
 </script>

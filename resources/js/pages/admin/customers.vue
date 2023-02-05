@@ -30,7 +30,7 @@
             <DxItem data-field="name"/>
             <DxItem data-field="contact"/>
             <DxItem data-field="organisation_number"/>
-            <DxItem data-field="email"/>
+            <DxItem data-field="email" :validation-rules="[{ type: 'required' }, { type: 'email' }]"/>
             <DxItem data-field="www" />
 
           <DxItem
@@ -51,7 +51,9 @@
             <DxItem data-field="phone"/>
             <DxItem data-field="zip"/>
             <DxItem data-field="city"/>
-            <DxItem data-field="country"/>
+            <DxItem data-field="country">
+              <country-select v-model="country" :country="country" topCountry="US"/>
+            </DxItem>
           </DxItem>
         </DxForm>
       </DxEditing>
@@ -122,6 +124,8 @@ export default {
   },
   data() {
     return {
+      country: '',
+    region: '',
       breadcrumbsItems: [
         {
           text: "Admin",

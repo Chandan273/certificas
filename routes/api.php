@@ -32,4 +32,12 @@ Route::middleware("auth:api")->group(function(){
     Route::post("create-customer", [App\Http\Controllers\Api\CustomerController::class, 'createCustomer']);
     Route::post('update-customer', [App\Http\Controllers\Api\CustomerController::class, 'updateCustomer']);
     Route::post('delete-customer', [App\Http\Controllers\Api\CustomerController::class, 'destroyCustomer']);
+    Route::get("all-courses", [App\Http\Controllers\Api\CourseController::class, 'allCourses']);
+    Route::post("create-course", [App\Http\Controllers\Api\CourseController::class, 'createCourse']);
+    Route::post('update-course', [App\Http\Controllers\Api\CourseController::class, 'updateCourse']);
+    Route::post('delete-course', [App\Http\Controllers\Api\CourseController::class, 'destroyCourse']);
+    Route::get("all-students", [App\Http\Controllers\Api\StudentController::class, 'allStudents']);
+    Route::post("create-student", [App\Http\Controllers\Api\StudentController::class, 'createStudent']);
+    Route::post('update-student', [App\Http\Controllers\Api\StudentController::class, 'updateStudent']);
+    Route::post('delete-student', [App\Http\Controllers\Api\StudentController::class, 'destroyStudent']);
 });
