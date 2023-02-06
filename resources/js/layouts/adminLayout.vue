@@ -46,7 +46,9 @@
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" class="px-0 px-1" :ripple="false">
             <div class="nav-profile d-flex">
-              <v-icon size="30" class="mr-1 mainPrimary">mdi-account-circle</v-icon>
+              <v-icon size="30" class="mr-1 mainPrimary">
+                mdi-account-circle
+              </v-icon>
             </div>
             &nbsp;
             <span class="mainPrimary text-capitalize">{{ user.username }}</span>
@@ -54,12 +56,12 @@
           </v-btn>
         </template>
         <v-list class="profile-dropdown">
-          <!-- <v-list-item router to="/">
-                        <v-list-item-title>
-                            <v-icon class="mr-2">mdi-account</v-icon>
-                            Profile
-                        </v-list-item-title>
-                    </v-list-item> -->
+          <!-- <v-list-item router to="/profile">
+            <v-list-item-title>
+              <v-icon class="mr-2">mdi-account</v-icon>
+              Profile
+            </v-list-item-title>
+          </v-list-item> -->
           <v-list-item @click="logout()">
             <v-list-item-title>
               <v-icon class="mr-2">mdi-logout</v-icon>
@@ -77,15 +79,15 @@
   </v-app>
 </template>
 <script>
-import Auth from "../Auth.js";
-import axios from "axios";
+import Auth from '../Auth.js'
+import axios from 'axios'
 
 export default {
-  name: "adminLayout",
+  name: 'adminLayout',
   components: {},
   data: () => ({
-    user: JSON.parse(localStorage.getItem("user")),
-    userRole: localStorage.getItem("role"),
+    user: JSON.parse(localStorage.getItem('user')),
+    userRole: localStorage.getItem('role'),
     drawer: true,
     miniVariant: false,
     rail: false,
@@ -93,37 +95,40 @@ export default {
     isActive: true,
     closeOnContentClick: true,
     adminItems: [
-      { title: "Tenants", icon: "mdi-account", to: "/tenants" },
+      { title: 'Tenants', icon: 'mdi-account', to: '/tenants' },
     ],
     companyItems: [
-      { title: "Customers", icon: "mdi-account-multiple", to: "/customers" },
-      { title: "Courses", icon: "mdi-school", to: "/courses" },
-      { title: "Students", icon: "mdi-library", to: "/students" },
-      { title: "Certificates", icon: "mdi-file-document", to: "/certificates" },
+      { title: 'Courses', icon: 'mdi-school', to: '/courses' },
+      { title: 'Customers', icon: 'mdi-account-multiple', to: '/customers' },
+      { title: 'Students', icon: 'mdi-library', to: '/students' },
+      { title: 'Certificates', icon: 'mdi-file-document', to: '/certificates' },
     ],
   }),
   methods: {
     async logout() {
       axios
-        .post("/api/logout")
+        .post('/api/logout')
         .then(({ data }) => {
           if (data) {
-            Auth.logout(); //reset local storage
-            localStorage.clear();
-            this.$router.push("/login");
+            Auth.logout() //reset local storage
+            localStorage.clear()
+            this.$router.push('/login')
           }
         })
         .catch((error) => {
-          console.log("Error => ", error);
-        });
+           if(error.response.status='401'){
+                Auth.logout() //reset local storage
+                localStorage.clear()
+                this.$router.push('/login');
+           }
+        })
     },
   },
   mounted() {},
   watch: {
     group() {
-      this.drawer = false;
+      this.drawer = false
     },
   },
-};
+}
 </script>
-<style></style>

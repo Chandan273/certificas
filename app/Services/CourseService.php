@@ -20,7 +20,7 @@ class CourseService{
             $tenant = Tenant::where('id', auth()->user()->id)->first();
             $certificate_layout = Certificate_layout::where('tenant_id', $tenant->id)->first();
             $course = Course::create([
-                "customer_id" => $request->customer_id,
+                "tenant_id" => $tenant->id,
                 "certificate_layout_id" => $certificate_layout->id,
                 "code" => $request->code,
                 "name" => $request->name,

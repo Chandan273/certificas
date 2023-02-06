@@ -1,124 +1,197 @@
 <template>
-    <AdminLayout>
-        <v-breadcrumbs class="ps-0 pt-0" :items="breadcrumbsItems"></v-breadcrumbs>
-        <!-- <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 widget-card">
-            <DataAddRemoveTable :dataSource="dataSource" :dataType="dataType">
-                <DxPopup :show-title="true" :width="600" :height="525" title="Certificates Info" />
-            </DataAddRemoveTable>
-        </div> -->
-    </AdminLayout>
+<AdminLayout>
+    <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
+    <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 widget-card">
+        <DxDataGrid :data-source="dataSource" :show-borders="true" key-expr="id">
+            <DxPaging :enabled="false" />
+            <DxSearchPanel :visible="true" />
+            <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
+                <DxPopup :show-title="true" :width="700" :height="375" title="Certificate Info" />
+                <DxForm>
+                    <DxItem :col-count="2" :col-span="2" item-type="group">
+                        <DxItem :visible="false" data-field="id" />
+                    </DxItem>
+                    <DxItem :col-count="2" :col-span="2" item-type="group">
+                        <DxItem :col-span="2" :editor-options="{ height: 100 }" data-field="description" editor-type="dxTextArea" :validation-rules="[
+                    { type: 'required', message: 'Description is required' },
+                  ]" />
+                        <DxItem data-field="valid_from" :validation-rules="[
+                    { type: 'required', message: 'Valid From Date is required' },
+                  ]" />
+                        <DxItem data-field="valid_untill" :validation-rules="[
+                    {
+                      type: 'required',
+                      message: 'Valid Untill Date is required',
+                    },
+                  ]" />
+                    </DxItem>
+                    <DxItem :visible="false" data-field="info" />
+                </DxForm>
+            </DxEditing>
+
+            <DxColumn :width="125" data-field="student_id" caption="Student">
+                <DxLookup :data-source="Students" value-expr="id" display-expr="name" />
+            </DxColumn>
+            <DxColumn data-field="description" />
+            <DxColumn data-field="valid_from" data-type="datetime" />
+            <DxColumn data-field="valid_untill" data-type="datetime" />
+            <DxColumn :visible="false" data-field="info" />
+        </DxDataGrid>
+    </div>
+</AdminLayout>
 </template>
 
+  
 <script>
-import DataAddRemoveTable from '../../components/table/DataAddRemoveTable.vue';
-import AdminLayout from '../../layouts/adminLayout.vue';
+import axios from 'axios'
+import AdminLayout from '../../layouts/adminLayout.vue'
 import {
+    DxDataGrid,
+    DxColumn,
+    DxPaging,
+    DxSearchPanel,
+    DxEditing,
     DxPopup,
+    DxLookup,
     DxForm,
+} from 'devextreme-vue/data-grid'
+import {
+    DxTextArea
+} from 'devextreme-vue/text-area'
+import {
     DxItem
-} from 'devextreme-vue/data-grid';
-export default {
-    name: "Certificates",
-    components: {
-        DataAddRemoveTable,
-        AdminLayout,
-        DxPopup,
-        DxForm,
-        DxItem
-    },
-    props: {
+} from 'devextreme-vue/form'
+import CustomStore from 'devextreme/data/custom_store'
 
-        showFilterRow: {
-            type: Boolean,
-            default: true,
-        },
+function isNotEmpty(value) {
+    return value !== undefined && value !== null && value !== ''
+}
+
+export default {
+    name: 'Certificates',
+    components: {
+        AdminLayout,
+        DxDataGrid,
+        DxColumn,
+        DxPaging,
+        DxSearchPanel,
+        DxEditing,
+        DxPopup,
+        DxLookup,
+        DxForm,
+        DxItem,
+        DxTextArea,
     },
     data() {
         return {
-            breadcrumbsItems: [
-                {
-                    text: "Admin",
+            Students: [],
+            breadcrumbsItems: [{
+                    text: 'Admin',
                     disabled: true,
-                    href: "dashboard",
+                    href: 'dashboard',
                 },
                 {
-                    text: "Certificates",
+                    text: 'Certificates',
                     disabled: false,
-                    href: "/certificates",
+                    href: '/certificates',
                 },
             ],
-            dataSource: [
-                {
-                    Student: 'Student',
-                    Course: 'bsc',
-                    valid_from: '05/08/2002',
-                    valid_until: '02/06/2002',
-                    created: '02/02/2002',
-                    updated: '03/09/2016',
-                },
-                {
-                    Student: 'Student 2',
-                    Course: 'bsc',
-                    valid_from: '05/08/2002',
-                    valid_until: '02/06/2002',
-                    created: '02/02/2002',
-                    updated: '03/09/2016',
-                },
-                {
-                    Student: 'Student 3',
-                    Course: 'bsc',
-                    valid_from: '05/08/2002',
-                    valid_until: '02/06/2002',
-                    created: '02/02/2002',
-                    updated: '03/09/2016',
-                },
-                {
-                    Student: 'Student 4',
-                    Course: 'bsc',
-                    valid_from: '05/08/2002',
-                    valid_until: '02/06/2002',
-                    created: '02/02/2002',
-                    updated: '03/09/2016',
-                },
-                {
-                    Student: 'Student 5',
-                    Course: 'bsc',
-                    valid_from: '05/08/2002',
-                    valid_until: '02/06/2002',
-                    created: '02/02/2002',
-                    updated: '03/09/2016',
-                },
-            ],
-
-            dataType: [
-                {
-                    "key": "Student",
-                    "type": 'string'
-                },
-                {
-                    "key": "Course",
-                    "type": 'string'
-                }, {
-                    "key": "valid_from",
-                    "type": 'date'
-                },
-                {
-                    "key": "valid_until",
-                    "type": 'date'
-                },
-                {
-                    "key": "created",
-                    "type": 'date'
-                },
-                {
-                    "key": "updated",
-                    "type": 'date'
-                },
-            ],
-
-        };
-
+        }
     },
+    computed: {
+        dataSource: () => {
+            return new CustomStore({
+                load: (loadOptions) => {
+                    let params = {};
+                    [
+                        'skip',
+                        'take',
+                        'requireTotalCount',
+                        'requireGroupCount',
+                        'sort',
+                        'filter',
+                    ].forEach((i) => {
+                        if (i in loadOptions && isNotEmpty(loadOptions[i])) {
+                            params[i] = `${JSON.stringify(loadOptions[i])}`
+                        }
+                    })
 
-};
+                    return axios
+                        .get(`/api/all-certificates`, {
+                            params
+                        })
+                        .then(({
+                            data
+                        }) => ({
+                            data: data.data,
+                            totalCount: data.totalCount,
+                        }))
+                        .catch((error) => {
+                            throw new Error('Data Loading Error')
+                        })
+                },
+                insert: (values) => {
+                    const payload = {
+                        student_id: values.student_id,
+                        description: values.description,
+                        valid_from: values.valid_from,
+                        valid_untill: values.valid_untill,
+                        info: [],
+                    }
+                    return axios
+                        .post(`/api/create-certificate`, payload)
+                        .then((data) => {})
+                        .catch((error) => {
+                            throw new Error('Data Loading Error')
+                        })
+                },
+                update: (key, values) => {
+                    const payload = {
+                        id: key.id,
+                        student_id: values.student_id ? values.student_id : key.student_id,
+                        course_id: values.course_id ? values.course_id : key.course_id,
+                        description: values.description ?
+                            values.description :
+                            key.description,
+                        valid_from: values.valid_from ? values.valid_from : key.valid_from,
+                        valid_untill: values.valid_untill ?
+                            values.valid_untill :
+                            key.valid_untill,
+                        info: values.info ? values.info : key.info,
+                    }
+                    return axios
+                        .post(`/api/update-certificate`, payload)
+                        .then((data) => {})
+                        .catch((error) => {
+                            throw new Error('Data Loading Error')
+                        })
+                },
+                remove: (key) => {
+                    const payload = {
+                        id: key.id,
+                    }
+                    return axios
+                        .post(`/api/delete-certificate`, payload)
+                        .then((data) => {})
+                        .catch((error) => {
+                            throw new Error('Data Loading Error')
+                        })
+                },
+            })
+        },
+    },
+    methods: {
+        async getStudents() {
+            try {
+                const {
+                    data
+                } = await axios.get(`/api/all-students`)
+                this.Students = data.data
+            } catch (error) {}
+        },
+    },
+    mounted() {
+        this.getStudents()
+    },
+}
 </script>

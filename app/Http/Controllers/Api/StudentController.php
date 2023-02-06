@@ -23,4 +23,8 @@ class StudentController extends Controller
     public function destroyStudent(Request $request){
         return StudentService::destroyStudent($request);
     }
+
+    public function importStudentCsv(Request $request){
+        return StudentService::importStudentCsv($request);
+    }
 }

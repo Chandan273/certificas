@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Tenant;
+use App\Models\Certificate_layout;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -29,6 +30,10 @@ class CreateAdminUserSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'language' => 'English',
             'password' => bcrypt('123456')
+        ]);
+
+        $certificate_layout = Certificate_layout::create([
+            'tenant_id' => $tenant->id
         ]);
 
         $role = Role::create(['name' => 'superadmin']);
