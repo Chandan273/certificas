@@ -13,21 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('courses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('tenant_id');
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
-            $table->string('number',50)->nullable();
+            $table->unsignedBigInteger('certificate_layout_id');
+            $table->foreign('certificate_layout_id')->references('id')->on('certificate_layouts')->onDelete('cascade');
+            $table->string('code',50)->nullable();
             $table->string('name')->nullable();
-            $table->string('contact')->nullable();
-            $table->string('organisation_number')->nullable();
-            $table->string('email')->nullable();
-            $table->string('www')->nullable();
-            $table->string('phone',25)->nullable();
-            $table->string('address')->nullable();
-            $table->string('zip',10)->nullable();
-            $table->string('city')->nullable();
-            $table->string('country')->nullable();
+            $table->text('description')->nullable();
+            $table->date('date_from', $precision = 0)->nullable();
+            $table->date('date_untill', $precision = 0)->nullable();
             $table->json('info')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -41,6 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('courses');
     }
 };

@@ -11,7 +11,7 @@ class Course extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'customer_id',
+        'tenant_id',
         'certificate_layout_id',
         'code',
         'name',

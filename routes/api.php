@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware'=>'guest'], function(){
     Route::post("login", [App\Http\Controllers\Api\AuthController::class, 'login']);
     Route::post("register", [App\Http\Controllers\Api\AuthController::class, 'register']);
+    Route::post("forgot-password", [App\Http\Controllers\Api\AuthController::class, 'forgotPassword']);
+    Route::post("reset-password", [App\Http\Controllers\Api\AuthController::class, 'resetPassword']);
 });
 
 Route::middleware("auth:api")->group(function(){
@@ -40,4 +42,5 @@ Route::middleware("auth:api")->group(function(){
     Route::post("create-student", [App\Http\Controllers\Api\StudentController::class, 'createStudent']);
     Route::post('update-student', [App\Http\Controllers\Api\StudentController::class, 'updateStudent']);
     Route::post('delete-student', [App\Http\Controllers\Api\StudentController::class, 'destroyStudent']);
+    Route::post('upload-student-csv', [App\Http\Controllers\Api\StudentController::class, 'importStudentCsv']);
 });

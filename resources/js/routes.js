@@ -2,9 +2,11 @@ import { createWebHistory, createRouter } from "vue-router";
 import Auth from './Auth.js';
 
 const routes = [
-    { name: 'home', path: '/', redirect: { name: 'login', path: '/Login',component: () => import('./pages/Login.vue') } },
+    { name: 'home', path: '/', redirect: { name: 'login', path: '/Login', component: () => import('./pages/Login.vue') } },
     { name: 'login', path: '/login', component: () => import('./pages/Login.vue') },
     { name: 'pagenotfound', path: '/:pathMatch(.*)', component: () => import('./pages/PageNotFound.vue') },
+    { name: "forgot-password", path: "/forgot-password", component: () => import("./pages/ForgotPassword.vue"),},
+    { name: "reset-password", path: "/reset-password", component: () => import("./pages/ResetPassword.vue"),},
 
     // Auth Routes
     { name: 'customers', path: '/customers', meta: { requiresAuth: true }, component: () => import('./pages/admin/customers.vue') },

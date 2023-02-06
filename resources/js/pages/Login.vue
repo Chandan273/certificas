@@ -9,13 +9,13 @@
                 <div class="logo mb-3 text-center">
                   <h3 class="page-title">Login</h3>
                 </div>
+                <div class="text-center">
+                  <span v-if="error" class="invalid-feedback text-red">{{
+                    error
+                  }}</span>
+                </div>
                 <v-form ref="form" @submit.prevent="login">
-                  <div class="text-center">
-                    <span v-if="errors" class="invalid-feedback text-red">{{
-                      errors
-                    }}</span>
-                  </div>
-                  <v-alert
+                  <!-- <v-alert
                     v-for="(item, index) in validationMsg"
                     :key="index"
                     v-model="alert"
@@ -23,52 +23,33 @@
                     class="alert-msg-error"
                   >
                     {{ item }}
-                  </v-alert>
+                  </v-alert> -->
                   <div class="mb-4">
                     <label for="email"><strong>Email</strong></label>
-                    <v-text-field
-                      variant="outlined"
-                      v-model="loginForm.email"
-                      required
-                      :rules="emailRules"
-                      class="pt-2"
-                      name="email"
-                      placeholder="Enter your email address"
-                      hide-details="auto"
-                    />
+                    <v-text-field variant="outlined" v-model="loginForm.email" required :rules="emailRules" class="pt-2"
+                      name="email" placeholder="Enter your email address" hide-details="auto" />
+                    <div class="text-center">
+                      <span v-if="email_error" class="invalid-feedback text-red">{{
+                        email_error
+                      }}</span>
+                    </div>
                   </div>
                   <div class="mb-5">
                     <label><strong>Password</strong></label>
-                    <v-text-field
-                      variant="outlined"
-                      type="Password"
-                      v-model="loginForm.password"
-                      required
-                      :rules="passwordRules"
-                      class="pt-2"
-                      placeholder="Enter your password"
-                      hide-details="auto"
-                    />
+                    <v-text-field variant="outlined" type="Password" v-model="loginForm.password" required
+                      :rules="passwordRules" class="pt-2" placeholder="Enter your password" hide-details="auto" />
+                    <div class="text-center">
+                      <span v-if="password_error" class="invalid-feedback text-red">{{
+                        password_error
+                      }}</span>
+                    </div>
                   </div>
-
-                  <!-- <div class="mb-4 d-flex justify-space-between align-center flex-wrap">
-                    <v-checkbox v-model="checkbox" class="mt-0 pt-0" hide-details color="#ff0000">
-                      <template #label>
-                        <div>Remember</div>
-                      </template>
-                    </v-checkbox>
-                    <router-link to="/forgot-password">
+                  <div class="mb-4 d-flex justify-space-between align-center flex-wrap">
+                    <router-link class="forgot-txt" to="/forgot-password">
                       Forgot Password?
                     </router-link>
-                  </div> -->
-                  <v-btn type="submit" block class="primary-red mt-2"> Log In </v-btn>
-                  <!-- <v-divider class="my-4"></v-divider>
-                  <div class="register d-flex justify-center align-center flex-wrap">
-                    <p class="mb-0 me-3">Dont have an account?</p>
-                    <router-link to="/register">
-                      Sign-up
-                    </router-link>
-                  </div> -->
+                  </div>
+                  <v-btn type="submit" block class="primary-red mt-2">Log In</v-btn>
                 </v-form>
               </div>
             </v-col>
@@ -85,12 +66,6 @@
                       <br />
                       we're always here, waiting for you.
                     </p>
-                    <!-- <div>
-                      <p class="mb-0 caption">Not have an account?</p>
-                      <v-btn type="submit" rounded class="primary-red mt-2 white" @click="$router.push('/register')">
-                        Sign Up
-                      </v-btn>
-                    </div> -->
                   </div>
                 </div>
               </div>
@@ -118,7 +93,9 @@ export default {
   },
   data() {
     return {
-      errors: "",
+      error: "",
+      email_error: "",
+      password_error: "",
       loader: false,
       show1: false,
       loginForm: {
@@ -126,19 +103,21 @@ export default {
         password: "",
       },
       checkbox: false,
-      emailRules: [
-        (v) => !!v || "E-mail is required.",
-        (v) => /.+@.+\..+/.test(v) || "E-mail must be valid.",
-      ],
-      passwordRules: [(v) => !!v || "Password is required."],
-      validationMsg: [],
+      //   emailRules: [
+      //     (v) => !!v || "E-mail is required.",
+      //     (v) => /.+@.+\..+/.test(v) || "E-mail must be valid.",
+      //   ],
+      //   passwordRules: [(v) => !!v || "Password is required."],
+      //   validationMsg: [],
       alert: false,
       messageRxd: "",
     };
   },
   methods: {
     async login() {
-      this.errors = "";
+      this.error = "";
+      this.email_error = "";
+      this.password_error = "";
       axios
         .post("/api/login", this.loginForm)
         .then(({ data }) => {
@@ -147,13 +126,19 @@ export default {
           if (data.role == "superadmin") {
             this.$router.push("/tenants");
           } else {
-            this.$router.push("/customers");
+            localStorage.setItem("tenant", JSON.stringify(data.tenant));
+            this.$router.push("/courses");
           }
         })
         .catch((error) => {
           if (error.response.data.status == false) {
-            this.errors = error.response.data.error;
+            this.error = error.response.data.error;
           }
+          if (error.response.status == 400) {
+            this.email_error = error.response.data.error.email[0];
+            this.password_error = error.response.data.error.password[0];
+          }
+
         });
     },
   },
@@ -165,3 +150,9 @@ export default {
   },
 };
 </script>
+
+<style>
+a.forgot-txt {
+  color: #008cff;
+}
+</style>

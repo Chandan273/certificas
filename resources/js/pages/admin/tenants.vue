@@ -17,18 +17,30 @@
           data-type="string"
           data-sort="false"
           caption="User Name"
+          :validation-rules="[{ type: 'required' }]"
         />
-        <DxColumn data-field="tenant.name" data-type="string" caption="Tenant Name" />
-        <DxColumn data-field="email" data-type="string" caption="Email" />
-        <DxColumn data-field="tenant.paid_untill" data-type="date" caption="Paid Untill" />
+        <DxColumn
+          data-field="tenant.name"
+          data-type="string"
+          caption="Tenant Name"
+          :validation-rules="[{ type: 'required' }]"
+        />
+        <DxColumn data-field="email" data-type="string" caption="Email" :validation-rules="[{ type: 'required', message: 'Email Address is Required' }, { type: 'email' }]" />
+        <DxColumn
+          data-field="tenant.paid_untill"
+          data-type="date"
+          caption="Paid Untill"
+          :validation-rules="[{ type: 'required', message:'Paid Untill is Required' }]"
+        />
+        <DxSearchPanel :visible="true" />
         <DxEditing
           :allow-updating="true"
           :allow-deleting="true"
           :allow-adding="true"
           :use-icons="true"
-          mode="popup"
+          mode="row"
         >
-          <DxPopup :show-title="true" :width="600" :height="300" title="Tenant Info" />
+          <!-- <DxPopup :show-title="true" :width="600" :height="300" title="Tenant Info" /> -->
         </DxEditing>
         <DxPaging :page-size="10" />
         <DxPager
@@ -40,10 +52,10 @@
   </AdminLayout>
 </template>
 <script>
-import axios from "axios";
+import axios from 'axios'
 
-import AdminLayout from "../../layouts/adminLayout.vue";
-import { DxTextArea } from "devextreme-vue/text-area";
+import AdminLayout from '../../layouts/adminLayout.vue'
+import { DxTextArea } from 'devextreme-vue/text-area'
 import {
   DxPopup,
   DxForm,
@@ -51,21 +63,22 @@ import {
   DxButton,
   DxPosition,
   DxToolbarItem,
-} from "devextreme-vue/data-grid";
+} from 'devextreme-vue/data-grid'
 import {
   DxDataGrid,
   DxColumn,
   DxPaging,
+  DxSearchPanel,
   DxPager,
   DxEditing,
-} from "devextreme-vue/data-grid";
-import CustomStore from "devextreme/data/custom_store";
+} from 'devextreme-vue/data-grid'
+import CustomStore from 'devextreme/data/custom_store'
 function isNotEmpty(value) {
-  return value !== undefined && value !== null && value !== "";
+  return value !== undefined && value !== null && value !== ''
 }
 
 export default {
-  name: "tenants",
+  name: 'tenant',
   components: {
     AdminLayout,
     DxPopup,
@@ -79,6 +92,7 @@ export default {
     DxColumn,
     DxPager,
     DxPaging,
+    DxSearchPanel,
     DxEditing,
   },
 
@@ -92,35 +106,36 @@ export default {
     return {
       breadcrumbsItems: [
         {
-          text: "Admin",
+          text: 'Admin',
           disabled: true,
-          href: "dashboard",
+          href: 'dashboard',
         },
         {
-          text: "Tenants",
+          text: 'Tenants',
           disabled: false,
-          href: "/tenants",
+          href: '/tenants',
         },
       ],
-    };
+      tableTitle: 'Tenant Details',
+    }
   },
   computed: {
     dataSource: () => {
       return new CustomStore({
         load: (loadOptions) => {
-          let params = {};
-          [
-            "skip",
-            "take",
-            "requireTotalCount",
-            "requireGroupCount",
-            "sort",
-            "filter",
+          let params = {}
+          ;[
+            'skip',
+            'take',
+            'requireTotalCount',
+            'requireGroupCount',
+            'sort',
+            'filter',
           ].forEach((i) => {
             if (i in loadOptions && isNotEmpty(loadOptions[i])) {
-              params[i] = `${JSON.stringify(loadOptions[i])}`;
+              params[i] = `${JSON.stringify(loadOptions[i])}`
             }
-          });
+          })
 
           return axios
             .get(`/api/all-tenants`, { params })
@@ -129,8 +144,8 @@ export default {
               totalCount: data.totalCount,
             }))
             .catch((error) => {
-              throw new Error("Data Loading Error");
-            });
+              throw new Error(error)
+            })
         },
         insert: (values) => {
           const payload = {
@@ -138,46 +153,44 @@ export default {
             email: values.email,
             username: values.username,
             paid_untill: values.tenant.paid_untill,
-          };
+          }
 
           return axios
             .post(`/api/create-tenant`, payload)
             .then((data) => {})
             .catch((error) => {
-              throw new Error("Data Loading Error");
-            });
+              throw new Error(error)
+            })
         },
         update: (key, values) => {
-          console.log(key, values);
           const payload = {
             id: key.id,
             name: values.tenant && values.tenant.name ? values.tenant.name : key.tenant.name,
             email: values.email ? values.email : key.email,
             username: values.username ? values.username: key.username,
-            paid_untill: values.tenant && values.tenant.paid_untill ? values.tenant.paid_untill : key.tenant.paid_untill,    
-          };
-
+            paid_untill: values.tenant && values.tenant.paid_untill ? values.tenant.paid_untill : key.tenant.paid_untill,
+          }
           return axios
             .post(`/api/update-tenant`, payload)
             .then((data) => {})
             .catch((error) => {
-              throw new Error("Data Loading Error");
-            });
+              throw new Error('Data Loading Error')
+            })
         },
 
         remove: (key) => {
           const payload = {
-            id: key.id,
-          };
+            id: key.tenant_id,
+          }
           return axios
             .post(`/api/delete-tenant`, payload)
             .then((data) => {})
             .catch((error) => {
-              throw new Error("Data Loading Error");
-            });
+              throw new Error('Data Loading Error')
+            })
         },
-      });
+      })
     },
   },
-};
+}
 </script>
