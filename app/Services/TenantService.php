@@ -14,13 +14,19 @@ use Illuminate\Support\Facades\Mail;
 class TenantService
 {
     /**
-     * Display a listing for all users.
+     * Display the specified Tenant resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public static function allTenants(Request $request)
+    public static function index(Request $request)
     {
         try {
             $totalCount = 0;
-            $tenants = User::with('tenant')->role('company');
+            $tenants = User::with('tenant')
+            ->whereHas('roles', function ($query) {
+                $query->where('name', 'company');
+            });
 
             if($request->has('requireTotalCount')){
                 $totalCount = $tenants->count();
@@ -41,12 +47,12 @@ class TenantService
             $tenants = $tenants->get();
 
             if ( $tenants) {
-                return $respone = response()->json(
+                return $response = response()->json(
                     ['success' => true, 'data' => $tenants, 'totalCount' => $totalCount],
                     200
                 );
             } else {
-                return $respone = response()->json(
+                return $response = response()->json(
                     ['success' => false, "data" => [],'totalCount' => $totalCount, 'message' => 'No Data Found!!'],
                     401
                 );
@@ -54,7 +60,7 @@ class TenantService
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $respone = response()->json(
+            return $response = response()->json(
                 ['success' => false, 'message' => $e],
                 400
             );
@@ -67,7 +73,7 @@ class TenantService
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public static function createTenant(Request $request)
+    public static function store(Request $request)
     {
         try {
 
@@ -75,7 +81,7 @@ class TenantService
 
             $tenant = Tenant::create([
                 'name' => $request->name,
-                'paid_untill' => date('Y-m-d', strtotime($request->paid_untill))
+                'paid_untill' => date('y-m-d', strtotime($request->paid_untill))
             ]);
 
             $user = User::create([
@@ -83,14 +89,13 @@ class TenantService
                 'username' => $request->username,
                 'email' => $request->email,
                 'password' => \Hash::make($password),
-            ]);  
-            
-            $certificate_layout = Certificate_layout::create([
-                'tenant_id' => $tenant->id
             ]);
 
-            $role = Role::findOrCreate('company');
-            $user->assignRole($role);
+            $certificate_layout = Certificate_layout::create([
+                'tenant_id' => $tenant->id,
+            ]);
+
+            $user->assignRole('company');
 
             $mailData = ["username"=>$user->username, "password"=>$password];
 
@@ -99,37 +104,39 @@ class TenantService
                 $message->to($user->email)->subject('Account created');
             });
 
-            return $respone = response()->json(
-                ['success' => true,  'user' => $user, 'message' => 'Tenant has been added successfully'],
+            return $response = response()->json(
+                ['success' => true, 'user' => $user, 'message' => 'Tenant has been added successfully'],
                 200
             );
 
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $respone = response()->json(
+            return $response = response()->json(
                 ['success' => false, 'message' => $e],
-                400
+                500
             );
         }
     }
 
     /**
-     * Show a company user in storage.
+     * Display a company user in storage.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function showTenants($id)
+    public static function show($id)
     {
         try {
             $user = User::find($id);
 
-            return $respone = response()->json(
+            return $response = response()->json(
                 ['success' => true, 'user' => $user],
                 200
             );
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $respone = response()->json(
+            return $response = response()->json(
                 ['success' => false, 'message' => $e],
                 400
             );
@@ -142,27 +149,28 @@ class TenantService
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public static function updateTenant(Request $request)
+    public static function update(Request $request)
     {
         try {
+
             $tenant = Tenant::where('id', $request->id)->first();
             $tenant->name = $request->name;
-            $tenant->paid_untill = $request->paid_untill;
+            $tenant->paid_untill = date('y-m-d', strtotime($request->paid_untill));
             $tenant->save();
 
-            $user = User::where('tenant_id', $request->id)->first();
+            $user = User::where('tenant_id', $tenant->id)->first();
             $user->username = $request->username;
             $user->email = $request->email;
             $user->save();
 
-            return $respone = response()->json(
-                ['success' => true,  'user' => $user, 'message' => 'Tenant has been updated successfully'],
+            return $response = response()->json(
+                ['success' => true, 'user' => $user, 'message' => 'Tenant has been updated successfully'],
                 200
             );
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $respone = response()->json(
+            return $response = response()->json(
                 ['success' => false, 'message' => $e],
                 400
             );
@@ -172,18 +180,19 @@ class TenantService
     /**
      * Delete teanat customer from storage.
      */
-    public static function destroyTenant(Request $request)
+    public static function destroy(Request $request)
     {
         try {
 
-            Tenant::where('id', $request->id)->delete();
-            User::where('tenant_id', $request->id)->delete();
-            Certificate_layout::where('tenant_id', $request->id)->delete();
-
-            return $respone = response()->json(
+            $user = User::where('tenant_id', $request->id)->first();
+            $tenant = Tenant::where('id', $request->id)->first();
+            $certificate_layout = Certificate_layout::where('tenant_id', $request->id)->delete();
+            $tenant->delete();
+            $user->delete();
+            return $response = response()->json(
                 [
                     'success' => true,
-                    'message' => 'Tenant has been deleted successfully!',
+                    'message' => 'User has been deleted successfully!',
                 ],
                 200
             );
@@ -191,7 +200,7 @@ class TenantService
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $respone = response()->json(
+            return $response = response()->json(
                 ['success' => false, 'message' => $e],
                 400
             );

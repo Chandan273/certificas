@@ -28,8 +28,8 @@ class RoleController extends Controller
      */
     public function store(RoleService $RoleService, Request $request)
     {
-        $allRoles = $RoleService->createRoles($request);
-        return $allRoles;
+        $createRoles = $RoleService->createRoles($request);
+        return $createRoles;
     }
     /**
      * Display the specified resource.

@@ -3,40 +3,98 @@
 namespace App\Services;
 
 use App\Models\User;
-use App\Models\Student;
-use App\Models\Course;
 use App\Models\Customer;
 use App\Models\Tenant;
-use Carbon\Carbon;
+use App\Models\Course;
+use App\Models\Student;
+use App\Models\Certificate_layout;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Storage;
 
-class StudentService{
+class StudentService
+{
+    /**
+     * Store a newly student resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */    
+    public static function store(Request $request)
+    {
+        try {
 
-    public static function allStudents(Request $request){
+            $tenant = User::where('id', auth()->user()->id)->first();
+            $course = Course::where('tenant_id', $tenant->id)->first();
+
+            if(!empty($request->course_id)){
+                $course_id = $request->course_id;
+            }else{
+                $course_id = null;
+            }
+
+            if($course){
+                $student = Student::create([
+                    'tenant_id' => $tenant->id,
+                    'course_id' => $course_id,
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'birth_date' => date('Y-m-d H:i:s', strtotime($request->birth_date)),
+                    'birth_place' => $request->birth_place,
+                    'info' => null,
+                ]);
+            }
+
+            $response = response()->json(
+                [
+                    'success' => true,
+                    'message' => 'Student created succesfully!'
+                ],
+                200
+            );
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+
+            $response = response()->json(
+                ['success' => false, 'message' => $e],
+                400
+            );
+        }
+
+        return $response;
+    }
+
+    /**
+     * Display the specified student resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public static function index(Request $request)
+    {
         try {
             $totalCount = 0;
-
             if(auth()->user()->hasRole('superadmin')) {
                 $students = Student::all();
             }
             else {
                 $tenant = User::where('id', auth()->user()->id)->first();
                 if($tenant) {
-                    $students = Student::join('courses', 'students.course_id', '=', 'courses.id')
-                    ->join('tenants', 'courses.tenant_id', '=', 'tenants.id')
-                    ->join('customers', 'tenants.id', '=', 'customers.tenant_id')
-                    ->select('students.*', 'courses.name as course_name', 'customers.name as customer_name', 'tenants.name as tenant_name');
+                    $students = Student::where(
+                        'tenant_id',
+                        $tenant->id
+                    );
                 }
                 else {
-                    $response = response()->json(
+                    return $response = response()->json(
                         ['success' => false, 'message' => 'No data found'],
                         400
                     );
                 }
-
             }
+
 
             if ($request->has('requireTotalCount')) {
                 $totalCount = $students->count();
@@ -91,20 +149,31 @@ class StudentService{
 
     }
 
-    public static function createStudent(Request $request){
-        try{
+    /**
+     * Update the specified student resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */    
+    public static function update(Request $request)
+    {
+        try {
 
-            $student = Student::create([
-                "course_id" => $request->course_id,
-                "name" => $request->name,
-                "email" => $request->email,
-                "birth_date" => date('Y-m-d', strtotime($request->birth_date)),
-                "birth_place" => $request->birth_place,
-                "info" => null
-            ]);
+            $student = Student::where('id', $request->id)->first();
+            $student->course_id = $request->course_id;
+            $student->name = $request->name;
+            $student->email = $request->email;
+            $student->birth_date = date('Y-m-d H:i:s', strtotime($request->birth_date));
+            $student->birth_place = $request->birth_place;
+            $student->info = json_encode($request->info);
+            $student->save();
 
             $response = response()->json(
-                ['success' => true, 'message' => "Customer Created Succesfully!"],
+                [
+                    'success' => true,
+                    'message' => 'Student Updated Succesfully!'
+                ],
                 200
             );
         } catch (Exception $e) {
@@ -117,75 +186,44 @@ class StudentService{
         }
 
         return $response;
-
     }
 
-
     /**
-     * Update Company User in storage.
+     * Delete record with the student id in storage.
      *
      * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
-     */
-    public static function updateStudent(Request $request)
+     */    
+    public static function destroy(Request $request)
     {
         try {
             $student = Student::where('id', $request->id)->first();
-            $student->course_id = $request->course_id;
-            $student->name = $request->name;
-            $student->email = $request->email;
-            $student->birth_date = date('Y-m-d', strtotime($request->birth_date));
-            $student->birth_place = $request->birth_place;
-            $student->save();
-
-            $response = response()->json(
-                ['success' => true, 'message' => 'Student has been updated successfully'],
-                200
-            );
-            
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-
-            $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
-        }
-
-        //return $response;
-
-    }
-
-    /**
-     * Delete teanat customer from storage.
-     */
-    public static function destroyStudent(Request $request)
-    {
-        try {
-
-            Student::where('id', $request->id)->delete();
-
-            $response = response()->json(
+            $student->delete();
+            return $response = response()->json(
                 [
                     'success' => true,
                     'message' => 'Student has been deleted successfully!',
                 ],
                 200
             );
-
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = response()->json(
+            return $response = response()->json(
                 ['success' => false, 'message' => $e],
                 400
             );
         }
-
-        return $response;
     }
-    
-    public static function importStudentCsv(Request $request)
+
+    /**
+     * Import a newly student resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */   
+    public static function importCsv(Request $request)
     {
 
         $file = $request->file('file');
@@ -209,14 +247,11 @@ class StudentService{
             // Check file size
             if ($fileSize <= $maxFileSize) {
 
-                // File upload location
-                $location = 'uploads';
+                // Store the file in the public disk
+                Storage::disk('public')->put($filename, file_get_contents($file));
 
-                // Upload file
-                $file->move($location, $filename);
-
-                // Import CSV to Database
-                $filepath = public_path($location . "/" . $filename);
+                // Reading file
+                $filepath = storage_path('app/public/' . $filename);
 
                 // Reading file
                 $file = fopen($filepath, "r");
@@ -228,7 +263,7 @@ class StudentService{
                     $num = count($filedata);
 
                     if ($i == 0) {
-                        if ($filedata[0] == "Name" || $filedata[1] == "Email" || $filedata[2] == "Birth date" || $filedata[3] == "Birth place") {
+                        if ($filedata[0] == "Courses" || $filedata[1] == "Name" || $filedata[2] == "Email" || $filedata[3] == "Birth date" || $filedata[4] == "Birth place") {
                             $i++;
                             continue;
                         } else {
@@ -237,11 +272,12 @@ class StudentService{
 
                     }
                     $importData_arr[] = [
-                        'course_id' => null,
-                        'name' => $filedata[0],
-                        'email' => $filedata[1],
-                        'birth_date' => date('Y-m-d', strtotime($filedata[2])),
-                        'birth_place' => $filedata[3],
+                        'tenant_id' => auth()->user()->id,
+                        'course_id' => null, //$filedata[0],
+                        'name' => $filedata[1],
+                        'email' => $filedata[2],
+                        'birth_date' => date('Y-m-d', strtotime($filedata[3])),
+                        'birth_place' => $filedata[4],
                         'created_at' => date('Y-m-d H:i:s'),
                         'updated_at' => date('Y-m-d H:i:s'),
                     ];
@@ -249,8 +285,10 @@ class StudentService{
                 }
                 fclose($file);
 
+                unlink($filepath);
+
                 try {
-                    Student::insert($importData_arr);
+                    Student::upsert($importData_arr, ['name', 'email']);
                     $response = response()->json(
                         [
                             'success' => true,
@@ -274,7 +312,48 @@ class StudentService{
 
     }
 
-}
+    /**
+     * Display the specified student courses resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */    
+    public static function courses(Request $request)
+    {
+        try {
 
+            if(auth()->user()->hasRole('superadmin')) {
+                $course = Course::all();
+            }
+            else {
+                $tenant = User::where('id', auth()->user()->id)->first();
+                if($tenant) {
+                    $courses = Course::where(
+                        'tenant_id',
+                        $tenant->id
+                    )->get();
+                }
+
+                $response = response()->json(
+                    [
+                        'success' => true,
+                        'courses' => $courses
+                    ],
+                    200
+                );
+            }
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+
+            $response = response()->json(
+                ['success' => false, 'message' => $e],
+                400
+            );
+        }
+
+        return $response;
+    }    
+
+}
 
 ?>

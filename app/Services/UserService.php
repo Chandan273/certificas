@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\URL;
 
 class UserService
 {
+    /**
+     * forgot password resource from storage.
+     *
+     * * @param \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response 
+     */    
     public static function forgotPassword(Request $request)
     {
         try {
@@ -67,6 +73,12 @@ class UserService
         return response()->json($response, $statusCode);
     }
 
+    /**
+     * Reset password resource from storage.
+     *
+     * * @param \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */    
     public static function resetPassword(Request $request)
     {
         try {
@@ -100,6 +112,12 @@ class UserService
         return response()->json($response, $statusCode);
     }
 
+    /**
+     * update user profile resource from storage.
+     *
+     * * @param \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */  
     public static function updateProfile(Request $request)
     {
         try {
@@ -162,6 +180,12 @@ class UserService
         return $response;
     }
 
+    /**
+     * Reset profile user password resource from storage.
+     *
+     * * @param \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */  
     public static function profilePassword(Request $request)
     {
         try {

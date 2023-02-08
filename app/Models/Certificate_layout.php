@@ -10,13 +10,7 @@ class Certificate_layout extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'tenant_id',
     ];
-
 }

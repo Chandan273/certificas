@@ -24,23 +24,35 @@ Route::group(['middleware'=>'guest'], function(){
 Route::middleware("auth:api")->group(function(){
     Route::post('/logout', [App\Http\Controllers\Api\AuthController::class, 'logout']);
     Route::get("userinfo", [App\Http\Controllers\Api\AuthController::class, 'userInfo']);
+    Route::post("update-profile", [App\Http\Controllers\Api\AuthController::class, 'updateProfile']);
+    Route::post("profile-password", [App\Http\Controllers\Api\AuthController::class, 'profilePassword']);
     Route::post("createrole", [App\Http\Controllers\Api\RoleController::class, 'store']);
     Route::get("allroles", [App\Http\Controllers\Api\RoleController::class, 'show']);
-    Route::get("all-tenants", [App\Http\Controllers\Api\UserController::class, 'allTenants']);
-    Route::post("create-tenant", [App\Http\Controllers\Api\UserController::class, 'createTenant']);
-    Route::post('update-tenant', [App\Http\Controllers\Api\UserController::class, 'updateTenants']);
-    Route::post('delete-tenant', [App\Http\Controllers\Api\UserController::class, 'destroyTenant']);
-    Route::get("all-customers", [App\Http\Controllers\Api\CustomerController::class, 'allCustomers']);
-    Route::post("create-customer", [App\Http\Controllers\Api\CustomerController::class, 'createCustomer']);
-    Route::post('update-customer', [App\Http\Controllers\Api\CustomerController::class, 'updateCustomer']);
-    Route::post('delete-customer', [App\Http\Controllers\Api\CustomerController::class, 'destroyCustomer']);
-    Route::get("all-courses", [App\Http\Controllers\Api\CourseController::class, 'allCourses']);
-    Route::post("create-course", [App\Http\Controllers\Api\CourseController::class, 'createCourse']);
-    Route::post('update-course', [App\Http\Controllers\Api\CourseController::class, 'updateCourse']);
-    Route::post('delete-course', [App\Http\Controllers\Api\CourseController::class, 'destroyCourse']);
-    Route::get("all-students", [App\Http\Controllers\Api\StudentController::class, 'allStudents']);
-    Route::post("create-student", [App\Http\Controllers\Api\StudentController::class, 'createStudent']);
-    Route::post('update-student', [App\Http\Controllers\Api\StudentController::class, 'updateStudent']);
-    Route::post('delete-student', [App\Http\Controllers\Api\StudentController::class, 'destroyStudent']);
+    Route::get("all-tenants", [App\Http\Controllers\Api\UserController::class, 'index']);
+    Route::post("create-tenant", [App\Http\Controllers\Api\UserController::class, 'store']);
+    Route::post('update-tenant', [App\Http\Controllers\Api\UserController::class, 'update']);
+    Route::post('delete-tenant', [App\Http\Controllers\Api\UserController::class, 'destroy']);
+    Route::post('create-customer', [App\Http\Controllers\Api\CustomerController::class, 'store']);
+    Route::get("all-customers", [App\Http\Controllers\Api\CustomerController::class, 'index']);
+    Route::post('update-customer', [App\Http\Controllers\Api\CustomerController::class, 'update']);
+    Route::post('delete-customer', [App\Http\Controllers\Api\CustomerController::class, 'destroy']);
+    Route::post('create-course', [App\Http\Controllers\Api\CourseController::class, 'store']);
+    Route::get("all-courses", [App\Http\Controllers\Api\CourseController::class, 'index']);
+    Route::post('update-course', [App\Http\Controllers\Api\CourseController::class, 'update']);
+    Route::post('delete-course', [App\Http\Controllers\Api\CourseController::class, 'destroy']);
+    Route::get("student-courses", [App\Http\Controllers\Api\StudentController::class, 'studentCourses']);
+    Route::post('create-student', [App\Http\Controllers\Api\StudentController::class, 'store']);
+    Route::get("all-students", [App\Http\Controllers\Api\StudentController::class, 'index']);
+    Route::post('update-student', [App\Http\Controllers\Api\StudentController::class, 'update']);
+    Route::post('delete-student', [App\Http\Controllers\Api\StudentController::class, 'destroy']);
+    Route::post('create-certificate', [App\Http\Controllers\Api\CertificateController::class, 'store']);
+    Route::get("all-certificates", [App\Http\Controllers\Api\CertificateController::class, 'index']);
+    Route::post('update-certificate', [App\Http\Controllers\Api\CertificateController::class, 'update']);
+    Route::post('delete-certificate', [App\Http\Controllers\Api\CertificateController::class, 'destroy']);
     Route::post('upload-student-csv', [App\Http\Controllers\Api\StudentController::class, 'importStudentCsv']);
 });
+
+
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });

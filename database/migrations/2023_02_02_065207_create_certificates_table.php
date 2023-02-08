@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('certificates', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('student_id');
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->unsignedBigInteger('course_id');

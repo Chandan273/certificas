@@ -2,20 +2,23 @@
 
 namespace App\Services;
 
-use App\Models\Customer;
 use App\Models\User;
+use App\Models\Customer;
 use App\Models\Tenant;
+use App\Models\Student;
 use App\Models\Course;
 use App\Models\Certificate_layout;
+use App\Models\Certificate;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
-class CourseService
+class CertificateService
 {
+
     /**
-     * Store a newly course resource in storage.
+     * Store a newly certificate resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -23,25 +26,24 @@ class CourseService
     public static function store(Request $request)
     {
         try {
-
             $tenant = User::where('id', auth()->user()->id)->first();
-            $customer = Customer::where('tenant_id', $tenant->id)->first();
             $certificate_layout = Certificate_layout::where('tenant_id',$tenant->id)->first();
-            $course = Course::create([
-                'tenant_id' => $tenant->id,
+            $student = Student::where('id',$request->student_id)->first();
+
+            $course = Certificate::create([
+                'student_id' => $request->student_id,
+                'course_id' => $student->course_id,
                 'certificate_layout_id' => $certificate_layout->id,
-                'code' => $request->code,
-                'name' => $request->name,
                 'description' => $request->description,
-                'date_from' => date('Y-m-d H:i:s', strtotime($request->date_from)),
-                'date_untill' => date('Y-m-d H:i:s', strtotime($request->date_untill)),
-                'info' => null,
+                'valid_from' => date('Y-m-d H:i:s', strtotime($request->valid_from)),
+                'valid_untill' => date('Y-m-d H:i:s', strtotime($request->valid_untill)),
+                'info' => json_encode($request->info),
             ]);
 
             $response = response()->json(
                 [
                     'success' => true,
-                    'message' => 'Course created succesfully!'
+                    'message' => 'Certificate created succesfully!'
                 ],
                 200
             );
@@ -58,7 +60,7 @@ class CourseService
     }
 
     /**
-     * Display a listing of the courses.
+     * Display a listing of the certificate.
      *
      * @return \Illuminate\Http\Response
      */
@@ -66,57 +68,57 @@ class CourseService
     {
         try {
             $totalCount = 0;
-            if(auth()->user()->hasRole('superadmin')) {
-                $courses = Course::all();
-            }
-            else {
+            if (
+                auth()
+                    ->user()
+                    ->hasRole('superadmin')
+            ) {
+                $certificates = Certificate::all();
+            } else {
                 $tenant = User::where('id', auth()->user()->id)->first();
-                if($tenant) {
-                    $courses = Course::where(
-                        'tenant_id',
-                        $tenant->id
-                    );
-                }
-                else {
-                    return $response = response()->json(
+
+                if ($tenant) {
+                    $certificate_layout = Certificate_layout::where('tenant_id',$tenant->id)->first();
+                    $certificates = Certificate::where('certificate_layout_id',$certificate_layout->id);
+                } else {
+                    $response = response()->json(
                         ['success' => false, 'message' => 'No data found'],
                         400
                     );
                 }
             }
 
-
             if ($request->has('requireTotalCount')) {
-                $totalCount = $courses->count();
+                $totalCount = $certificates->count();
             }
 
             if ($request->has('skip')) {
-                $courses->skip($request->skip)->take($request->take);
+                $certificates->skip($request->skip)->take($request->take);
             }
 
             if ($request->has('sort')) {
                 $sort = json_decode($request->sort, 1);
                 if (count($sort)) {
-                    $courses->orderBy(
+                    $certificates->orderBy(
                         $sort[0]['selector'],
                         $sort[0]['desc'] ? 'DESC' : 'ASC'
                     );
                 }
             }
 
-            $courses = $courses->get();
+            $certificates = $certificates->get();
 
-            if ($courses) {
-                return $response = response()->json(
+            if ($certificates) {
+                $response = response()->json(
                     [
                         'success' => true,
-                        'data' => $courses,
+                        'data' => $certificates,
                         'totalCount' => $totalCount,
                     ],
                     200
                 );
             } else {
-                return $response = response()->json(
+                $response = response()->json(
                     [
                         'success' => false,
                         'data' => [],
@@ -129,17 +131,19 @@ class CourseService
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $response = response()->json(
+            $response = response()->json(
                 ['success' => false, 'message' => $e],
                 400
             );
         }
+
+        return $response;
     }
 
     /**
-     * Update the specified courses resource in storage.
+     * Update the specified certificate resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -147,19 +151,19 @@ class CourseService
     {
         try {
 
-            $course = Course::where('id', $request->id)->first();
-            $course->code = $request->code;
-            $course->name = $request->name;
-            $course->description = $request->description;
-            $course->date_from = date('Y-m-d H:i:s', strtotime($request->date_from));
-            $course->date_untill = date('Y-m-d H:i:s', strtotime($request->date_untill));
-            $course->info = null;
-            $course->save();
+            $certificate = Certificate::where('id', $request->id)->first();
+            $certificate->student_id = $request->student_id;
+            $certificate->course_id = $request->course_id;
+            $certificate->description = $request->description;
+            $certificate->valid_from = date('Y-m-d H:i:s', strtotime($request->valid_from));
+            $certificate->valid_untill = date('Y-m-d H:i:s', strtotime($request->valid_untill));
+            $certificate->info = json_encode($request->info);
+            $certificate->save();
 
             $response = response()->json(
                 [
                     'success' => true,
-                    'message' => 'Course Updated Succesfully!'
+                    'message' => 'Certificate Updated Succesfully!'
                 ],
                 200
             );
@@ -176,21 +180,21 @@ class CourseService
     }
 
     /**
-     * Delete record with the course id in storage.
+     * Delete record with the certificate id in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
-     */
+     */  
     public static function destroy(Request $request)
     {
         try {
-            $course = Course::where('id', $request->id)->first();
+            $course = Certificate::where('id', $request->id)->first();
             $course->delete();
             return $response = response()->json(
                 [
                     'success' => true,
-                    'message' => 'Course has been deleted successfully!',
+                    'message' => 'Certificate has been deleted successfully!',
                 ],
                 200
             );

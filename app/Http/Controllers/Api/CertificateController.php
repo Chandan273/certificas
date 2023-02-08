@@ -4,42 +4,46 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\StudentService;
+use App\Services\CertificateService;
 use Illuminate\Support\Facades\Validator;
 
-class StudentController extends Controller
+class CertificateController extends Controller
 {
+
     /**
-     * Store a newly student resource in storage.
+     * Store a newly certificate resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
-     */    
+     */
     public function store(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'student_id' => 'required',
+            'description' => 'required',
+            'valid_from' => 'required',
+            'valid_untill' => 'required',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 422);
         }
 
-        return StudentService::store($request);
+
+        return CertificateService::store($request);
     }
 
     /**
-     * Display the specified student resource.
+     * Display a listing of the certificate.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request){
-        return StudentService::index($request);
+        return CertificateService::index($request);
     }
 
     /**
-     * Update the specified student resource in storage.
+     * Update the specified certificate resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
      * @param  int  $id
@@ -48,18 +52,21 @@ class StudentController extends Controller
     public function update(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'student_id' => 'required',
+            'description' => 'required',
+            'valid_from' => 'required',
+            'valid_untill' => 'required',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 422);
         }
 
-        return StudentService::update($request);
+        return CertificateService::update($request);
     }
 
     /**
-     * Delete record with the student id in storage.
+     * Delete record with the certificate id in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
@@ -75,27 +82,7 @@ class StudentController extends Controller
             return response()->json(['error'=>$validator->errors()], 422);
         }
 
-        return StudentService::destroy($request);
-    }
-
-    /**
-     * Import a newly student resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */    
-    public function importStudentCsv(Request $request){
-        return StudentService::importCsv($request);
-    }
-
-    /**
-     * Display the specified student courses resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function studentCourses(Request $request){
-        return StudentService::courses($request);
+        return CertificateService::destroy($request);
     }
 
 }
