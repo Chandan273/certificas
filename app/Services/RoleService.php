@@ -28,7 +28,7 @@ class RoleService {
 
             $role->syncPermissions($input->permission);
 
-            return $response =  response()->json(["role"=>$role, "success" => true],200);
+            return $response = response()->json(["role"=>$role, "success" => true],200);
         }
         catch(Exception $e){
             Log::error($e->getMessage());

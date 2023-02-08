@@ -12,13 +12,13 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
     /**
-     * Display a listing of the Users.
+     * Display a listing of the Tenants.
      *
      * @return \Illuminate\Http\Response
      */
-    public function allTenants(Request $request)
+    public function index(Request $request)
     {
-        return TenantService::allTenants($request);
+        return TenantService::index($request);
     }
 
     /**
@@ -27,75 +27,75 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function createTenant(Request $request)
+    public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'paid_untill' => 'required',
             'username' => 'required',
             'email' => 'required|email|unique:users',
-            'paid_untill' => 'required',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 401);
+            return response()->json(['error'=>$validator->errors()], 422);
         }
 
-        return TenantService::createTenant($request);
+        return TenantService::store($request);
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified Tenant resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show(TenantService $tenantService, $id)
     {
-        $showUser = $tenantService->showTenants($request);
+        $showUser = $tenantService->show($request);
         return $showUser;
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified Tenant resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateTenants(Request $request)
+    public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'username' => 'required',
-            'email' => 'required',
             'paid_untill' => 'required',
+            'email' => 'required',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 401);
+            return response()->json(['error'=>$validator->errors()], 422);
         }
 
-        return TenantService::updateTenant($request);
+        return TenantService::update($request);
     }
 
     /**
-     * Delete record with the tenant id in storage.
+     * Delete record with the Tenant id in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroyTenant(Request $request)
+    public function destroy(TenantService $tenantService, Request $request)
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 401);
+            return response()->json(['error'=>$validator->errors()], 422);
         }
 
-        return TenantService::destroyTenant($request);
+        return TenantService::destroy($request);
     }
 
 }

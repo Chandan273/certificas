@@ -1,16 +1,31 @@
 <template>
-    <div class="auth-wrapper">
+    <div class="auth-wrapper login-page">
         <div class="d-flex align-center parent" style="height: 100vh">
             <v-container>
                 <div class="white child-wrapper">
+                    <v-progress-linear
+                        v-if="pageLoader"
+                        indeterminate
+                        color="blue"
+                    ></v-progress-linear>
                     <v-row no-gutters>
                         <v-col cols="12" sm="6">
-                            <div class="left-box pa-7">
+                            <div class="left-box px-10 py-12">
+                                <v-alert
+                                    v-if="success"
+                                    class="px-0 py-2 mb-3"
+                                    type="success"
+                                    text="Password updated successfully!!"
+                                ></v-alert>
                                 <div class="logo mb-3 text-center">
                                     <h3 class="page-title">Reset Password</h3>
                                 </div>
-                                <v-form ref="form" @submit.prevent="login">
-                                    <div class="text-center">
+                                <v-form
+                                    ref="form"
+                                    @submit.prevent="login"
+                                    class="login-form"
+                                >
+                                    <div class="text-start">
                                         <span
                                             v-if="errors"
                                             class="invalid-feedback text-red"
@@ -27,40 +42,39 @@
                                         {{ item }}
                                     </v-alert>
                                     <div class="mb-5">
-                                        <label><strong>Password</strong></label>
+                                        <label>Password</label>
                                         <v-text-field
                                             variant="outlined"
                                             type="Password"
                                             v-model="password"
                                             required
                                             :rules="passwordRules"
-                                            class="pt-2"
+                                            class="mt-2"
                                             placeholder="Enter your password"
                                             hide-details="auto"
+                                            prepend-icon="mdi-lock"
                                         />
                                     </div>
                                     <div class="mb-5">
-                                        <label
-                                            ><strong
-                                                >Confirm Password</strong
-                                            ></label
-                                        >
+                                        <label>Confirm Password</label>
                                         <v-text-field
                                             variant="outlined"
                                             type="Password"
                                             v-model="confirmPassword"
                                             required
                                             :rules="confirmPasswordRules"
-                                            class="pt-2"
+                                            class="mt-2"
                                             placeholder="Enter confirm password"
                                             hide-details="auto"
+                                            prepend-icon="mdi-lock"
                                         />
                                     </div>
 
                                     <v-btn
                                         type="submit"
                                         block
-                                        class="primary-red mt-2"
+                                        elevation="0"
+                                        class="primary-red"
                                     >
                                         Reset
                                     </v-btn>
@@ -93,7 +107,6 @@
     </div>
 </template>
 <script>
-import { mapGetters } from "vuex";
 import axios from "axios";
 
 export default {
@@ -104,12 +117,11 @@ export default {
         return {
             errors: "",
             loader: false,
+            success: false,
+            pageLoader: false,
             password: "",
             confirmPassword: "",
             checkbox: false,
-            // passwordRules: [(v) => !!v || "Password is required."],
-            // confirmPasswordRules: [(v) => !!v || "Password is required."],
-            // validationMsg: [],
             alert: false,
             messageRxd: "",
         };
@@ -120,13 +132,19 @@ export default {
             const payload = {
                 password: this.password,
                 confirm_password: this.confirmPassword,
-                email: this.$route.query.email
+                email: this.$route.query.email,
             };
             axios
                 .post("/api/reset-password", payload)
                 .then(({ data }) => {
-                    this.errors = data.message;
-                    this.$router.push("/login");
+                    if (data.success == true) {
+                        this.success = true;
+                        this.pageLoader = true;
+                        setTimeout(
+                            () => this.$router.push({ path: "/login" }),
+                            3000
+                        );
+                    }
                 })
                 .catch((error) => {
                     if (error.response.data.success == false) {

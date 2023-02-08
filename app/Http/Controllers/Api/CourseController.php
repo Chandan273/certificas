@@ -5,22 +5,83 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\CourseService;
+use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
 {
-    public function createCourse(Request $request){
-        return CourseService::createCourse($request);
+    /**
+     * Store a newly course resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request){
+
+        $validator = Validator::make($request->all(),[
+            'code' => 'required',
+            'name' => 'required',
+            'description' => 'required',
+            'date_from' => 'required',
+            'date_untill' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status'=>'false', 'error'=>$validator->errors()], 422);
+        }
+
+        return CourseService::store($request);
     }
 
-    public function allCourses(Request $request){
-        return CourseService::allCourses($request);
+    /**
+     * Display a listing of the courses.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request){
+        return CourseService::index($request);
     }
 
-    public function updateCourse(Request $request){
-        return CourseService::updateCourse($request);
+    /**
+     * Update the specified courses resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request){
+
+        $validator = Validator::make($request->all(),[
+            'code' => 'required',
+            'name' => 'required',
+            'description' => 'required',
+            'date_from' => 'required',
+            'date_untill' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status'=>'false', 'error'=>$validator->errors()], 422);
+        }
+
+        return CourseService::update($request);
     }
 
-    public function destroyCourse(Request $request){
-        return CourseService::destroyCourse($request);
+    /**
+     * Delete record with the course id in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */    
+    public function destroy(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 422);
+        }
+
+        return CourseService::destroy($request);
     }
 }

@@ -9,33 +9,48 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
 class AuthService {
-    public static function login($input) {
-
+    /**
+     * login a user resource in storage.
+     *
+     * @param \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public static function login(Request $request) {
         try{
+
             $data = [
-                'email' => $input->email,
-                'password' => $input->password
+                'email' => $request->email,
+                'password' => $request->password
             ];
 
             if(auth()->attempt($data)){
                 $token = auth()->user()->createToken("Token")->accessToken;
                 $user = auth()->user();
+                $tenant = Tenant::where('id', auth()->user()->id)->first();
                 $role = $user->roles()->first()->name;
 
-                return response()->json(["status" => true, "access_token"=> $token, 'user' => $user, 'role'=>$role], 200);
+                $response = response()->json(["status" => true, "access_token"=> $token, 'user' => $user, 'role'=>$role, 'tenant'=> $tenant], 200);
             }else{
-                return response()->json(['status'=> false, 'error' => 'UnAuthorised Access', 'message' => "Please check Login details"], 401);
+                $response = response()->json(['status'=> false, 'error' => 'Incorrect Password', 'message' => "Please check Login details"], 401);
             }
         }
         catch(Exception $e){
             Log::error($e->getMessage());
 
-            return $response =  response()->json(["success" => false, "message"=>$e], 400);
+            $response = response()->json(["success" => false, "message"=>$e], 400);
         }
+
+        return $response;
 
     }
 
-    public static function logout ($request)
+    /**
+     * logout user resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response 
+     */    
+    public static function logout(Request $request)
     {
         try{
             $token = $request->user()->token();

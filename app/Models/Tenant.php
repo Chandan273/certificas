@@ -11,7 +11,7 @@ class Tenant extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name', 'paid_untill'
+        'name', 'paid_untill',
     ];
 
     /**
@@ -22,4 +22,10 @@ class Tenant extends Model
     protected $hidden = [
         'created_at', 'updated_at'
     ];
+
+    /**
+     * Get the user that owns the Tenant
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
 }

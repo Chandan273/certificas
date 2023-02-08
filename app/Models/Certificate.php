@@ -8,28 +8,17 @@ use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Customer extends Model
+class Certificate extends Model
 {
     use HasFactory, HasApiTokens, HasRoles, SoftDeletes;
 
     protected $fillable = [
-        'number',
-        'name',
-        'contact',
-        'organisation_number',
-        'email',
-        'www',
-        'phone',
-        'address',
-        'zip',
-        'city',
-        'country',
+        'student_id',
+        'course_id',
+        'certificate_layout_id',
+        'description',
+        'valid_from',
+        'valid_untill',
         'info',
-        'tenant_id'
     ];
-
-    public function tenant()
-    {
-        return $this->belongsTo(Tenant::class);
-    }
 }
