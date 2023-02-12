@@ -104,43 +104,17 @@ class TenantService
                 $message->to($user->email)->subject('Account created');
             });
 
-            return $response = response()->json(
-                ['success' => true, 'user' => $user, 'message' => 'Tenant has been added successfully'],
-                200
-            );
+            $response = ['success' => true, 'user' => $user, 'message' => 'Tenant has been added successfully', 'statusCode' => 200];
 
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $response = response()->json(
-                ['success' => false, 'message' => $e],
-                500
-            );
+            $response = ['success' => false, 'message' => $e, 'statusCode' => 500];
+            
         }
-    }
 
-    /**
-     * Display a company user in storage.
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public static function show($id)
-    {
-        try {
-            $user = User::find($id);
+        return $response;
 
-            return $response = response()->json(
-                ['success' => true, 'user' => $user],
-                200
-            );
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-
-            return $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
-        }
     }
 
     /**
@@ -152,13 +126,28 @@ class TenantService
     public static function update(Request $request)
     {
         try {
+            $user = User::where('tenant_id', $request->id)->first();
+            $existingUser = User::where('username', $request->username)->first();
+            if ($existingUser && $existingUser->id != $user->id) {
+                return $response = response()->json(
+                    ['success' => false, 'message' => 'Username already exists'],
+                    400
+                );
+            }
 
+            $existingUser = User::where('email', $request->email)->first();
+            if ($existingUser && $existingUser->id != $user->id) {
+                return $response = response()->json(
+                    ['success' => false, 'message' => 'Email already exists'],
+                    400
+                );
+            }
+            
             $tenant = Tenant::where('id', $request->id)->first();
             $tenant->name = $request->name;
             $tenant->paid_untill = date('y-m-d', strtotime($request->paid_untill));
             $tenant->save();
 
-            $user = User::where('tenant_id', $tenant->id)->first();
             $user->username = $request->username;
             $user->email = $request->email;
             $user->save();
@@ -176,10 +165,14 @@ class TenantService
             );
         }
     }
-
+ 
     /**
-     * Delete teanat customer from storage.
-     */
+     * Delete record with the tenant id in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */  
     public static function destroy(Request $request)
     {
         try {
@@ -189,21 +182,15 @@ class TenantService
             $certificate_layout = Certificate_layout::where('tenant_id', $request->id)->delete();
             $tenant->delete();
             $user->delete();
-            return $response = response()->json(
-                [
-                    'success' => true,
-                    'message' => 'User has been deleted successfully!',
-                ],
-                200
-            );
+
+            $response = ['success' => true, 'message' => 'User has been deleted successfully!', 'statusCode' => 200];
 
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e, 'statusCode' => 500];
         }
+
+        return $response;
     }
 }

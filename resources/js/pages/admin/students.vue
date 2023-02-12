@@ -36,7 +36,7 @@
                                 <v-card-actions>
                                     <p
                                         @click="downloadCSV"
-                                        class="secondary-dark"
+                                        class="secondary-dark download-csv-cls"
                                     >
                                         Click Here Download sample CSV file
                                     </p>
@@ -119,7 +119,13 @@
                     </DxForm>
                 </DxEditing>
 
-                <DxColumn :width="125" data-field="course_id" caption="Courses">
+                <DxColumn
+                    :allow-exporting="true"
+                    :visible="true"
+                    :width="125"
+                    data-field="course_id"
+                    caption="Courses"
+                >
                     <DxLookup
                         :data-source="Courses"
                         value-expr="id"
@@ -177,6 +183,8 @@ import { DxTextArea } from "devextreme-vue/text-area";
 import { DxItem } from "devextreme-vue/form";
 import { DxButton } from "devextreme-vue/button";
 import CustomStore from "devextreme/data/custom_store";
+import notify from "devextreme/ui/notify";
+
 function isNotEmpty(value) {
     return value !== undefined && value !== null && value !== "";
 }
@@ -259,7 +267,20 @@ export default {
                     };
                     return axios
                         .post(`/api/create-student`, payload)
-                        .then((data) => {})
+                        .then(({ data }) => {
+                            notify(
+                                {
+                                    position: "top right",
+                                    message:
+                                        "Student has been added successfully!!",
+                                    width: 300,
+                                    shading: true,
+                                },
+                                "success",
+                                2000
+                            );
+                            return data;
+                        })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });
@@ -282,7 +303,20 @@ export default {
                     };
                     return axios
                         .post(`/api/update-student`, payload)
-                        .then((data) => {})
+                        .then(({ data }) => {
+                            notify(
+                                {
+                                    position: "top right",
+                                    message:
+                                        "Student has been updated successfully!!",
+                                    width: 300,
+                                    shading: true,
+                                },
+                                "success",
+                                2000
+                            );
+                            return data;
+                        })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });
@@ -293,7 +327,20 @@ export default {
                     };
                     return axios
                         .post(`/api/delete-student`, payload)
-                        .then((data) => {})
+                        .then(({ data }) => {
+                            notify(
+                                {
+                                    position: "top right",
+                                    message:
+                                        "Student has been deleted successfully!!",
+                                    width: 300,
+                                    shading: true,
+                                },
+                                "success",
+                                2000
+                            );
+                            return data;
+                        })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });
@@ -326,9 +373,7 @@ export default {
                     this.$router.go(this.$router.currentRoute);
                     this.successMessage = "Image updated successfully!";
                 })
-                .catch((error) => {
-                    console.log(error);
-                });
+                .catch((error) => {});
             this.$refs.fileInput.value = "";
             this.dialog = false;
         },
@@ -357,6 +402,14 @@ export default {
             let birthDate = new Date(params.value);
             let age = today.getFullYear() - birthDate.getFullYear();
 
+            if (
+                today.getMonth() < birthDate.getMonth() ||
+                (today.getMonth() === birthDate.getMonth() &&
+                    today.getDate() < birthDate.getDate())
+            ) {
+                age--;
+            }
+
             if (age < 15) {
                 return false;
             }
@@ -365,7 +418,7 @@ export default {
         },
         downloadCSV() {
             const csvContent =
-                "Name,Email,Birth date,Birth place\nabc,abc@gmail.com,2023-02-08T05:30:00+05:30,Abc Location\npqr,pqr@gmail.com,2023-02-08T05:30:00+05:30,Pqr Location\nxyz,xyz@gmail.com,2023-02-08T05:30:00+05:30,Xyz Location";
+                "Courses,Name,Email,Birth date,Birth place\n1,abc,abc@gmail.com,2023-02-08T05:30:00+05:30,Abc Location\n1,pqr,pqr@gmail.com,2023-02-08T05:30:00+05:30,Pqr Location\n1,xyz,xyz@gmail.com,2023-02-08T05:30:00+05:30,Xyz Location";
             const encodedUri = encodeURI(
                 `data:text/csv;charset=utf-8,${csvContent}`
             );
@@ -380,3 +433,9 @@ export default {
     },
 };
 </script>
+
+<style>
+.download-csv-cls {
+    cursor: grab;
+}
+</style>

@@ -163,8 +163,7 @@ class UserService
                         [
                             'success' => true,
                             'user' => $user,
-                            'message' =>
-                                'Tenant Profile has been updated successfully',
+                            'message' => 'Tenant Profile has been updated successfully',
                         ],
                         200
                     );

@@ -102,10 +102,12 @@ import {
     DxPopup,
     DxLookup,
     DxForm,
+    DxButton,
 } from "devextreme-vue/data-grid";
 import { DxTextArea } from "devextreme-vue/text-area";
 import { DxItem } from "devextreme-vue/form";
 import CustomStore from "devextreme/data/custom_store";
+import notify from "devextreme/ui/notify";
 
 function isNotEmpty(value) {
     return value !== undefined && value !== null && value !== "";
@@ -125,6 +127,7 @@ export default {
         DxForm,
         DxItem,
         DxTextArea,
+        DxButton,
     },
     data() {
         return {
@@ -180,7 +183,20 @@ export default {
                     };
                     return axios
                         .post(`/api/create-course`, payload)
-                        .then((data) => {})
+                        .then(({ data }) => {
+                            notify(
+                                {
+                                    position: "top right",
+                                    message:
+                                        "Course has been added successfully!!",
+                                    width: 300,
+                                    shading: true,
+                                },
+                                "success",
+                                2000
+                            );
+                            return data;
+                        })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });
@@ -204,7 +220,19 @@ export default {
                     };
                     return axios
                         .post(`/api/update-course`, payload)
-                        .then((data) => {})
+                        .then(({ data }) => {
+                            notify(
+                                {
+                                    position: "top right",
+                                    message: "Course Updated Successfully!!",
+                                    width: 300,
+                                    shading: true,
+                                },
+                                "success",
+                                3000
+                            );
+                            return data;
+                        })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });
@@ -215,7 +243,19 @@ export default {
                     };
                     return axios
                         .post(`/api/delete-course`, payload)
-                        .then((data) => {})
+                        .then(({ data }) => {
+                            notify(
+                                {
+                                    position: "top right",
+                                    message: "Course Deleted Successfully!!",
+                                    width: 300,
+                                    shading: true,
+                                },
+                                "success",
+                                3000
+                            );
+                            return data;
+                        })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });

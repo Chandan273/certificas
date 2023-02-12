@@ -24,7 +24,7 @@
                     />
                     <DxForm>
                         <DxItem :col-count="2" :col-span="2" item-type="group">
-                            <DxItem :visible="false" data-field="id" />
+                            <DxItem data-field="student_id" />
                         </DxItem>
                         <DxItem :col-count="2" :col-span="2" item-type="group">
                             <DxItem
@@ -69,7 +69,7 @@
                     caption="Student"
                 >
                     <DxLookup
-                        :data-source="Students"
+                        :data-source="students"
                         value-expr="id"
                         display-expr="name"
                     />
@@ -81,7 +81,19 @@
                 <DxColumn data-field="Action" type="buttons">
                     <DxButton name="edit" />
                     <DxButton name="delete" />
+                    <DxButton
+                        hint="Download Certificate"
+                        icon="download"
+                        @click="downloadPdf"
+                    />
                 </DxColumn>
+                <template #download>
+                    <DxButton
+                        icon="import"
+                        @click="importCSV"
+                        title="Import CSV file"
+                    />
+                </template>
             </DxDataGrid>
         </div>
     </AdminLayout>
@@ -98,10 +110,13 @@ import {
     DxPopup,
     DxLookup,
     DxForm,
+    DxButton,
 } from "devextreme-vue/data-grid";
 import { DxTextArea } from "devextreme-vue/text-area";
 import { DxItem } from "devextreme-vue/form";
 import CustomStore from "devextreme/data/custom_store";
+import notify from "devextreme/ui/notify";
+
 function isNotEmpty(value) {
     return value !== undefined && value !== null && value !== "";
 }
@@ -118,12 +133,13 @@ export default {
         DxPopup,
         DxLookup,
         DxForm,
+        DxButton,
         DxItem,
         DxTextArea,
     },
     data() {
         return {
-            Students: [],
+            students: {},
             breadcrumbsItems: [
                 {
                     text: "Admin",
@@ -167,16 +183,28 @@ export default {
                         });
                 },
                 insert: (values) => {
+                    console.log(values);
                     const payload = {
                         student_id: values.student_id,
                         description: values.description,
                         valid_from: values.valid_from,
                         valid_untill: values.valid_untill,
-                        info: [],
                     };
                     return axios
                         .post(`/api/create-certificate`, payload)
-                        .then((data) => {})
+                        .then(({ data }) => {
+                            notify(
+                                {
+                                    position: "top right",
+                                    message: "Certificate added successfully!!",
+                                    width: 300,
+                                    shading: true,
+                                },
+                                "success",
+                                2000
+                            );
+                            return data;
+                        })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });
@@ -203,7 +231,20 @@ export default {
                     };
                     return axios
                         .post(`/api/update-certificate`, payload)
-                        .then((data) => {})
+                        .then(({ data }) => {
+                            notify(
+                                {
+                                    position: "top right",
+                                    message:
+                                        "Certificate updated successfully!!",
+                                    width: 300,
+                                    shading: true,
+                                },
+                                "success",
+                                3000
+                            );
+                            return data;
+                        })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });
@@ -214,7 +255,20 @@ export default {
                     };
                     return axios
                         .post(`/api/delete-certificate`, payload)
-                        .then((data) => {})
+                        .then(({ data }) => {
+                            notify(
+                                {
+                                    position: "top right",
+                                    message:
+                                        "Certificate deleted successfully!!",
+                                    width: 300,
+                                    shading: true,
+                                },
+                                "success",
+                                3000
+                            );
+                            return data;
+                        })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });
@@ -226,8 +280,14 @@ export default {
         async getStudents() {
             try {
                 const { data } = await axios.get(`/api/all-students`);
-                this.Students = data.data;
+                this.students = data.data;
             } catch (error) {}
+        },
+        downloadPdf(params) {
+            console.log(params.row.data);
+            let link = document.createElement("a");
+            link.href = "http://127.0.0.1:8000/api/generate-pdf";
+            link.click();
         },
     },
     mounted() {

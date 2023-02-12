@@ -195,12 +195,15 @@ import {
     DxPopup,
     DxLookup,
     DxForm,
+    DxButton,
 } from "devextreme-vue/data-grid";
 
 import { countries } from "../../assets/data/country-iso";
 import { DxTextArea } from "devextreme-vue/text-area";
 import { DxItem } from "devextreme-vue/form";
 import CustomStore from "devextreme/data/custom_store";
+import notify from "devextreme/ui/notify";
+
 function isNotEmpty(value) {
     return value !== undefined && value !== null && value !== "";
 }
@@ -219,6 +222,7 @@ export default {
         DxForm,
         DxItem,
         DxTextArea,
+        DxButton,
     },
     data() {
         return {
@@ -281,7 +285,20 @@ export default {
                     };
                     return axios
                         .post(`/api/create-customer`, payload)
-                        .then((data) => {})
+                        .then(({ data }) => {
+                            notify(
+                                {
+                                    position: "top right",
+                                    message:
+                                        "Customer has been added Successfully!!",
+                                    width: 300,
+                                    shading: true,
+                                },
+                                "success",
+                                2000
+                            );
+                            return data;
+                        })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });
@@ -306,7 +323,20 @@ export default {
                     };
                     return axios
                         .post(`/api/update-customer`, payload)
-                        .then((data) => {})
+                        .then(({ data }) => {
+                            notify(
+                                {
+                                    position: "top right",
+                                    message:
+                                        "Customer has been updated successfully!!",
+                                    width: 300,
+                                    shading: true,
+                                },
+                                "success",
+                                2000
+                            );
+                            return data;
+                        })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });
@@ -317,7 +347,20 @@ export default {
                     };
                     return axios
                         .post(`/api/delete-customer`, payload)
-                        .then((data) => {})
+                        .then(({ data }) => {
+                            notify(
+                                {
+                                    position: "top right",
+                                    message:
+                                        "Customer has been deleted successfully!!",
+                                    width: 300,
+                                    shading: true,
+                                },
+                                "success",
+                                2000
+                            );
+                            return data;
+                        })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });
