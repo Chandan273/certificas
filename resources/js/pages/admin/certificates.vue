@@ -284,9 +284,9 @@ export default {
             } catch (error) {}
         },
         downloadPdf(params) {
-            console.log(params.row.data);
+            let student_id = params.row.data.student_id;
             let link = document.createElement("a");
-            link.href = "http://127.0.0.1:8000/api/generate-pdf";
+            link.href = `http://127.0.0.1:8000/api/generate-pdf?student_id=${student_id}`;
             link.click();
         },
     },

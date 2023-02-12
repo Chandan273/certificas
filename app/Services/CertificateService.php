@@ -171,7 +171,11 @@ class CertificateService
     public static function generatePdf(Request $request)
     {
         try{
-            $student = Student::where("id", 2)->first();
+            if (!$request->has('student_id')) {
+                $response = ['success' => false, 'message' => 'Student ID is missing', 'statusCode' => 400];
+            }
+            
+            $student = Student::where("id", $request->student_id)->first();
 
             if (!file_exists(storage_path('app/public/qr'))) {
                 mkdir(storage_path('app/public/qr'), 0777, true);
