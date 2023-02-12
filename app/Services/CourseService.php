@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
+use Dompdf\Dompdf;
 
 class CourseService
 {
@@ -38,20 +39,11 @@ class CourseService
                 'info' => null,
             ]);
 
-            $response = response()->json(
-                [
-                    'success' => true,
-                    'message' => 'Course created succesfully!'
-                ],
-                200
-            );
+            $response = ['success' => true, 'message' => 'Course created succesfully!', 'statusCode' => 200 ];
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
 
         return $response;
@@ -78,10 +70,8 @@ class CourseService
                     );
                 }
                 else {
-                    return $response = response()->json(
-                        ['success' => false, 'message' => 'No data found'],
-                        400
-                    );
+
+                    $response = ['success' => false, 'message' => 'No data found', 'statusCode' => 401];
                 }
             }
 
@@ -107,33 +97,19 @@ class CourseService
             $courses = $courses->get();
 
             if ($courses) {
-                return $response = response()->json(
-                    [
-                        'success' => true,
-                        'data' => $courses,
-                        'totalCount' => $totalCount,
-                    ],
-                    200
-                );
+
+                $response = ['success' => true, 'data' => $courses, 'totalCount' => $totalCount, 'statusCode' => 200];
             } else {
-                return $response = response()->json(
-                    [
-                        'success' => false,
-                        'data' => [],
-                        'totalCount' => $totalCount,
-                        'message' => 'No Data Found!!',
-                    ],
-                    401
-                );
+
+                $response = ['success' => false, 'data' => [], 'totalCount' => $totalCount, 'message' => 'No Data Found!!', 'statusCode' => 404];
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
+
+        return $response;
     }
 
     /**
@@ -153,23 +129,13 @@ class CourseService
             $course->description = $request->description;
             $course->date_from = date('Y-m-d H:i:s', strtotime($request->date_from));
             $course->date_untill = date('Y-m-d H:i:s', strtotime($request->date_untill));
-            $course->info = null;
             $course->save();
 
-            $response = response()->json(
-                [
-                    'success' => true,
-                    'message' => 'Course Updated Succesfully!'
-                ],
-                200
-            );
+            $response = ['success' => true, 'message' => 'Course Updated Succesfully!', 'statusCode' => 200 ];
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
 
         return $response;
@@ -187,21 +153,15 @@ class CourseService
         try {
             $course = Course::where('id', $request->id)->first();
             $course->delete();
-            return $response = response()->json(
-                [
-                    'success' => true,
-                    'message' => 'Course has been deleted successfully!',
-                ],
-                200
-            );
+
+            $response = ['success' => true, 'message' => 'Course has been deleted successfully!', 'statusCode' => 200 ];
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
+
+        return $response;
     }
 }
 

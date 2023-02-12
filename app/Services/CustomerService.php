@@ -13,51 +13,7 @@ use Spatie\Permission\Models\Role;
 class CustomerService
 {
     /**
-     * Store a newly customer resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */    
-    public static function store(Request $request)
-    {
-        try {
-            $customer = Customer::create([
-                'tenant_id' => auth()->user()->id,
-                'number' => $request->number,
-                'name' => $request->name,
-                'contact' => $request->contact,
-                'organisation_number' => $request->organisation_number,
-                'email' => $request->email,
-                'www' => $request->www,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'zip' => $request->zip,
-                'city' => $request->city,
-                'country' => $request->country,
-                'info' => null,
-            ]);
-            $customer->save();
-
-            return $response = response()->json(
-                [
-                    'success' => true,
-                    'message' => 'Customer Created Succesfully!',
-                    'customer' => $customer,
-                ],
-                200
-            );
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-
-            return $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
-        }
-    }
-
-    /**
-     * Display the specified customer resource.
+     * Display the customer listing resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -80,10 +36,8 @@ class CustomerService
                         $tenant->id
                     );
                 } else {
-                    return $response = response()->json(
-                        ['success' => false, 'message' => 'No data found'],
-                        400
-                    );
+
+                    $response = ['success' => false, 'message' => 'No data found', 'stausCode' => 400];
                 }
             }
 
@@ -108,37 +62,57 @@ class CustomerService
             $customers = $customers->get();
 
             if ($customers) {
-                return $response = response()->json(
-                    [
-                        'success' => true,
-                        'data' => $customers,
-                        'totalCount' => $totalCount,
-                    ],
-                    200
-                );
+                $response = ['success' => true, 'data' => $customers, 'totalCount' => $totalCount, 'stausCode' => 200];
             } else {
-                return $response = response()->json(
-                    [
-                        'success' => false,
-                        'data' => [],
-                        'totalCount' => $totalCount,
-                        'message' => 'No Data Found!!',
-                    ],
-                    401
-                );
+                $response = ['success' => false, 'data' => [], 'totalCount' => $totalCount, 'message' => 'No Data Found!!','statusCode' => 404 ];
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e, 'statuscode' => 500];
         }
+
+        return $response;
     }
 
     /**
-     * Update the specified customer resource in storage.
+     * Store a customer resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */    
+    public static function store(Request $request)
+    {
+        try {
+            $customer = Customer::create([
+                'tenant_id' => auth()->user()->id,
+                'number' => $request->number,
+                'name' => $request->name,
+                'contact' => $request->contact,
+                'organisation_number' => $request->organisation_number,
+                'email' => $request->email,
+                'www' => $request->www,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'zip' => $request->zip,
+                'city' => $request->city,
+                'country' => $request->country,
+                'info' => null,
+            ]);
+            $customer->save();
+
+            $response = ['success' => true, 'message' => 'Customer Created Succesfully!', 'customer' => $customer, 'statusCode' => 200];
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+
+            $response = ['success' => false, 'message' => $e, 'statusCode' => 400];
+        }
+
+        return $response;
+    }
+
+    /**
+     * Update the customer resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
@@ -163,23 +137,14 @@ class CustomerService
             $customer->info = null;
             $customer->save();
 
-            return $response = response()->json(
-                [
-                    'success' => true,
-                    'message' => 'Customer Updated Succesfully!',
-                    'customer' => $customer,
-                ],
-                200
-            );
-            // }
+            $response = ['success' => true, 'message' => 'Customer Updated Succesfully!', 'customer' => $customer, 'statusCode' => 200];
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
+
+        return $response;
     }
 
     /**
@@ -194,21 +159,15 @@ class CustomerService
         try {
             $customer = Customer::where('id', $request->id)->first();
             $customer->delete();
-            return $response = response()->json(
-                [
-                    'success' => true,
-                    'message' => 'User has been deleted successfully!',
-                ],
-                200
-            );
+
+            $response = ['success' => true, 'message' => 'User has been deleted successfully!', 'statusCode' => 200];
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
+
+        return $response;
     }
 }
 

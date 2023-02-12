@@ -19,6 +19,7 @@ Route::group(['middleware'=>'guest'], function(){
     Route::post("register", [App\Http\Controllers\Api\AuthController::class, 'register']);
     Route::post("forgot-password", [App\Http\Controllers\Api\AuthController::class, 'forgotPassword']);
     Route::post("reset-password", [App\Http\Controllers\Api\AuthController::class, 'resetPassword']);
+    Route::get('generate-pdf', [App\Http\Controllers\Api\CertificateController::class, 'generatePdf']);
 });
 
 Route::middleware("auth:api")->group(function(){
@@ -45,14 +46,9 @@ Route::middleware("auth:api")->group(function(){
     Route::get("all-students", [App\Http\Controllers\Api\StudentController::class, 'index']);
     Route::post('update-student', [App\Http\Controllers\Api\StudentController::class, 'update']);
     Route::post('delete-student', [App\Http\Controllers\Api\StudentController::class, 'destroy']);
+    Route::post('upload-student-csv', [App\Http\Controllers\Api\StudentController::class, 'importStudentCsv']);
     Route::post('create-certificate', [App\Http\Controllers\Api\CertificateController::class, 'store']);
     Route::get("all-certificates", [App\Http\Controllers\Api\CertificateController::class, 'index']);
     Route::post('update-certificate', [App\Http\Controllers\Api\CertificateController::class, 'update']);
     Route::post('delete-certificate', [App\Http\Controllers\Api\CertificateController::class, 'destroy']);
-    Route::post('upload-student-csv', [App\Http\Controllers\Api\StudentController::class, 'importStudentCsv']);
 });
-
-
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });

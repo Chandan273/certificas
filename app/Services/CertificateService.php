@@ -12,53 +12,11 @@ use App\Models\Certificate;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
-use Spatie\Permission\Models\Role;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use PDF;
 
 class CertificateService
 {
-
-    /**
-     * Store a newly certificate resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */    
-    public static function store(Request $request)
-    {
-        try {
-            $tenant = User::where('id', auth()->user()->id)->first();
-            $certificate_layout = Certificate_layout::where('tenant_id',$tenant->id)->first();
-            $student = Student::where('id',$request->student_id)->first();
-
-            $course = Certificate::create([
-                'student_id' => $request->student_id,
-                'course_id' => $student->course_id,
-                'certificate_layout_id' => $certificate_layout->id,
-                'description' => $request->description,
-                'valid_from' => date('Y-m-d H:i:s', strtotime($request->valid_from)),
-                'valid_untill' => date('Y-m-d H:i:s', strtotime($request->valid_untill)),
-                'info' => json_encode($request->info),
-            ]);
-
-            $response = response()->json(
-                [
-                    'success' => true,
-                    'message' => 'Certificate created succesfully!'
-                ],
-                200
-            );
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-
-            $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
-        }
-
-        return $response;
-    }
-
     /**
      * Display a listing of the certificate.
      *
@@ -81,10 +39,8 @@ class CertificateService
                     $certificate_layout = Certificate_layout::where('tenant_id',$tenant->id)->first();
                     $certificates = Certificate::where('certificate_layout_id',$certificate_layout->id);
                 } else {
-                    $response = response()->json(
-                        ['success' => false, 'message' => 'No data found'],
-                        400
-                    );
+                
+                    $response = ['success' => false, 'message' => 'No data found', 'sttausCode' => 404];
                 }
             }
 
@@ -109,32 +65,48 @@ class CertificateService
             $certificates = $certificates->get();
 
             if ($certificates) {
-                $response = response()->json(
-                    [
-                        'success' => true,
-                        'data' => $certificates,
-                        'totalCount' => $totalCount,
-                    ],
-                    200
-                );
+
+                $response = ['success' => true, 'data' => $certificates, 'totalCount' => $totalCount, 'statusCode' => 200];
             } else {
-                $response = response()->json(
-                    [
-                        'success' => false,
-                        'data' => [],
-                        'totalCount' => $totalCount,
-                        'message' => 'No Data Found!!',
-                    ],
-                    401
-                );
+
+                $response = ['success' => false, 'data' => [], 'totalCount' => $totalCount, 'message' => 'No Data Found!!', 'statusCode' => 404];
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
+        }
+
+        return $response;
+    }
+
+    /**
+     * Store a newly certificate resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */    
+    public static function store(Request $request)
+    {
+        try {
+            $certificate_layout = Certificate_layout::where('tenant_id',auth()->user()->id)->first();
+            $student = Student::where('id',$request->student_id)->first();
+
+            $course = Certificate::create([
+                'student_id' => $request->student_id,
+                'course_id' => $student->course_id,
+                'certificate_layout_id' => $certificate_layout->id,
+                'description' => $request->description,
+                'valid_from' => date('Y-m-d H:i:s', strtotime($request->valid_from)),
+                'valid_untill' => date('Y-m-d H:i:s', strtotime($request->valid_untill)),
+                'info' => null,
+            ]);
+
+            $response = ['success' => true, 'statusCode' => 200, 'message' => 'Certificate created succesfully!' ];
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
 
         return $response;
@@ -150,30 +122,19 @@ class CertificateService
     public static function update(Request $request)
     {
         try {
-
             $certificate = Certificate::where('id', $request->id)->first();
             $certificate->student_id = $request->student_id;
             $certificate->course_id = $request->course_id;
             $certificate->description = $request->description;
             $certificate->valid_from = date('Y-m-d H:i:s', strtotime($request->valid_from));
             $certificate->valid_untill = date('Y-m-d H:i:s', strtotime($request->valid_untill));
-            $certificate->info = json_encode($request->info);
             $certificate->save();
 
-            $response = response()->json(
-                [
-                    'success' => true,
-                    'message' => 'Certificate Updated Succesfully!'
-                ],
-                200
-            );
+            $response = ['success' => true, 'message' => 'Certificate Updated Succesfully!', 'statusCode' => 200];
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
 
         return $response;
@@ -191,21 +152,54 @@ class CertificateService
         try {
             $course = Certificate::where('id', $request->id)->first();
             $course->delete();
-            return $response = response()->json(
-                [
-                    'success' => true,
-                    'message' => 'Certificate has been deleted successfully!',
-                ],
-                200
-            );
+
+            $response = ['success' => true, 'message' => 'Certificate has been deleted successfully!', 'statusCode' => 200 ];
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
+
+        return $response;
+    }
+
+    /**
+     * Generate PDF for the certificate.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public static function generatePdf(Request $request)
+    {
+        try{
+            $student = Student::where("id", 2)->first();
+
+            if (!file_exists(storage_path('app/public/qr'))) {
+                mkdir(storage_path('app/public/qr'), 0777, true);
+            }
+            
+            $qrCodePath = storage_path('app/public/qr/qrcode.png');
+            QrCode::format('png')
+                ->size(200)
+                ->generate('www.google.com', $qrCodePath);
+    
+            $studentData = [
+                'name' => $student->name,
+                'email' => $student->email,
+                'birth_date' => $student->birth_date,
+                'birth_place' => $student->birth_place,
+                'qrCodePath' => $qrCodePath
+            ];
+            
+            $pdf = PDF::loadView('pdf.certificate', $studentData);
+    
+            $response = $pdf->download('certificas.pdf');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
+        }
+
+        return $response;
     }
 }
 

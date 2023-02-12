@@ -17,56 +17,6 @@ use Illuminate\Support\Facades\Storage;
 class StudentService
 {
     /**
-     * Store a newly student resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */    
-    public static function store(Request $request)
-    {
-        try {
-
-            $tenant = User::where('id', auth()->user()->id)->first();
-            $course = Course::where('tenant_id', $tenant->id)->first();
-
-            if(!empty($request->course_id)){
-                $course_id = $request->course_id;
-            }else{
-                $course_id = null;
-            }
-
-            if($course){
-                $student = Student::create([
-                    'tenant_id' => $tenant->id,
-                    'course_id' => $course_id,
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'birth_date' => date('Y-m-d H:i:s', strtotime($request->birth_date)),
-                    'birth_place' => $request->birth_place,
-                    'info' => null,
-                ]);
-            }
-
-            $response = response()->json(
-                [
-                    'success' => true,
-                    'message' => 'Student created succesfully!'
-                ],
-                200
-            );
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-
-            $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
-        }
-
-        return $response;
-    }
-
-    /**
      * Display the specified student resource.
      *
      * @param  int  $id
@@ -88,10 +38,7 @@ class StudentService
                     );
                 }
                 else {
-                    return $response = response()->json(
-                        ['success' => false, 'message' => 'No data found'],
-                        400
-                    );
+                    $response = ['success' => false, 'message' => 'No data found', 'statusCode' => 404];
                 }
             }
 
@@ -117,36 +64,59 @@ class StudentService
             $students = $students->get();
 
             if ($students) {
-                $response = response()->json(
-                    [
-                        'success' => true,
-                        'data' => $students,
-                        'totalCount' => $totalCount,
-                    ],
-                    200
-                );
+
+                $response = ['success' => true, 'data' => $students, 'totalCount' => $totalCount, 'statusCode' => 200];
             } else {
-                $response = response()->json(
-                    [
-                        'success' => false,
-                        'data' => [],
-                        'totalCount' => $totalCount,
-                        'message' => 'No Data Found!!',
-                    ],
-                    401
-                );
+
+                $response = ['success' => false,'data' => [], 'totalCount' => $totalCount, 'message' => 'No Data Found!!', 'statusCode' => 404];
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
 
         return $response;
 
+    }
+
+    /**
+     * Store a newly student resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */    
+    public static function store(Request $request)
+    {
+        try {
+            $course = Course::where('tenant_id', auth()->user()->id)->first();
+
+            if(!empty($request->course_id)){
+                $course_id = $request->course_id;
+            }else{
+                $course_id = null;
+            }
+
+            if($course){
+                $student = Student::create([
+                    'tenant_id' => auth()->user()->id,
+                    'course_id' => $course_id,
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'birth_date' => date('Y-m-d H:i:s', strtotime($request->birth_date)),
+                    'birth_place' => $request->birth_place,
+                    'info' => null,
+                ]);
+            }
+
+            $response = ['success' => true, 'message' => 'Student created succesfully!', 'statusCode' => 200 ];
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500 ];
+        }
+
+        return $response;
     }
 
     /**
@@ -169,20 +139,11 @@ class StudentService
             $student->info = json_encode($request->info);
             $student->save();
 
-            $response = response()->json(
-                [
-                    'success' => true,
-                    'message' => 'Student Updated Succesfully!'
-                ],
-                200
-            );
+            $response = ['success' => true, 'message' => 'Student Updated Succesfully!', 'statusCode' => 200 ];
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500 ];
         }
 
         return $response;
@@ -200,21 +161,15 @@ class StudentService
         try {
             $student = Student::where('id', $request->id)->first();
             $student->delete();
-            return $response = response()->json(
-                [
-                    'success' => true,
-                    'message' => 'Student has been deleted successfully!',
-                ],
-                200
-            );
+
+            $response = ['success' => true, 'message' => 'Student has been deleted successfully!', 'statusCode' => 200];
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500 ];
         }
+
+        return $response;
     }
 
     /**
@@ -267,7 +222,7 @@ class StudentService
                             $i++;
                             continue;
                         } else {
-                            $response = response()->json(['success' => false, 'status' => 401, 'message' => "Please upload a valid csv file"]);
+                            $response = ['success' => false, 'message' => "Please upload a valid csv file", 'statusCode' => 401];
                         }
 
                     }
@@ -289,21 +244,12 @@ class StudentService
 
                 try {
                     Student::upsert($importData_arr, ['name', 'email']);
-                    $response = response()->json(
-                        [
-                            'success' => true,
-                            'message' => 'Student Data Imported successfully!'
-                        ],
-                        200
-                    );
+
+                    $response = ['success' => true, 'message' => 'Student Data Imported successfully!', 'statusCode' => 200];
                 } catch (Exception $e) {
                     Log::error($e->getMessage());
 
-                    $response = response()->json(
-                        ['success' => false, 'message' => $e],
-                        400
-                    );
-
+                    $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
                 }
             }
         }
@@ -334,21 +280,12 @@ class StudentService
                     )->get();
                 }
 
-                $response = response()->json(
-                    [
-                        'success' => true,
-                        'courses' => $courses
-                    ],
-                    200
-                );
+                $response = ['success' => true, 'courses' => $courses, 'message' => 'all courses listing', 'statusCode' => 200];
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
 
         return $response;

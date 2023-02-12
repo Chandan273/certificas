@@ -85,4 +85,13 @@ class CertificateController extends Controller
         return CertificateService::destroy($request);
     }
 
+    /**
+     * Generate PDF for the certificate.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function generatePdf(Request $request){
+        return CertificateService::generatePdf($request);
+    }
+
 }
