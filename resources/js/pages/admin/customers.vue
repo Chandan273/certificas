@@ -87,11 +87,11 @@
                     type: 'required',
                     message: 'Website is required',
                   },
-                  {
-                    type: 'pattern',
-                    pattern: /^(https?:\/\/)?([\w\d]+\.)+[\w\d]+$/,
-                    message: 'Invalid website address',
-                  },
+                  // {
+                  //   type: 'pattern',
+                  //   pattern: /^(https?:\/\/)?([\w\d]+\.)+[\w\d]+$/,
+                  //   message: 'Invalid website address',
+                  // },
                 ]"
               />
 
@@ -122,12 +122,12 @@
                     type: 'required',
                     message: 'Phone number is required',
                   },
-                  {
-                    type: 'pattern',
-                    pattern: /^[\d()\-+ ]{10,15}$/,
-                    message:
-                      'Invalid phone number, phone number should have minimum length 10 and maximum length 15',
-                  },
+                  // {
+                  //   type: 'pattern',
+                  //   pattern: /^[\d()\-+ ]{10,15}$/,
+                  //   message:
+                  //     'Invalid phone number, phone number should have minimum length 10 and maximum length 15',
+                  // },
                 ]"
               />
               <DxItem

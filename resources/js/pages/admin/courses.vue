@@ -10,7 +10,7 @@
         <v-icon icon="mdi-plus"></v-icon> Add Course
       </v-btn>
       <v-dialog v-model="courseDialog" persistent max-width="700px">
-        <AddCourses @close="closeModal"></AddCourses>
+        <AddCourses @close="closeModal" :courseData="courseData"></AddCourses>
       </v-dialog>
       <DxDataGrid
         class="tenants-table"
@@ -93,7 +93,11 @@
         <DxColumn data-field="date_from" data-type="date" />
         <DxColumn data-field="date_untill" data-type="date" />
         <DxColumn data-field="Action" type="buttons">
-          <DxButton name="edit" />
+          <DxButton name="edit"
+            hint="Download Certificate"
+            icon="edit"
+            @click="editCourse"
+          />
           <DxButton name="delete" />
         </DxColumn>
       </DxDataGrid>
@@ -143,6 +147,7 @@ export default {
   },
   data() {
     return {
+      courseData: {},
       courseDialog: false,
       breadcrumbsItems: [
         {
@@ -161,6 +166,10 @@ export default {
   methods: {
     closeModal() {
       this.courseDialog = false;
+    },
+    editCourse(params){
+      this.courseDialog = true; 
+      this.courseData = params.row.data;
     },
   },
   computed: {
