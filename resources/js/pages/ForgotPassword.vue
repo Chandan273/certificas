@@ -63,8 +63,7 @@
                 <router-link
                   class="forgot-txt mt-12 mx-auto d-table"
                   to="/login"
-                  ><v-icon icon="mdi-chevron-left" class="mr-2"></v-icon>
-                  Back</router-link
+                  ><v-icon icon="mdi-chevron-left"></v-icon> Back</router-link
                 >
               </div>
             </v-col>

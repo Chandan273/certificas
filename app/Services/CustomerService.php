@@ -8,6 +8,7 @@ use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 
 class CustomerService
@@ -99,7 +100,15 @@ class CustomerService
                 'country' => $request->country,
                 'info' => null,
             ]);
-            $customer->save();
+
+            //$customer->assignRole("customer");
+
+            // $mailData = ["username"=>$user->username, "password"=>$password];
+
+            // Mail::send('mails.password', $mailData, function ($message) use ($user) {
+            //     $message->from('admin@certificas.com', 'Certificas');
+            //     $message->to($user->email)->subject('Account created');
+            // });
 
             $response = ['success' => true, 'message' => 'Customer Created Succesfully!', 'customer' => $customer, 'statusCode' => 200];
         } catch (Exception $e) {

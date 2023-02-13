@@ -16,8 +16,7 @@ class RolesSeeder extends Seeder
     public function run()
     {
         $data = [
-            ['name'=>'company', 'guard_name'=> 'api', 'created_at' => date('Y-m-d H:i:s')],
-            // ['name'=>'customer', 'guard_name'=> 'api', 'created_at' => date('Y-m-d H:i:s')],
+            ['name'=>'customer', 'guard_name'=> 'api', 'created_at' => date('Y-m-d H:i:s')],
         ];
 
         Role::insert($data); // Eloquent approach

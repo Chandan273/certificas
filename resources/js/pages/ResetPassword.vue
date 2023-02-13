@@ -77,6 +77,12 @@
                       <h2>Certificas</h2>
                     </div>
                     <img src="../assets/images/forgot.png" />
+                    <!-- <h1 class="mb-3 mt-2">Welcome Back!</h1>
+                    <p>
+                      Welcome back to the best.
+                      <br />
+                      we're always here, waiting for you.
+                    </p> -->
                   </div>
                 </div>
               </div>

@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "./routes";
 import vuetify from "../plugins/vuetify";
 import "devextreme/dist/css/dx.light.css";
+import "../js/assets/css/global.scss";
 
 const app = createApp(App);
 app.use(router);

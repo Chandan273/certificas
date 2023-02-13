@@ -1,6 +1,11 @@
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer" :rail="rail" permanent>
+    <v-navigation-drawer
+      v-model="drawer"
+      :rail="rail"
+      permanent
+      class="left-sidebar"
+    >
       <v-list class="sidebar-logo pt-2 pb-2">
         <v-list-item class="justify-center">
           <router-link to="/" class="text-center mainPrimary">
@@ -33,12 +38,11 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar class="Certificas" elevation="1">
+    <v-app-bar class="Certificas page-header" elevation="1">
       <v-app-bar-nav-icon
-        slot="start"
         variant="text"
         @click="rail = !rail"
-        icon="mdi-format-align-left mainPrimary"
+        icon="mdi-format-align-left"
       ></v-app-bar-nav-icon>
       <v-spacer />
       <!-- profile dropdown  -->
@@ -46,22 +50,20 @@
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" class="px-0 px-1" :ripple="false">
             <div class="nav-profile d-flex">
-              <v-icon size="30" class="mr-1 mainPrimary">
-                mdi-account-circle
-              </v-icon>
+              <v-icon size="30" class="mr-1"> mdi-account-circle </v-icon>
             </div>
             &nbsp;
-            <span class="mainPrimary text-capitalize">{{ user.username }}</span>
-            <v-icon class="mainPrimary">mdi-chevron-down</v-icon>
+            <span class="text-capitalize">{{ user.username }}</span>
+            <v-icon>mdi-chevron-down</v-icon>
           </v-btn>
         </template>
         <v-list class="profile-dropdown">
-          <!-- <v-list-item router to="/profile">
+          <v-list-item router to="/profile">
             <v-list-item-title>
               <v-icon class="mr-2">mdi-account</v-icon>
               Profile
             </v-list-item-title>
-          </v-list-item> -->
+          </v-list-item>
           <v-list-item @click="logout()">
             <v-list-item-title>
               <v-icon class="mr-2">mdi-logout</v-icon>
@@ -72,63 +74,61 @@
       </v-menu>
     </v-app-bar>
     <v-main>
-      <v-container>
+      <v-container class="px-8">
         <slot></slot>
       </v-container>
     </v-main>
   </v-app>
 </template>
 <script>
-import Auth from '../Auth.js'
-import axios from 'axios'
+import Auth from "../Auth.js";
+import axios from "axios";
 
 export default {
-  name: 'adminLayout',
+  name: "adminLayout",
   components: {},
   data: () => ({
-    user: JSON.parse(localStorage.getItem('user')),
-    userRole: localStorage.getItem('role'),
+    user: JSON.parse(localStorage.getItem("user")),
+    userRole: localStorage.getItem("role"),
     drawer: true,
     miniVariant: false,
     rail: false,
     group: null,
     isActive: true,
     closeOnContentClick: true,
-    adminItems: [
-      { title: 'Tenants', icon: 'mdi-account', to: '/tenants' },
-    ],
+    adminItems: [{ title: "Tenants", icon: "mdi-account", to: "/tenants" }],
     companyItems: [
-      { title: 'Courses', icon: 'mdi-school', to: '/courses' },
-      { title: 'Customers', icon: 'mdi-account-multiple', to: '/customers' },
-      { title: 'Students', icon: 'mdi-library', to: '/students' },
-      { title: 'Certificates', icon: 'mdi-file-document', to: '/certificates' },
+      { title: "Courses", icon: "mdi-school", to: "/courses" },
+      { title: "Customers", icon: "mdi-account-multiple", to: "/customers" },
+      { title: "Students", icon: "mdi-library", to: "/students" },
+      { title: "Certificates", icon: "mdi-file-document", to: "/certificates" },
     ],
   }),
   methods: {
     async logout() {
       axios
-        .post('/api/logout')
+        .post("/api/logout")
         .then(({ data }) => {
           if (data) {
-            Auth.logout() //reset local storage
-            localStorage.clear()
-            this.$router.push('/login')
+            Auth.logout(); //reset local storage
+            localStorage.clear();
+            this.$router.push("/login");
           }
         })
         .catch((error) => {
-           if(error.response.status='401'){
-                Auth.logout() //reset local storage
-                localStorage.clear()
-                this.$router.push('/login');
-           }
-        })
+          if ((error.response.status = "401")) {
+            Auth.logout(); //reset local storage
+            localStorage.clear();
+            this.$router.push("/login");
+          }
+        });
     },
   },
   mounted() {},
   watch: {
     group() {
-      this.drawer = false
+      this.drawer = false;
     },
   },
-}
+};
 </script>

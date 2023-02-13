@@ -12,6 +12,8 @@ class Customer extends Model
 {
     use HasFactory, HasApiTokens, HasRoles, SoftDeletes;
 
+    protected $guard_name = 'api';
+
     protected $fillable = [
         'number',
         'name',
