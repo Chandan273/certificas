@@ -60,6 +60,9 @@ html {
         }
 
         .v-btn {
+            letter-spacing: 0;
+            text-transform: capitalize;
+
             &.primary-red {
                 background-color: var(--main-primary);
                 color: var(--white);
@@ -69,17 +72,134 @@ html {
                 background-color: #303030;
                 color: var(--white);
             }
+
+            &.primary-btn {
+                background: var(--main-primary);
+                color: var(--white);
+                letter-spacing: 0;
+                text-transform: capitalize;
+            }
+
+            &.primary-border-btn {
+                border-color: var(--main-primary);
+                color: var(--main-primary);
+            }
         }
 
+        .v-textarea {
+            textarea:invalid {
+                box-shadow: none;
+                -webkit-mask-image: none;
+                mask-image: none;
+            }
+        }
+
+
         main.v-main {
-            background: var(--background-color);
+            background: #f5fbff;
         }
 
         .widget-card {
             background: var(--white);
             border-radius: 10px;
             border-bottom: 1px solid #e0e3e8;
+            box-shadow: 0 1px 4px rgb(0 0 0 / 10%);
+
+            &.course-card {
+                position: relative;
+
+                .v-btn {
+                    &.add-btn {
+                        position: absolute;
+                        z-index: 2;
+                        right: 200px;
+                    }
+                }
+
+                &.students-table {
+                    .v-btn {
+                        &.add-btn {
+                            right: 300px;
+                        }
+                    }
+                }
+            }
         }
+
+        .v-dialog {
+            .v-card.course-modal {
+                border-radius: 16px;
+
+                .v-card-title {
+                    border-bottom: 1px solid #008cff12;
+                    background: #008cff12;
+
+                    h3 {
+                        font-size: 22px;
+                        font-weight: 600;
+                        color: var(--main-primary);
+                        letter-spacing: 0;
+                    }
+
+                    .v-icon {
+                        font-size: 24px;
+                    }
+                }
+
+                .v-card-text {
+                    &.import-csv {
+                        input {
+                            &.file-input {
+                                width: 100%;
+                                border: 1px solid #ddd;
+                                border-radius: 4px;
+                                padding: 3px 12px;
+                            }
+                        }
+                    }
+
+                    label {
+                        color: var(--body-font);
+                        font-weight: 500;
+                        letter-spacing: 0;
+                        font-size: 15px;
+
+                        span {
+                            &.required {
+                                color: red;
+                            }
+                        }
+                    }
+
+                    .v-input {
+                        --v-input-control-height: 38px;
+
+                        .v-input__control {
+                            .v-field__append-inner {
+                                padding-top: 8px;
+                            }
+                        }
+                    }
+                }
+
+                .v-card-actions {
+                    border-top: 1px solid #ebebeb;
+                }
+            }
+        }
+
+        .left-sidebar {
+            .v-list {
+                .v-list-item {
+                    min-height: 44px;
+
+                    .v-list-item-title {
+                        font-size: 16px;
+                    }
+                }
+            }
+        }
+
 
         .v-breadcrumbs__item:not(.v-breadcrumbs__item--disabled) {
             color: var(--main-primary);
@@ -135,6 +255,7 @@ html {
                 border-radius: 20px;
                 overflow: hidden;
                 border-bottom: 1px solid #e0e3e8;
+                box-shadow: 0 6px 15px rgb(0 0 0 / 16%);
             }
         }
 
@@ -162,7 +283,8 @@ html {
             background-color: var(--white);
             border-top-left-radius: 8px;
             border-bottom-left-radius: 8px;
-            min-height: 360px;
+            min-height: 460px;
+            height: 100%;
 
             .logo {
                 h3.page-title {
@@ -331,20 +453,23 @@ html {
     span {
         &.invalid-feedback {
             font-size: 14px;
-            &.text-red{
-                .v-icon{
+
+            &.text-red {
+                .v-icon {
                     border: 1px solid red;
                 }
-                
-            }
-            &.text-green{
-                .v-icon{
 
-                border: 1px solid green;}
+            }
+
+            &.text-green {
+                .v-icon {
+
+                    border: 1px solid green;
+                }
             }
 
             .v-icon {
-               
+
                 border-radius: 50%;
                 font-weight: bold;
                 width: 20px;
@@ -364,6 +489,7 @@ html {
             border: 1px solid #ddd;
             border-radius: 4px;
             align-items: center;
+            min-height: 38px;
 
             .v-input__prepend {
                 padding-top: 8px;
@@ -385,16 +511,117 @@ html {
                 }
             }
         }
-        
+
         .v-btn {
             border-radius: 4px;
             letter-spacing: 0;
             text-transform: capitalize;
             font-size: 16px;
             font-weight: normal;
+            min-height: 38px;
+            box-shadow: 0 2px 8px rgb(0 0 0 / 16%);
         }
     }
 }
+
+.profile-page {
+    .personal-info {
+        form {
+            border-bottom: 1px solid #ddd;
+        }
+    }
+
+    h3 {
+        font-weight: 600;
+        font-size: 20px;
+    }
+
+    form.v-form {
+        label {
+            font-weight: 600;
+            color: var(--body-font)
+        }
+
+        .v-input {
+            .v-field__outline {
+                .v-field__outline__start {
+                    border-color: #ddd;
+                    opacity: 1;
+                }
+
+                .v-field__outline__end {
+                    border-color: #ddd;
+                    opacity: 1;
+                }
+            }
+        }
+    }
+
+    .v-btn {
+        box-shadow: 0 2px 8px rgb(0 0 0 / 16%);
+        border-radius: 4px;
+        letter-spacing: 0;
+        text-transform: capitalize;
+        font-size: 16px;
+        font-weight: normal;
+        min-height: 38px;
+    }
+}
+
+ul {
+    &.v-breadcrumbs {
+        a {
+            &.v-breadcrumbs-item {
+                &.v-breadcrumbs-item--link {
+                    color: var(--main-primary);
+                }
+
+                &.v-breadcrumbs-item--disabled {
+                    color: #000;
+                }
+            }
+        }
+    }
+}
+
+.tenants-table {
+    .dx-datagrid {
+        .dx-datagrid-header-panel {
+            .dx-toolbar-button {
+                .dx-item-content {
+                    .dx-button {
+                        background: var(--main-primary);
+
+                        .dx-icon {
+                            color: var(--white);
+                        }
+                    }
+                }
+            }
+        }
+
+        .dx-datagrid-headers {
+            border-bottom: 0;
+
+            .dx-header-row {
+                td {
+                    background: var(--main-primary);
+                    color: #fff;
+                }
+            }
+        }
+    }
+}
+
+header {
+    &.v-toolbar {
+        &.v-app-bar.page-header {
+            background: #008cff;
+            color: #fff;
+        }
+    }
+}
+
 
 
 @media only screen and (min-width: 1600px) {
@@ -408,9 +635,6 @@ html {
         max-width: 1320px;
     }
 }
-
-
-@media (max-width: 1024px) {}
 
 @media (max-width: 991px) {
     html {
@@ -426,11 +650,3 @@ html {
     }
 
 }
-
-
-
-@media (max-width: 767px) {}
-
-@media (max-width: 1199.98px) {}
-
-@media only screen and (max-width: 959.98px) {}

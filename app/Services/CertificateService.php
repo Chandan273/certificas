@@ -123,12 +123,11 @@ class CertificateService
     {
         try {
             $certificate = Certificate::where('id', $request->id)->first();
-            $certificate->student_id = $request->student_id;
-            $certificate->course_id = $request->course_id;
-            $certificate->description = $request->description;
-            $certificate->valid_from = date('Y-m-d H:i:s', strtotime($request->valid_from));
-            $certificate->valid_untill = date('Y-m-d H:i:s', strtotime($request->valid_untill));
-            $certificate->save();
+
+            $certificate->update(array_merge($request->all(), [
+                'valid_from' => date('Y-m-d H:i:s', strtotime($request->valid_from)),
+                'valid_untill' => date('Y-m-d H:i:s', strtotime($request->valid_untill))
+            ]));
 
             $response = ['success' => true, 'message' => 'Certificate Updated Succesfully!', 'statusCode' => 200];
         } catch (Exception $e) {
@@ -171,7 +170,11 @@ class CertificateService
     public static function generatePdf(Request $request)
     {
         try{
-            $student = Student::where("id", 2)->first();
+            if (!$request->has('student_id')) {
+                $response = ['success' => false, 'message' => 'Student ID is missing', 'statusCode' => 400];
+            }
+            
+            $student = Student::where("id", $request->student_id)->first();
 
             if (!file_exists(storage_path('app/public/qr'))) {
                 mkdir(storage_path('app/public/qr'), 0777, true);

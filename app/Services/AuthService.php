@@ -29,15 +29,15 @@ class AuthService {
                 $tenant = Tenant::where('id', auth()->user()->id)->first();
                 $role = $user->roles()->first()->name;
 
-                $response = response()->json(["status" => true, "access_token"=> $token, 'user' => $user, 'role'=>$role, 'tenant'=> $tenant], 200);
+                $response = ["success" => true, "accessToken"=> $token, 'user' => $user, 'role'=>$role, 'tenant'=> $tenant, 'statusCode'=> 200];
             }else{
-                $response = response()->json(['status'=> false, 'error' => 'Incorrect Password', 'message' => "Please check Login details"], 401);
+                $response = ['success'=> false, 'error' => 'Incorrect Password', 'message' => "Please check Login details", 'statusCode'=> 401];
             }
         }
         catch(Exception $e){
             Log::error($e->getMessage());
 
-            $response = response()->json(["success" => false, "message"=>$e], 400);
+            $response = ["success" => false, "message"=>$e->getMessage(), 'statusCode'=> 500];
         }
 
         return $response;
@@ -56,12 +56,14 @@ class AuthService {
             $token = $request->user()->token();
             $token->revoke();
 
-            return response()->json(['status'=> 'true', 'message' => 'You have been successfully logged out!'], 200);
+            $response = ['success'=> true, 'message' => 'You have been successfully logged out!', 'statusCode'=> 200];
         }
         catch(Exception $e){
             Log::error($e->getMessage());
 
-            return $response =  response()->json(["success" => false, "message"=>$e], 400);
+            $response = ["success" => false, "message"=>$e->getMessage(), 'statusCode'=> 500];
         }
+
+        return $response;
     }
 }

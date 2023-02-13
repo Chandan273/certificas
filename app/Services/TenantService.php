@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Tenant;
-use App\Models\Certificate_layout;
-use Carbon\Carbon;
-use Spatie\Permission\Models\Role;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\Certificate_layout;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Mail;
 
 class TenantService
@@ -46,25 +46,20 @@ class TenantService
 
             $tenants = $tenants->get();
 
-            if ( $tenants) {
-                return $response = response()->json(
-                    ['success' => true, 'data' => $tenants, 'totalCount' => $totalCount],
-                    200
-                );
+            if ($tenants) {
+
+                $response = ['success' => true, 'data' => $tenants, 'totalCount' => $totalCount, 'statusCode' => 200];
             } else {
-                return $response = response()->json(
-                    ['success' => false, "data" => [],'totalCount' => $totalCount, 'message' => 'No Data Found!!'],
-                    401
-                );
+
+                $response = ['success' => false, "data" => [],'totalCount' => $totalCount, 'message' => 'No Data Found!!', 'statusCode' => 401];
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            return $response = response()->json(
-                ['success' => false, 'message' => $e],
-                400
-            );
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
+
+        return $response;
     }
 
     /**
@@ -109,7 +104,7 @@ class TenantService
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = ['success' => false, 'message' => $e, 'statusCode' => 500];
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
             
         }
 
@@ -160,7 +155,7 @@ class TenantService
             Log::error($e->getMessage());
 
             return $response = response()->json(
-                ['success' => false, 'message' => $e],
+                ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500],
                 400
             );
         }
@@ -188,7 +183,7 @@ class TenantService
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = ['success' => false, 'message' => $e, 'statusCode' => 500];
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
 
         return $response;

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\AuthService;
 use App\Services\UserService;
 use App\Services\RegisterService;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -29,7 +29,7 @@ class AuthController extends Controller
             return response()->json(['status'=>'false', 'error'=>$validator->errors()], 400);
         }
 
-        return AuthService::login($request);
+        return response()->json(AuthService::login($request));
     }
 
     /**
@@ -40,7 +40,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        return AuthService::logout($request);
+        return response()->json(AuthService::logout($request));
     }
 
     /**
@@ -73,7 +73,7 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'error'=>$validator->errors()], 422);
         }
 
-        return UserService::forgotPassword($request);
+        return response()->json(UserService::forgotPassword($request));
     }
 
     /**
@@ -97,7 +97,7 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'error'=> $validator->errors()], 422);
         }
 
-        return UserService::resetPassword($request);
+        return response()->json(UserService::resetPassword($request));
     }
 
     /**
@@ -118,7 +118,7 @@ class AuthController extends Controller
             return response()->json(['error'=>$validator->errors()], 422);
         }
 
-        return UserService::updateProfile($request);
+        return response()->json(UserService::updateProfile($request));
     }
 
     /**
@@ -142,6 +142,6 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'error'=> $validator->errors()], 422);
         }
 
-        return UserService::profilePassword($request);
+        return response()->json(UserService::profilePassword($request));
     }
 }
