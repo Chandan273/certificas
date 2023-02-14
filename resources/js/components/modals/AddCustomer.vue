@@ -1,174 +1,84 @@
 <template>
-    <v-card class="course-modal">
-        <v-card-title
-            class="d-flex justify-space-between align-center px-6 pt-4 pb-2"
-        >
-            <h3>Add new customer</h3>
-            <v-icon icon="mdi-close" @click="closeModal"></v-icon>
-        </v-card-title>
-        <v-card-text class="px-3 py-0">
-            <v-container>
-                <v-row>
-                    <v-col cols="12" class="pb-0">
-                        <h4>Customer Information</h4>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                        <label>Number <span class="required">*</span></label>
-                        <v-text-field
-                            v-model="customerData.number"
-                            placeholder="Customer number"
-                            variant="outlined"
-                            hide-details="auto"
-                            class="mt-2"
-                            required
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                        <label>Name <span class="required">*</span></label>
-                        <v-text-field
-                            v-model="customerData.name"
-                            placeholder="Customer name"
-                            class="mt-2"
-                            hide-details="auto"
-                            variant="outlined"
-                            required
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="4">
-                        <label>Email <span class="required">*</span></label>
-                        <v-text-field
-                            v-model="customerData.email"
-                            placeholder="Customer email"
-                            type="email"
-                            hide-details="auto"
-                            class="mt-2"
-                            variant="outlined"
-                            required
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="4">
-                        <label>Contact <span class="required">*</span></label>
-                        <v-text-field
-                            v-model="customerData.contact"
-                            placeholder="Customer contact"
-                            variant="outlined"
-                            hide-details="auto"
-                            class="mt-2"
-                            required
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="4">
-                        <label
-                            >Organisation Number
-                            <span class="required">*</span></label
-                        >
-                        <v-text-field
-                            v-model="customerData.organisation_number"
-                            placeholder="Organisation number"
-                            hide-details="auto"
-                            class="mt-2"
-                            variant="outlined"
-                            required
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="4">
-                        <label>Website <span class="required">*</span></label>
-                        <v-text-field
-                            v-model="customerData.www"
-                            placeholder="Website"
-                            hide-details="auto"
-                            class="mt-2"
-                            variant="outlined"
-                            required
-                        ></v-text-field>
-                    </v-col>
-                </v-row>
-                <v-row class="mt-6">
-                    <v-col cols="12" class="pb-0">
-                        <h4>Customer Address</h4>
-                    </v-col>
-                    <v-col cols="12">
-                        <label>Address <span class="required">*</span></label>
-                        <v-textarea
-                            v-model="customerData.address"
-                            placeholder="Customer address"
-                            variant="outlined"
-                            hide-details="auto"
-                            class="mt-2"
-                            required
-                        ></v-textarea>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                        <label
-                            >Phone Number <span class="required">*</span></label
-                        >
-                        <v-text-field
-                            v-model="customerData.phone"
-                            placeholder="Phone number"
-                            class="mt-2"
-                            hide-details="auto"
-                            variant="outlined"
-                            required
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="4">
-                        <label>Zip <span class="required">*</span></label>
-                        <v-text-field
-                            v-model="customerData.zip"
-                            placeholder="Zip"
-                            hide-details="auto"
-                            class="mt-2"
-                            variant="outlined"
-                            required
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="4">
-                        <label>City <span class="required">*</span></label>
-                        <v-text-field
-                            v-model="customerData.city"
-                            placeholder="City"
-                            variant="outlined"
-                            hide-details="auto"
-                            class="mt-2"
-                            required
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="4">
-                        <label>Country <span class="required">*</span></label>
-                        <v-select
-                            :items="countries"
-                            placeholder="Select country"
-                            variant="outlined"
-                            hide-details="auto"
-                            class="mt-2"
-                            required
-                            item-title="name"
-                            item-value="alpha_2"
-                            v-model="customer.country"
-                        >
-                        </v-select>
-                    </v-col>
-                </v-row>
-            </v-container>
-        </v-card-text>
-        <v-card-actions class="px-6 py-3">
-            <v-spacer></v-spacer>
-            <v-btn
-                @click="closeModal()"
-                variant="outlined"
-                class="primary-border-btn"
-            >
-                Close
-            </v-btn>
-            <v-btn
-                @click="addCustomer(customerData.id ? 'update' : 'add')"
-                class="primary-btn"
-            >
-                Save
-            </v-btn>
-        </v-card-actions>
-    </v-card>
+<v-card class="course-modal">
+    <v-card-title class="d-flex justify-space-between align-center px-6 pt-4 pb-2">
+        <h3>Add new customer</h3>
+        <v-snackbar v-model="snackbar" :color="color" top left>
+            {{ message }}
+        </v-snackbar>
+        <v-icon icon="mdi-close" @click="closeModal"></v-icon>
+    </v-card-title>
+    <v-card-text class="px-3 py-0">
+        <v-container>
+            <v-row>
+                <v-col cols="12" class="pb-0">
+                    <h4>Customer Information</h4>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                    <label>Number <span class="required">*</span></label>
+                    <v-text-field v-model="customer.number" placeholder="Customer number" variant="outlined" hide-details="auto" class="mt-2" required></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                    <label>Name <span class="required">*</span></label>
+                    <v-text-field v-model="customer.name" placeholder="Customer name" class="mt-2" hide-details="auto" variant="outlined" required></v-text-field>
+                </v-col>
+                <v-col cols="12" md="4">
+                    <label>Email <span class="required">*</span></label>
+                    <v-text-field v-model="customer.email" placeholder="Customer email" type="email" hide-details="auto" class="mt-2" variant="outlined" required></v-text-field>
+                </v-col>
+                <v-col cols="12" md="4">
+                    <label>Contact <span class="required">*</span></label>
+                    <v-text-field v-model="customer.contact" placeholder="Customer contact" variant="outlined" hide-details="auto" class="mt-2" required></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4">
+                    <label>Organisation Number
+                        <span class="required">*</span></label>
+                    <v-text-field v-model="customer.organisation_number" placeholder="Organisation number" hide-details="auto" class="mt-2" variant="outlined" required></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4">
+                    <label>Website <span class="required">*</span></label>
+                    <v-text-field v-model="customer.www" placeholder="Website" hide-details="auto" class="mt-2" variant="outlined" required></v-text-field>
+                </v-col>
+            </v-row>
+            <v-row class="mt-6">
+                <v-col cols="12" class="pb-0">
+                    <h4>Customer Address</h4>
+                </v-col>
+                <v-col cols="12">
+                    <label>Address <span class="required">*</span></label>
+                    <v-textarea v-model="customer.address" placeholder="Customer address" variant="outlined" hide-details="auto" class="mt-2" required></v-textarea>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                    <label>Phone Number <span class="required">*</span></label>
+                    <v-text-field v-model="customer.phone" placeholder="Phone number" class="mt-2" hide-details="auto" variant="outlined" required></v-text-field>
+                </v-col>
+                <v-col cols="12" md="4">
+                    <label>Zip <span class="required">*</span></label>
+                    <v-text-field v-model="customer.zip" placeholder="Zip" hide-details="auto" class="mt-2" variant="outlined" required></v-text-field>
+                </v-col>
+                <v-col cols="12" md="4">
+                    <label>City <span class="required">*</span></label>
+                    <v-text-field v-model="customer.city" placeholder="City" variant="outlined" hide-details="auto" class="mt-2" required></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4">
+                    <label>Country <span class="required">*</span></label>
+                    <v-select v-model="customer.country" :items="countries" placeholder="Select country" variant="outlined" hide-details="auto" class="mt-2" required item-title="name" item-value="alpha_2">
+                    </v-select>
+                </v-col>
+            </v-row>
+        </v-container>
+    </v-card-text>
+    <v-card-actions class="px-6 py-3">
+        <v-spacer></v-spacer>
+        <v-btn @click="closeModal()" variant="outlined" class="primary-border-btn">
+            Close
+        </v-btn>
+        <v-btn @click="addCustomer(customerData.id ? 'update' : 'add')" class="primary-btn">
+            Save
+        </v-btn>
+    </v-card-actions>
+</v-card>
 </template>
+
 <script>
 import countries from "../../assets/data/country-iso";
 import axios from "axios";
@@ -176,9 +86,6 @@ import axios from "axios";
 export default {
     props: {
         customerData: Object,
-        countryData: Object,
-        name: String,
-        iso: String,
     },
     data() {
         return {
@@ -187,6 +94,9 @@ export default {
             },
             selectedCountry: countries[0],
             countries: countries,
+            snackbar: false,
+            message: '',
+            color: 'success',
         };
     },
     methods: {
@@ -225,6 +135,11 @@ export default {
                         "/api/update-customer",
                         payload
                     );
+
+                    this.closeModal();
+
+                    this.snackbar = true;
+                    this.message = "Customers updated successfully!!";
                 } else {
                     let result = await axios.post(
                         "/api/create-customer",

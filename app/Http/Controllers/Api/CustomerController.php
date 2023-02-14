@@ -23,7 +23,7 @@ class CustomerController extends Controller
             'name' => 'required',
             'contact' => 'required',
             'organisation_number' => 'required',
-            'email' => 'required',
+            'email' => 'required|email|unique:customers',
             'www' => 'required',
             'phone' => 'required',
             'address' => 'required',
@@ -36,7 +36,7 @@ class CustomerController extends Controller
             return response()->json(['error'=>$validator->errors()], 422);
         }
 
-        return CustomerService::store($request);
+        return response()->json(CustomerService::store($request));
     }
 
     /**
@@ -47,7 +47,7 @@ class CustomerController extends Controller
      */    
     public function index(Request $request)
     {
-        return CustomerService::index($request);
+        return response()->json(CustomerService::index($request));
     }
 
     /**
@@ -79,7 +79,7 @@ class CustomerController extends Controller
             return response()->json(['error'=>$validator->errors()], 422);
         }
 
-        return CustomerService::update($request);
+        return response()->json(CustomerService::update($request));
     }
     
     /**
@@ -98,7 +98,7 @@ class CustomerController extends Controller
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 422);
         }
-        return CustomerService::destroy($request);
+        return response()->json(CustomerService::destroy($request));
     }
 
 }

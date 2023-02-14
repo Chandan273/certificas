@@ -1,5 +1,6 @@
 <template>
     <AdminLayout>
+        
         <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
         <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 course-card widget-card">
             <v-btn
@@ -16,7 +17,7 @@
                 <AddCertificate
                     @close="closeModal"
                     :certificateData="certificateData"
-                    :studentData="studentData"
+                    :students="students"
                 ></AddCertificate>
             </v-dialog>
             <DxDataGrid
@@ -166,7 +167,6 @@ export default {
         return {
             certificateDialog: false,
             students: {},
-            studentData: {},
             certificateData: {},
             breadcrumbsItems: [
                 {
@@ -316,7 +316,6 @@ export default {
         editCertificate(params) {
             this.certificateDialog = true;
             this.certificateData = params.row.data;
-            this.studentData = this.students;
         },
         downloadPdf(params) {
             let student_id = params.row.data.student_id;

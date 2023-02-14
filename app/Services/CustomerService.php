@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use App\Models\Customer;
-use App\Models\Tenant;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Tenant;
+use App\Models\Customer;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Mail;
 
 class CustomerService
 {
@@ -85,32 +85,19 @@ class CustomerService
     public static function store(Request $request)
     {
         try {
-            $customer = Customer::create([
+            $customer = Customer::create(array_merge($request->all(), [
                 'tenant_id' => auth()->user()->id,
-                'number' => $request->number,
-                'name' => $request->name,
-                'contact' => $request->contact,
-                'organisation_number' => $request->organisation_number,
-                'email' => $request->email,
-                'www' => $request->www,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'zip' => $request->zip,
-                'city' => $request->city,
-                'country' => $request->country,
                 'info' => null,
-            ]);
+            ]));
 
             //$customer->assignRole("customer");
-
             // $mailData = ["username"=>$user->username, "password"=>$password];
-
             // Mail::send('mails.password', $mailData, function ($message) use ($user) {
             //     $message->from('admin@certificas.com', 'Certificas');
             //     $message->to($user->email)->subject('Account created');
             // });
 
-            $response = ['success' => true, 'message' => 'Customer Created Succesfully!', 'customer' => $customer, 'statusCode' => 200];
+            $response = ['success' => true, 'message' => 'Customer Created Succesfully!', 'statusCode' => 200];
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
@@ -131,22 +118,9 @@ class CustomerService
     {
         try {
             $customer = Customer::where('id', $request->id)->first();
-            $customer->tenant_id = $request->tenant_id;
-            $customer->number = $request->number;
-            $customer->name = $request->name;
-            $customer->contact = $request->contact;
-            $customer->organisation_number = $request->organisation_number;
-            $customer->email = $request->email;
-            $customer->www = $request->www;
-            $customer->phone = $request->phone;
-            $customer->address = $request->address;
-            $customer->zip = $request->zip;
-            $customer->city = $request->city;
-            $customer->country = $request->country;
-            $customer->info = null;
-            $customer->save();
+            $customer->update($request->all());
 
-            $response = ['success' => true, 'message' => 'Customer Updated Succesfully!', 'customer' => $customer, 'statusCode' => 200];
+            $response = ['success' => true, 'message' => 'Customer Updated Succesfully!', 'statusCode' => 200];
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
