@@ -201,7 +201,7 @@ export default {
 
                     return axios
                         .get(`/api/all-courses`, { params })
-                        .then(({ daxta }) => ({
+                        .then(({ data }) => ({
                             data: data.data,
                             totalCount: data.totalCount,
                         }))

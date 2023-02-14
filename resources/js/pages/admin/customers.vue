@@ -18,7 +18,6 @@
                 <AddCustomer
                     @close="closeModal"
                     :customerData="customerData"
-                    :countryData="countryData"
                 ></AddCustomer>
             </v-dialog>
             <DxDataGrid
@@ -187,13 +186,7 @@
                 <DxColumn data-field="address" />
                 <DxColumn :visible="false" data-field="zip" />
                 <DxColumn :visible="false" data-field="city" />
-                <DxColumn :width="125" data-field="country" caption="Country">
-                    <DxLookup
-                        :data-source="country"
-                        value-expr="alpha_2"
-                        display-expr="name"
-                    />
-                </DxColumn>
+                <DxColumn :visible="false" data-field="country" />
                 <DxColumn data-field="Action" type="buttons">
                     <DxButton
                         name="edit"
@@ -223,7 +216,6 @@ import {
     DxButton,
 } from "devextreme-vue/data-grid";
 
-import countries from "../../assets/data/country-iso";
 import { DxTextArea } from "devextreme-vue/text-area";
 import { DxItem } from "devextreme-vue/form";
 import CustomStore from "devextreme/data/custom_store";
@@ -253,7 +245,6 @@ export default {
     data() {
         return {
             customerDialog: false,
-            countryData: countries,
             country: [],
             breadcrumbsItems: [
                 {
@@ -276,7 +267,6 @@ export default {
         editCustomer(params) {
             this.customerDialog = true;
             this.customerData = params.row.data;
-            // this.countryData = this.country;
         },
     },
     computed: {
@@ -405,14 +395,6 @@ export default {
                 },
             });
         },
-    },
-    mounted() {
-        countries.map((c) => {
-            this.country.push({
-                name: c.name,
-                iso: c.alpha_2,
-            });
-        });
-    },
+    },  
 };
 </script>
