@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\CourseService;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
@@ -29,7 +29,7 @@ class CourseController extends Controller
             return response()->json(['status'=>'false', 'error'=>$validator->errors()], 422);
         }
 
-        return CourseService::store($request);
+        return response()->json(CourseService::store($request));
     }
 
     /**
@@ -38,7 +38,7 @@ class CourseController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request){
-        return CourseService::index($request);
+        return response()->json(CourseService::index($request));
     }
 
     /**
@@ -62,7 +62,7 @@ class CourseController extends Controller
             return response()->json(['status'=>'false', 'error'=>$validator->errors()], 422);
         }
 
-        return CourseService::update($request);
+        return response()->json(CourseService::update($request));
     }
 
     /**
@@ -82,6 +82,6 @@ class CourseController extends Controller
             return response()->json(['error'=>$validator->errors()], 422);
         }
 
-        return CourseService::destroy($request);
+        return response()->json(CourseService::destroy($request));
     }
 }
