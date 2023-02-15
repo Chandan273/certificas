@@ -15,7 +15,6 @@
             <v-dialog v-model="courseDialog" persistent max-width="700px">
                 <AddCourses
                     @close="closeModal"
-                    @dataSource="dataSource"
                     :courseData="courseData"
                 ></AddCourses>
             </v-dialog>
@@ -26,7 +25,6 @@
                 key-expr="id"
                 :remote-operations="true"
             >
-                <DxPaging :enabled="false" />
                 <DxSearchPanel :visible="true" />
                 <DxEditing
                     :allow-updating="true"
@@ -95,6 +93,11 @@
                         </DxItem>
                     </DxForm>
                 </DxEditing>
+                <DxPaging :page-size="10" />
+                <DxPager
+                    :show-page-size-selector="true"
+                    :allowed-page-sizes="[10, 25, 50, 100]"
+                />
                 <DxColumn data-field="code" />
                 <DxColumn data-field="name" />
                 <DxColumn data-field="description" />
@@ -120,6 +123,7 @@ import {
     DxDataGrid,
     DxColumn,
     DxPaging,
+    DxPager,
     DxSearchPanel,
     DxEditing,
     DxPopup,
@@ -144,6 +148,7 @@ export default {
         DxDataGrid,
         DxColumn,
         DxPaging,
+        DxPager,
         DxSearchPanel,
         DxEditing,
         DxPopup,

@@ -11,7 +11,7 @@
             <v-container>
                 <v-row>
                     <v-col cols="12" sm="6" md="6">
-                        <label>Code</label>
+                        <label>Code <span class="required">*</span></label>
                         <v-text-field
                             v-model="courseData.code"
                             placeholder="Course code"
@@ -167,14 +167,16 @@ export default {
                         "/api/update-course",
                         payload
                     );
+                    this.closeModal();
+                    this.$router.go(this.$router.currentRoute);
                 } else {
                     let result = await axios.post(
                         "/api/create-course",
                         payload
                     );
+                    this.closeModal();
+                    this.$router.go(this.$router.currentRoute);
                 }
-
-                //console.log(result);
             } catch (error) {
                 if (
                     error.response.data &&

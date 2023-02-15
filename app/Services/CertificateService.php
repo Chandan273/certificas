@@ -40,7 +40,7 @@ class CertificateService
                     $certificates = Certificate::where('certificate_layout_id',$certificate_layout->id);
                 } else {
                 
-                    $response = ['success' => false, 'message' => 'No data found', 'sttausCode' => 404];
+                    $response = ['success' => false, 'message' => 'No data found', 'stausCode' => 404];
                 }
             }
 
@@ -92,15 +92,13 @@ class CertificateService
             $certificate_layout = Certificate_layout::where('tenant_id',auth()->user()->id)->first();
             $student = Student::where('id',$request->student_id)->first();
 
-            $course = Certificate::create([
-                'student_id' => $request->student_id,
+            $course = Certificate::create(array_merge($request->all(),[
                 'course_id' => $student->course_id,
                 'certificate_layout_id' => $certificate_layout->id,
-                'description' => $request->description,
                 'valid_from' => date('Y-m-d H:i:s', strtotime($request->valid_from)),
                 'valid_untill' => date('Y-m-d H:i:s', strtotime($request->valid_untill)),
                 'info' => null,
-            ]);
+            ]));
 
             $response = ['success' => true, 'statusCode' => 200, 'message' => 'Certificate created succesfully!' ];
         } catch (Exception $e) {

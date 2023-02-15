@@ -30,7 +30,7 @@ class CertificateController extends Controller
         }
 
 
-        return CertificateService::store($request);
+        return response()->json(CertificateService::store($request));
     }
 
     /**
@@ -39,7 +39,7 @@ class CertificateController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request){
-        return CertificateService::index($request);
+        return response()->json(CertificateService::index($request));
     }
 
     /**
@@ -62,7 +62,7 @@ class CertificateController extends Controller
             return response()->json(['error'=>$validator->errors()], 422);
         }
 
-        return CertificateService::update($request);
+        return response()->json(CertificateService::update($request));
     }
 
     /**
@@ -82,7 +82,7 @@ class CertificateController extends Controller
             return response()->json(['error'=>$validator->errors()], 422);
         }
 
-        return CertificateService::destroy($request);
+        return response()->json(CertificateService::destroy($request));
     }
 
     /**
@@ -91,7 +91,7 @@ class CertificateController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function generatePdf(Request $request){
-        return CertificateService::generatePdf($request);
+        return response()->json(CertificateService::generatePdf($request));
     }
 
 }

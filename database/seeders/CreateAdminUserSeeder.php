@@ -19,21 +19,22 @@ class CreateAdminUserSeeder extends Seeder
     public function run()
     {
 
+        // Adding New User
+
         $tenant = Tenant::create([
-            'name' => 'Super Admin',
-            'paid_untill' => '2050-03-25',
+            'name' => 'superadmin',
         ]);
 
         $user = User::create([
             'tenant_id' => $tenant->id,
-            'username' => 'superadmin',
+            'username' => 'admin',
             'email' => 'admin@gmail.com',
             'language' => 'English',
             'password' => bcrypt('123456')
         ]);
 
         $certificate_layout = Certificate_layout::create([
-            'tenant_id' => $tenant->id
+            'tenant_id' => $tenant->id,
         ]);
 
         $role = Role::create(['name' => 'superadmin']);
@@ -43,5 +44,27 @@ class CreateAdminUserSeeder extends Seeder
         $role->syncPermissions($permissions);
 
         $user->assignRole([$role->id]);
+
+        // Adding Permissions
+        $permissions = [
+            'add',
+            'edit',
+            'import',
+            'create',
+            'send'
+         ];
+ 
+         foreach ($permissions as $permission) {
+              Permission::create(['name' => $permission]);
+         }
+ 
+         //Add New Role
+ 
+         $rolesData = [
+             ['name'=>'company', 'guard_name'=> 'api', 'created_at' => date('Y-m-d H:i:s')],
+         ];
+ 
+         Role::insert($rolesData);
+
     }
 }

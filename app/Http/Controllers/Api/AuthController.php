@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Services\AuthService;
 use App\Services\UserService;
+use Illuminate\Validation\Rule;
 use App\Services\RegisterService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -109,13 +110,31 @@ class AuthController extends Controller
     public function updateProfile(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'username' => 'required',
-            'email' => 'required|email',
+            'username' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('users')->ignore(auth()->id()),
+            ],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore(auth()->id()),
+            ],
+            'name' => [
+                'required',
+                'string',
+            ],
         ]);
-
+    
+        // If validation fails, return the error messages
         if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 422);
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
         }
 
         return response()->json(UserService::updateProfile($request));
