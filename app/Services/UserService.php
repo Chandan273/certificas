@@ -5,12 +5,12 @@ namespace App\Services;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Tenant;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class UserService
 {
@@ -90,26 +90,18 @@ class UserService
                     'password' => \Hash::make($request->password),
                 ]);
 
-                $response = [
-                    'message' => 'Password Updated Sucessfully!!',
-                    'success' => true,
-                ];
-                $statusCode = 200;
+                $response = ['success' => true, 'message' => 'Password Updated Sucessfully!!', 'statusCode' => 200];
             } else {
-                $response = [
-                    'message' => 'User Not Found!!',
-                    'success' => false,
-                ];
-                $statusCode = 401;
+                
+                $response = ['success' => false, 'message' => 'User Not Found!!', 'statusCode' => 401];
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = ['success' => false, 'message' => $e];
-            $statusCode = 400;
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
 
-        return response()->json($response, $statusCode);
+        return $response;
     }
 
     /**
@@ -132,48 +124,27 @@ class UserService
                     $user->email = $request->email;
                     $user->save();
 
-                    $response = response()->json(
-                        [
-                            'success' => true,
-                            'user' => $user,
-                            'message' =>
-                                'SuperAdmin Profile has been updated successfully!',
-                        ],
-                        200
-                    );
+                    $response = ['success' => true, 'user' => $user, 'message' => 'Profile has been updated successfully!', 'statusCode' => 200];
                 }
             } else {
-                $tenant = Tenant::with('user')
-                    ->where('user_id', $request->user_id)
-                    ->first();
-                if ($tenant) {
-                    $user = User::where('id', $request->user_id)->first();
+                $user = User::where('tenant_id', $request->user_id)->first();
+                if ($user) {
+
+                    $tenant = Tenant::where('id', $request->user_id)->first();
+                    $tenant->name = $request->name;
+                    $tenant->save();
+
                     $user->username = $request->username;
                     $user->email = $request->email;
                     $user->save();
 
-                    $tenant = Tenant::where(
-                        'user_id',
-                        $request->user_id
-                    )->first();
-                    $tenant->name = $request->name;
-                    $tenant->save();
-
-                    $response = response()->json(
-                        [
-                            'success' => true,
-                            'user' => $user,
-                            'message' => 'Tenant Profile has been updated successfully',
-                        ],
-                        200
-                    );
+                    $response = ['success' => true, 'user' => $user, 'tenant' => $tenant, 'message' => 'Profile has been updated successfully', 'statusCode' => 200];
                 }
             }
-        } catch (Exception $e) {
+        }catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = ['success' => false, 'message' => $e];
-            $statusCode = 400;
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
 
         return $response;
@@ -188,61 +159,23 @@ class UserService
     public static function profilePassword(Request $request)
     {
         try {
-            if (
-                auth()
-                    ->user()
-                    ->hasRole('superadmin')
-            ) {
+            
                 $user = User::where('id', $request->user_id)->first();
-                if ($user) {
-                    if (Hash::check($request->current_password, $user->password)) {
-                        $user->password = Hash::make($request->password);
-                        $user->save();
-                        $response = [
-                            'success' => true,
-                            'message' => 'Superadmin profile password has been Updated Sucessfully!!',
-                        ];
-                    }
-                } else {
-                    $response = [
-                        'success' => false,
-                        'message' => 'User Not Found!!',
-                    ];
-                    $statusCode = 401;
-                }
-            } else {
-                $tenant = Tenant::with('user')
-                    ->where('user_id', $request->user_id)
-                    ->first();
-                if ($tenant) {
-                    $user = User::where('id', $request->user_id)->first();
+                if (Hash::check($request->current_password, $user->password)) {
+                    $user->password = Hash::make($request->password);
+                    $user->save();
 
-                    if ($user) {
-                        if (Hash::check($request->current_password, $user->password)) {
-                            $user->password = Hash::make($request->password);
-                            $user->save();
-                            $response = [
-                                'success' => true,
-                                'message' =>
-                                    'Profile password has been Updated Sucessfully!!',
-                            ];
-                        }
-                    } else {
-                        $response = [
-                            'success' => false,
-                            'message' => 'User Not Found!!',
-                        ];
-                        $statusCode = 401;
-                    }
+                    return $response = ['success' => true,'message' => 'Profile password has been Updated Sucessfully!', 'statusCode' => 200];
+                } else {
+
+                    return $response = ['success' => false, 'message' => 'current password is incorrect!', 'statusCode' => 401];
                 }
-            }
+        
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = ['success' => false, 'message' => $e];
-            $statusCode = 400;
+            return ['success' => false, 'message' => $e->getMessage()];
         }
 
-        return $response;
     }
 }

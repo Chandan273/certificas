@@ -25,5 +25,13 @@ class PermissionTableSeeder extends Seeder
         foreach ($permissions as $permission) {
              Permission::create(['name' => $permission]);
         }
+
+
+        $rolesData = [
+            ['name'=>'company', 'guard_name'=> 'api', 'created_at' => date('Y-m-d H:i:s')],
+        ];
+
+        Role::insert($rolesData);
+
     }
 }

@@ -7,12 +7,19 @@
             <v-btn
                 class="primary-btn add-btn"
                 elevation="0"
-                @click="studentDialog = true"
+                @click="
+                    studentData = {};
+                    studentDialog = true;
+                "
             >
                 <v-icon icon="mdi-plus"></v-icon> Add Student
             </v-btn>
             <v-dialog v-model="studentDialog" persistent max-width="700px">
-                <AddStudent @close="closeModal"></AddStudent>
+                <AddStudent
+                    @close="closeModal"
+                    :studentData="studentData"
+                    :Courses="Courses"
+                ></AddStudent>
             </v-dialog>
             <div class="text-center">
                 <template>
@@ -168,11 +175,12 @@
                     <DxItem name="applyFilterButton" />
                 </DxToolbar>
                 <template #importAction>
-                    <DxButton
-                        icon="import"
+                    <v-btn
+                        elevation="0"
+                        class="primary-btn ml-2"
                         @click="importCSV"
-                        title="Import CSV file"
-                    />
+                        ><v-icon size="large"> mdi-import </v-icon>
+                    </v-btn>
                 </template>
             </DxDataGrid>
         </div>
@@ -193,13 +201,13 @@ import {
     DxLookup,
     DxForm,
     DxToolbar,
+    DxButton,
+    DxTextArea,
+    DxItem,
 } from "devextreme-vue/data-grid";
 import { Workbook } from "exceljs";
 import { saveAs } from "file-saver-es";
 import { exportDataGrid } from "devextreme/excel_exporter";
-import { DxTextArea } from "devextreme-vue/text-area";
-import { DxItem } from "devextreme-vue/form";
-import { DxButton } from "devextreme-vue/button";
 import CustomStore from "devextreme/data/custom_store";
 import AddStudent from "../../components/modals/AddStudent.vue";
 function isNotEmpty(value) {
@@ -211,7 +219,6 @@ export default {
     components: {
         AdminLayout,
         DxDataGrid,
-        DxButton,
         DxColumn,
         DxPaging,
         DxPager,
@@ -224,6 +231,7 @@ export default {
         DxItem,
         DxTextArea,
         DxToolbar,
+        DxButton,
         AddStudent,
     },
     data() {
@@ -233,6 +241,7 @@ export default {
             studentDialog: false,
             file: null,
             Courses: [],
+            studentData: {},
             breadcrumbsItems: [
                 {
                     text: "Admin",
@@ -374,7 +383,6 @@ export default {
         editStudent(params) {
             this.studentDialog = true;
             this.studentData = params.row.data;
-            console.log(this.studentData);
         },
         importCSV() {
             this.dialog = !this.dialog;

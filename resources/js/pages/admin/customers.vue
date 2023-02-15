@@ -26,7 +26,6 @@
                 :show-borders="true"
                 key-expr="id"
             >
-                <DxPaging :enabled="false" />
                 <DxSearchPanel :visible="true" />
                 <DxEditing
                     :allow-updating="true"
@@ -172,7 +171,11 @@
                         </DxItem>
                     </DxForm>
                 </DxEditing>
-
+                <DxPaging :page-size="10" />
+                <DxPager
+                    :show-page-size-selector="true"
+                    :allowed-page-sizes="[10, 25, 50, 100]"
+                />
                 <DxColumn data-field="number" />
                 <DxColumn data-field="name" />
                 <DxColumn data-field="contact" />
@@ -208,6 +211,7 @@ import {
     DxDataGrid,
     DxColumn,
     DxPaging,
+    DxPager,
     DxSearchPanel,
     DxEditing,
     DxPopup,
@@ -232,6 +236,7 @@ export default {
         DxDataGrid,
         DxColumn,
         DxPaging,
+        DxPager,
         DxSearchPanel,
         DxEditing,
         DxPopup,
@@ -395,6 +400,6 @@ export default {
                 },
             });
         },
-    },  
+    },
 };
 </script>

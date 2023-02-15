@@ -1,6 +1,5 @@
 <template>
     <AdminLayout>
-        
         <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
         <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 course-card widget-card">
             <v-btn
@@ -26,7 +25,6 @@
                 :show-borders="true"
                 key-expr="id"
             >
-                <DxPaging :enabled="false" />
                 <DxSearchPanel :visible="true" />
                 <DxEditing
                     :allow-updating="true"
@@ -81,7 +79,11 @@
                         <DxItem :visible="false" data-field="info" />
                     </DxForm>
                 </DxEditing>
-
+                <DxPaging :page-size="10" />
+                <DxPager
+                    :show-page-size-selector="true"
+                    :allowed-page-sizes="[10, 25, 50, 100]"
+                />
                 <DxColumn
                     :width="125"
                     data-field="student_id"
@@ -129,6 +131,7 @@ import {
     DxDataGrid,
     DxColumn,
     DxPaging,
+    DxPager,
     DxSearchPanel,
     DxEditing,
     DxPopup,
@@ -153,6 +156,7 @@ export default {
         DxDataGrid,
         DxColumn,
         DxPaging,
+        DxPager,
         DxSearchPanel,
         DxEditing,
         DxPopup,
@@ -211,7 +215,6 @@ export default {
                         });
                 },
                 insert: (values) => {
-                    console.log(values);
                     const payload = {
                         student_id: values.student_id,
                         description: values.description,

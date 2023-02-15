@@ -20,15 +20,15 @@ class CustomerController extends Controller
 
         $validator = Validator::make($request->all(), [
             'number' => 'required',
-            'name' => 'required',
-            'contact' => 'required',
+            'name' => 'required|string',
+            'contact' => 'required|string',
             'organisation_number' => 'required',
             'email' => 'required|email|unique:customers',
-            'www' => 'required',
-            'phone' => 'required',
+            'www' => 'required|url',
+            'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
             'address' => 'required',
             'zip' => 'required',
-            'city' => 'required',
+            'city' => 'required|string',
             'country' => 'required',
         ]);
 
@@ -66,8 +66,8 @@ class CustomerController extends Controller
             'name' => 'required',
             'contact' => 'required',
             'organisation_number' => 'required',
-            'email' => 'required',
-            'www' => 'required',
+            'email' => 'required|email',
+            'www' => 'required|url',
             'phone' => 'required',
             'address' => 'required',
             'zip' => 'required',
