@@ -91,7 +91,7 @@ class CertificateController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function generatePdf(Request $request){
-        return response()->json(CertificateService::generatePdf($request));
+        return CertificateService::generatePdf($request);
     }
 
 }

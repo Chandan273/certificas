@@ -140,7 +140,7 @@ export default {
             axios
                 .post("/api/login", this.loginForm)
                 .then(({ data }) => {
-                    if (data.status == false && data.error) {
+                    if (data.statusCode == 401) {
                         this.password_error = data.error;
                         return false;
                     }

@@ -323,7 +323,8 @@ export default {
         downloadPdf(params) {
             let student_id = params.row.data.student_id;
             let link = document.createElement("a");
-            link.href = `http://127.0.0.1:8000/api/generate-pdf?student_id=${student_id}`;
+            let url = window.location.origin;
+            link.href = `${url}/api/generate-pdf?student_id=${student_id}`;
             link.click();
         },
     },

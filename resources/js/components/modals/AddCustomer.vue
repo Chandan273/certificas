@@ -3,7 +3,8 @@
         <v-card-title
             class="d-flex justify-space-between align-center px-6 pt-4 pb-2"
         >
-            <h3>Add new customer</h3>
+            <h3 v-if="customer.id">Update Customer</h3>
+            <h3 v-else>Add New Customer</h3>
             <v-snackbar v-model="snackbar" :color="color" top left>
                 {{ message }}
             </v-snackbar>

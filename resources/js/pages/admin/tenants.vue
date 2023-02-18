@@ -46,8 +46,15 @@
                             type: 'required',
                             message: 'Paid Untill is Required',
                         },
+                        {
+                            type: 'custom',
+                            validationCallback: paid_untill,
+                            message:
+                                'Paid Untill must be today or a future date',
+                        },
                     ]"
                 />
+
                 <DxSearchPanel :visible="true" />
                 <DxColumn data-field="Action" type="buttons">
                     <DxButton name="edit" />
@@ -307,6 +314,14 @@ export default {
                         });
                 },
             });
+        },
+    },
+    methods: {
+        paid_untill(options) {
+            const value = options.value;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return value >= today;
         },
     },
     mounted() {

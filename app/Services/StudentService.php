@@ -61,7 +61,7 @@ class StudentService
                 }
             }
 
-            $students = $students->get();
+            $students = $students->whereNull('deleted_at')->get();
 
             if ($students) {
 
@@ -89,31 +89,27 @@ class StudentService
     public static function store(Request $request)
     {
         try {
-            $course = Course::where('tenant_id', auth()->user()->id)->first();
+            $student = Student::withTrashed()
+                ->where('course_id', $request->course_id)
+                ->where('email', $request->email)
+                ->where('tenant_id', auth()->user()->id)
+                ->first();
 
-            if(!empty($request->course_id)){
-                $course_id = $request->course_id;
-            }else{
-                $course_id = null;
-            }
+            if ($student) {
+                $student->fill($request->all())->save();
 
-            if($course){
-                $student = Student::create([
+                $response = ['success' => true, 'message' => "Student updated successfully!", 'statusCode' => 200];
+            } else {
+                $student = Student::create(array_merge($request->all(), [
                     'tenant_id' => auth()->user()->id,
-                    'course_id' => $course_id,
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'birth_date' => date('Y-m-d H:i:s', strtotime($request->birth_date)),
-                    'birth_place' => $request->birth_place,
-                    'info' => null,
-                ]);
-            }
+                ]));
 
-            $response = ['success' => true, 'message' => 'Student created succesfully!', 'statusCode' => 200 ];
+                $response = ['success' => true, 'message' => "Student created successfully!", 'statusCode' => 200];
+            }
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500 ];
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
 
         return $response;
@@ -178,13 +174,12 @@ class StudentService
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */   
-    public static function importCsv(Request $request)
+    public static function importCSV(Request $request)
     {
-
         $file = $request->file('file');
 
         // File Details
-        $filename = time().".".$file->getClientOriginalName();
+        $filename = time() . "." . $file->getClientOriginalName();
         $extension = $file->getClientOriginalExtension();
         $tempPath = $file->getRealPath();
         $fileSize = $file->getSize();
@@ -198,10 +193,8 @@ class StudentService
 
         // Check file extension
         if (in_array(strtolower($extension), $valid_extension)) {
-
             // Check file size
             if ($fileSize <= $maxFileSize) {
-
                 // Store the file in the public disk
                 Storage::disk('public')->put($filename, file_get_contents($file));
 
@@ -224,26 +217,45 @@ class StudentService
                         } else {
                             $response = ['success' => false, 'message' => "Please upload a valid csv file", 'statusCode' => 401];
                         }
-
                     }
-                    $importData_arr[] = [
-                        'tenant_id' => auth()->user()->id,
-                        'course_id' => null, //$filedata[0],
-                        'name' => $filedata[1],
-                        'email' => $filedata[2],
-                        'birth_date' => date('Y-m-d', strtotime($filedata[3])),
-                        'birth_place' => $filedata[4],
-                        'created_at' => date('Y-m-d H:i:s'),
-                        'updated_at' => date('Y-m-d H:i:s'),
-                    ];
+
+                    $student = Student::withTrashed()->where('email', $filedata[2])->first();
+
+                    if ($student) {
+                        // If the student is soft deleted, restore it
+                        if ($student->trashed()) {
+                            $student->restore();
+                        }
+
+                        // Update the student data
+                        $student->course_id = $filedata[0];
+                        $student->name = $filedata[1];
+                        $student->birth_date = date('Y-m-d', strtotime($filedata[3]));
+                        $student->birth_place = $filedata[4];
+                        $student->save();
+                    } else {
+                        $importData_arr[] = [
+                            'tenant_id' => auth()->user()->id,
+                            'course_id' => $filedata[0],
+                            'name' => $filedata[1],
+                            'email' => $filedata[2],
+                            'birth_date' => date('Y-m-d', strtotime($filedata[3])),
+                            'birth_place' => $filedata[4],
+                            'created_at' => date('Y-m-d H:i:s'),
+                            'updated_at' => date('Y-m-d H:i:s'),
+                        ];
+                    }
+
                     $i++;
                 }
-                fclose($file);
 
+                fclose($file);
                 unlink($filepath);
 
                 try {
-                    Student::upsert($importData_arr, ['name', 'email']);
+                    if (!empty($importData_arr)) {
+                        Student::upsert($importData_arr, ['email']);
+                    }
 
                     $response = ['success' => true, 'message' => 'Student Data Imported successfully!', 'statusCode' => 200];
                 } catch (Exception $e) {
@@ -277,7 +289,7 @@ class StudentService
                     $courses = Course::where(
                         'tenant_id',
                         $tenant->id
-                    )->get();
+                    )->whereNull('deleted_at')->get();
                 }
 
                 $response = ['success' => true, 'courses' => $courses, 'message' => 'all courses listing', 'statusCode' => 200];
