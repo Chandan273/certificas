@@ -15,11 +15,13 @@
             <v-dialog v-model="certificateDialog" persistent max-width="700px">
                 <AddCertificate
                     @close="closeModal"
+                    @refreshGrid="refreshGrid"
                     :certificateData="certificateData"
                     :students="students"
                 ></AddCertificate>
             </v-dialog>
             <DxDataGrid
+                :ref="dataGridRefKey"
                 class="tenants-table"
                 :data-source="dataSource"
                 :show-borders="true"
@@ -125,6 +127,8 @@
     </AdminLayout>
 </template>
 <script>
+const dataGridRefKey = 'my-data-grid';
+
 import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 import {
@@ -172,6 +176,7 @@ export default {
             certificateDialog: false,
             students: {},
             certificateData: {},
+            dataGridRefKey,
             breadcrumbsItems: [
                 {
                     text: "Admin",
@@ -305,10 +310,16 @@ export default {
                 },
             });
         },
+        dataGrid: function() {
+            return this.$refs[dataGridRefKey].instance;
+        }
     },
     methods: {
         closeModal() {
             this.certificateDialog = false;
+        },
+        refreshGrid(){
+            this.dataGrid.refresh();
         },
         async getStudents() {
             try {

@@ -127,6 +127,7 @@ export default {
             description_error: "",
             valid_from_error: "",
             valid_untill_error: "",
+            refreshGrid: "refreshGrid",
         };
     },
     methods: {
@@ -158,16 +159,16 @@ export default {
                             payload
                         );
 
+                        this.$emit("refreshGrid", this.refreshGrid);
                         this.closeModal();
-                        this.$router.go(this.$router.currentRoute);
                     } else {
                         let result = await axios.post(
                             "/api/create-certificate",
                             payload
                         );
 
+                        this.dataGrid.refresh();
                         this.closeModal();
-                        this.$router.go(this.$router.currentRoute);
                     }
                 } catch (error) {
                     if (
