@@ -51,26 +51,18 @@ class UserService
                     $message->subject('Reset Password');
                 });
 
-                $response = [
-                    'success' => true,
-                    'message' => 'Reset link has been sent to registered mail',
-                ];
-                $statusCode = 200;
+                $response = ['success' => true, 'message' => 'Reset link has been sent to registered mail', 'statusCode' => 200];
             } else {
-                $response = [
-                    'success' => false,
-                    'message' => 'No account found with this email',
-                ];
-                $statusCode = 401;
+
+                $response = ['success' => false, 'message' => 'No account found with this email', 'statusCode' => 401];
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
-            $response = ['success' => false, 'message' => $e];
-            $statusCode = 400;
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
 
-        return response()->json($response, $statusCode);
+        return $response;
     }
 
     /**

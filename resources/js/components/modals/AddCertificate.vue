@@ -3,7 +3,8 @@
         <v-card-title
             class="d-flex justify-space-between align-center px-6 pt-4 pb-2"
         >
-            <h3>Add certificate</h3>
+            <h3 v-if="certificateData.id">Update Certificate</h3>
+            <h3 v-else>Add New Certificate</h3>
             <v-icon icon="mdi-close" @click="closeModal"></v-icon>
         </v-card-title>
         <v-card-text class="px-3 py-0">
@@ -126,6 +127,7 @@ export default {
             description_error: "",
             valid_from_error: "",
             valid_untill_error: "",
+            refreshGrid: "refreshGrid",
         };
     },
     methods: {
@@ -137,66 +139,88 @@ export default {
             this.description_error = "";
             this.valid_from_error = "";
             this.valid_untill_error = "";
+            this.validateDates();
 
-            try {
-                let payload = {
-                    student_id: this.certificateData.student_id,
-                    description: this.certificateData.description,
-                    valid_from: this.certificateData.valid_from,
-                    valid_untill: this.certificateData.valid_untill,
-                };
+            if (!this.valid_from_error && !this.valid_untill_error) {
+                try {
+                    let payload = {
+                        student_id: this.certificateData.student_id,
+                        description: this.certificateData.description,
+                        valid_from: this.certificateData.valid_from,
+                        valid_untill: this.certificateData.valid_untill,
+                    };
 
-                if (type == "update") {
-                    payload.id = this.certificateData.id;
-                    payload.course_id = this.certificateData.course_id;
+                    if (type == "update") {
+                        payload.id = this.certificateData.id;
+                        payload.course_id = this.certificateData.course_id;
 
-                    let result = await axios.post(
-                        "/api/update-certificate",
-                        payload
-                    );
+                        let result = await axios.post(
+                            "/api/update-certificate",
+                            payload
+                        );
 
-                    this.closeModal();
-                    this.$router.go(this.$router.currentRoute);
-                } else {
-                    let result = await axios.post(
-                        "/api/create-certificate",
-                        payload
-                    );
+                        this.$emit("refreshGrid", this.refreshGrid);
+                        this.closeModal();
+                    } else {
+                        let result = await axios.post(
+                            "/api/create-certificate",
+                            payload
+                        );
 
-                    this.closeModal();
-                    this.$router.go(this.$router.currentRoute);
+                        this.dataGrid.refresh();
+                        this.closeModal();
+                    }
+                } catch (error) {
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.student_id
+                    ) {
+                        this.student_id_error =
+                            "The student field is required.";
+                    }
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.description
+                    ) {
+                        this.description_error =
+                            error.response.data.error.description[0];
+                    }
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.valid_from
+                    ) {
+                        this.valid_from_error =
+                            error.response.data.error.valid_from[0];
+                    }
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.valid_untill
+                    ) {
+                        this.valid_untill_error =
+                            error.response.data.error.valid_untill[0];
+                    }
                 }
-            } catch (error) {
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.student_id
-                ) {
-                    this.student_id_error = "The student field is required.";
-                }
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.description
-                ) {
-                    this.description_error =
-                        error.response.data.error.description[0];
-                }
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.valid_from
-                ) {
+            }
+        },
+        validateDates() {
+            if (
+                this.certificateData.valid_from &&
+                this.certificateData.valid_untill
+            ) {
+                const date_from = new Date(this.certificateData.valid_from);
+                const date_untill = new Date(this.certificateData.valid_untill);
+                if (date_from > date_untill) {
                     this.valid_from_error =
-                        error.response.data.error.valid_from[0];
-                }
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.valid_untill
-                ) {
+                        "Start date cannot be after end date.";
                     this.valid_untill_error =
-                        error.response.data.error.valid_untill[0];
+                        "End date cannot be before start date.";
+                } else {
+                    this.valid_from_error = "";
+                    this.valid_untill_error = "";
                 }
             }
         },

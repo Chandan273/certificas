@@ -27,8 +27,6 @@ Route::middleware("auth:api")->group(function(){
     Route::get("userinfo", [App\Http\Controllers\Api\AuthController::class, 'userInfo']);
     Route::post("update-profile", [App\Http\Controllers\Api\AuthController::class, 'updateProfile']);
     Route::post("profile-password", [App\Http\Controllers\Api\AuthController::class, 'profilePassword']);
-    Route::post("createrole", [App\Http\Controllers\Api\RoleController::class, 'store']);
-    Route::get("allroles", [App\Http\Controllers\Api\RoleController::class, 'show']);
     Route::get("all-tenants", [App\Http\Controllers\Api\UserController::class, 'index']);
     Route::post("create-tenant", [App\Http\Controllers\Api\UserController::class, 'store']);
     Route::post('update-tenant', [App\Http\Controllers\Api\UserController::class, 'update']);

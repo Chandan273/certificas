@@ -3,19 +3,20 @@
         <v-card-title
             class="d-flex justify-space-between align-center px-6 pt-4 pb-2"
         >
-            <h3>Add new student</h3>
+            <h3 v-if="studentData.id">Update Student</h3>
+            <h3 v-else>Add New Student</h3>
             <v-icon icon="mdi-close" @click="closeModal"></v-icon>
         </v-card-title>
         <v-card-text class="px-3 py-0">
             <v-container>
                 <v-row>
                     <v-col cols="12" sm="6" md="6">
-                        <label>Courses</label>
+                        <label>Courses <span class="required">*</span></label>
 
                         <v-select
                             v-model="studentData.course_id"
                             :items="Courses"
-                            placeholder="Course code"
+                            placeholder="Course Name"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
@@ -49,7 +50,7 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="6">
-                        <label>Email</label>
+                        <label>Email <span class="required">*</span></label>
                         <v-text-field
                             v-model="studentData.email"
                             placeholder="Student email"
@@ -67,7 +68,7 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="6">
-                        <label>DOB</label>
+                        <label>DOB <span class="required">*</span></label>
                         <v-text-field
                             v-model="studentData.birth_date"
                             placeholder="Date of birth"
@@ -76,8 +77,6 @@
                             class="mt-2"
                             type="date"
                             required
-                            :error-messages="dobErrorMessage"
-                            :rules="[dobRule]"
                         ></v-text-field>
                         <div class="text-start">
                             <span
@@ -88,7 +87,9 @@
                         </div>
                     </v-col>
                     <v-col cols="6" sm="6">
-                        <label>Birth place</label>
+                        <label
+                            >Birth place <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="studentData.birth_place"
                             placeholder="Birth place"
@@ -153,100 +154,89 @@ export default {
             this.email_error = "";
             this.birth_date_error = "";
             this.birth_place_error = "";
+            this.dobErrorMessage();
 
-            try {
-                let payload = {
-                    course_id: this.studentData.course_id,
-                    name: this.studentData.name,
-                    email: this.studentData.email,
-                    birth_date: this.studentData.birth_date,
-                    birth_place: this.studentData.birth_place,
-                };
+            if (!this.birth_date_error) {
+                try {
+                    let payload = {
+                        course_id: this.studentData.course_id,
+                        name: this.studentData.name,
+                        email: this.studentData.email,
+                        birth_date: this.studentData.birth_date,
+                        birth_place: this.studentData.birth_place,
+                    };
 
-                if (type == "update") {
-                    payload.id = this.studentData.id;
+                    if (type == "update") {
+                        payload.id = this.studentData.id;
 
-                    let result = await axios.post(
-                        "/api/update-student",
-                        payload
-                    );
+                        let result = await axios.post(
+                            "/api/update-student",
+                            payload
+                        );
 
-                    this.closeModal();
-                    this.$router.go(this.$router.currentRoute);
-                } else {
-                    let result = await axios.post(
-                        "/api/create-student",
-                        payload
-                    );
+                        this.closeModal();
+                        this.$router.go(this.$router.currentRoute);
+                    } else {
+                        let result = await axios.post(
+                            "/api/create-student",
+                            payload
+                        );
 
-                    this.closeModal();
-                    this.$router.go(this.$router.currentRoute);
-                }
-            } catch (error) {
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.course_id
-                ) {
-                    this.course_id_error = "The Course field is required.";
-                }
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.name
-                ) {
-                    this.name_error = error.response.data.error.name[0];
-                }
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.email
-                ) {
-                    this.email_error = error.response.data.error.email[0];
-                }
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.birth_date
-                ) {
-                    this.birth_date_error =
-                        error.response.data.error.birth_date[0];
-                }
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.birth_place
-                ) {
-                    this.birth_place_error =
-                        error.response.data.error.birth_place[0];
-                }
-            }
-        },
-    },
-    computed: {
-        dobErrorMessage() {
-            if (this.studentData.birth_date) {
-                const dob = new Date(this.studentData.birth_date);
-                const ageInYears = Math.floor((new Date() - dob) / 31557600000);
-                if (ageInYears < 15) {
-                    return "You must be at least 15 years old.";
-                }
-            }
-            return "";
-        },
-        dobRule() {
-            return (value) => {
-                if (value) {
-                    const dob = new Date(value);
-                    const ageInYears = Math.floor(
-                        (new Date() - dob) / 31557600000
-                    );
-                    if (ageInYears < 15) {
-                        return "You must be at least 15 years old.";
+                        this.closeModal();
+                        this.$router.go(this.$router.currentRoute);
+                    }
+                } catch (error) {
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.course_id
+                    ) {
+                        this.course_id_error = "The Course field is required.";
+                    }
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.name
+                    ) {
+                        this.name_error = error.response.data.error.name[0];
+                    }
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.email
+                    ) {
+                        this.email_error = error.response.data.error.email[0];
+                    }
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.birth_date
+                    ) {
+                        this.birth_date_error =
+                            error.response.data.error.birth_date[0];
+                    }
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.birth_place
+                    ) {
+                        this.birth_place_error =
+                            error.response.data.error.birth_place[0];
                     }
                 }
-                return true;
-            };
+            }
+        },
+        dobErrorMessage() {
+            if (this.studentData.birth_date) {
+                let dob = new Date(this.studentData.birth_date);
+                let ageInYears = Math.floor((new Date() - dob) / 31557600000);
+                if (ageInYears < 15) {
+                    this.birth_date_error =
+                        "You must be at least 15 years old.";
+                } else {
+                    this.birth_date_error = "";
+                }
+            }
         },
     },
 };

@@ -18,7 +18,11 @@ class StudentController extends Controller
     public function store(Request $request){
 
         $validator = Validator::make($request->all(), [
+            'course_id' => 'required',
             'name' => 'required',
+            'email' => 'required|email',
+            'birth_date' => 'required',
+            'birth_place' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -85,7 +89,7 @@ class StudentController extends Controller
      * @return \Illuminate\Http\Response
      */    
     public function importStudentCsv(Request $request){
-        return StudentService::importCsv($request);
+        return StudentService::importCSV($request);
     }
 
     /**

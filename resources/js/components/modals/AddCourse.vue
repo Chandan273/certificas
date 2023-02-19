@@ -1,12 +1,23 @@
 <template>
+    <v-snackbar
+        v-model="snackbar"
+        :value="true"
+        absolute
+        right
+        top
+        :color="color"
+        timeout="3000"
+    >
+        {{ message }}
+    </v-snackbar>
     <v-card class="course-modal">
         <v-card-title
             class="d-flex justify-space-between align-center px-6 pt-4 pb-2"
         >
-            <h3>Add new course</h3>
+            <h3 v-if="courseData.id">Update Course</h3>
+            <h3 v-else>Add New Course</h3>
             <v-icon icon="mdi-close" @click="closeModal"></v-icon>
         </v-card-title>
-
         <v-card-text class="px-3 py-0">
             <v-container>
                 <v-row>
@@ -139,6 +150,9 @@ export default {
             date_from_error: "",
             date_untill_error: "",
             description_error: "",
+            snackbar: false,
+            message: "",
+            color: "success",
         };
     },
     methods: {
@@ -151,70 +165,98 @@ export default {
             this.date_from_error = "";
             this.date_untill_error = "";
             this.description_error = "";
+            this.validateDates();
 
-            try {
-                let payload = {
-                    code: this.courseData.code,
-                    name: this.courseData.name,
-                    date_from: this.courseData.date_from,
-                    date_untill: this.courseData.date_untill,
-                    description: this.courseData.description,
-                };
-                if (type == "update") {
-                    payload.id = this.courseData.id;
+            if (!this.date_from_error && !this.date_until_error) {
+                try {
+                    let payload = {
+                        code: this.courseData.code,
+                        name: this.courseData.name,
+                        date_from: this.courseData.date_from,
+                        date_untill: this.courseData.date_untill,
+                        description: this.courseData.description,
+                    };
+                    if (type == "update") {
+                        payload.id = this.courseData.id;
 
-                    let result = await axios.post(
-                        "/api/update-course",
-                        payload
-                    );
-                    this.closeModal();
-                    this.$router.go(this.$router.currentRoute);
-                } else {
-                    let result = await axios.post(
-                        "/api/create-course",
-                        payload
-                    );
-                    this.closeModal();
-                    this.$router.go(this.$router.currentRoute);
+                        let result = await axios.post(
+                            "/api/update-course",
+                            payload
+                        );
+
+                        if (result.data.statusCode == "200") {
+                            this.snackbar = true;
+                            this.message = result.data.message;
+                            this.closeModal();
+                            this.$router.go(this.$router.currentRoute);
+                        }
+                    } else {
+                        let result = await axios.post(
+                            "/api/create-course",
+                            payload
+                        );
+
+                        if (result.data.statusCode == "200") {
+                            this.snackbar = true;
+                            this.message = result.data.message;
+                            this.closeModal();
+                            this.$router.go(this.$router.currentRoute);
+                        }
+                    }
+                } catch (error) {
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.code
+                    ) {
+                        this.code_error = error.response.data.error.code[0];
+                    }
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.name
+                    ) {
+                        this.name_error = error.response.data.error.name[0];
+                    }
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.date_from
+                    ) {
+                        this.date_from_error =
+                            error.response.data.error.date_from[0];
+                    }
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.date_untill
+                    ) {
+                        this.date_untill_error =
+                            error.response.data.error.date_untill[0];
+                    }
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.description
+                    ) {
+                        this.description_error =
+                            error.response.data.error.description[0];
+                    }
                 }
-            } catch (error) {
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.code
-                ) {
-                    this.code_error = error.response.data.error.code[0];
-                }
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.name
-                ) {
-                    this.name_error = error.response.data.error.name[0];
-                }
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.date_from
-                ) {
+            }
+        },
+        validateDates() {
+            if (this.courseData.date_from && this.courseData.date_untill) {
+                const date_from = new Date(this.courseData.date_from);
+                const date_untill = new Date(this.courseData.date_untill);
+                if (date_from > date_untill) {
                     this.date_from_error =
-                        error.response.data.error.date_from[0];
-                }
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.date_untill
-                ) {
+                        "Start date cannot be after end date.";
                     this.date_untill_error =
-                        error.response.data.error.date_untill[0];
-                }
-                if (
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.description
-                ) {
-                    this.description_error =
-                        error.response.data.error.description[0];
+                        "End date cannot be before start date.";
+                } else {
+                    this.date_from_error = "";
+                    this.date_untill_error = "";
                 }
             }
         },
