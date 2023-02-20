@@ -12,6 +12,16 @@ class Certificate extends Model
 {
     use HasFactory, HasApiTokens, HasRoles, SoftDeletes;
 
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
+
     protected $fillable = [
         'student_id',
         'course_id',

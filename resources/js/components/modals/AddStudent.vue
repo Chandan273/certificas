@@ -142,6 +142,9 @@ export default {
             email_error: "",
             birth_date_error: "",
             birth_place_error: "",
+            message: "",
+            refreshGrid: true,
+            color: "success",
         };
     },
     methods: {
@@ -174,16 +177,35 @@ export default {
                             payload
                         );
 
-                        this.closeModal();
-                        this.$router.go(this.$router.currentRoute);
+                        if(result.data.statusCode == 200){
+                            this.message = result.data.message;
+                            this.$emit('data-passed', {
+                                snackbar: true,
+                                message: this.message,
+                                color: this.color,
+                                refreshGrid: this.refreshGrid,
+                            });
+                            
+                            this.closeModal();
+                        }
+
                     } else {
                         let result = await axios.post(
                             "/api/create-student",
                             payload
                         );
 
-                        this.closeModal();
-                        this.$router.go(this.$router.currentRoute);
+                        if(result.data.statusCode == 200){
+                            this.message = result.data.message;
+                            this.$emit('data-passed', {
+                                snackbar: true,
+                                message: this.message,
+                                color: this.color,
+                                refreshGrid: this.refreshGrid,
+                            });
+                            
+                            this.closeModal();
+                        }
                     }
                 } catch (error) {
                     if (

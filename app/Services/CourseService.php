@@ -2,16 +2,18 @@
 
 namespace App\Services;
 
-use App\Models\Customer;
+use Dompdf\Dompdf;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Tenant;
 use App\Models\Course;
-use App\Models\Certificate_layout;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
+use App\Models\Student;
+use App\Models\Customer;
+use App\Models\Certificate;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
-use Dompdf\Dompdf;
+use App\Models\Certificate_layout;
 
 class CourseService
 {
@@ -153,6 +155,9 @@ class CourseService
         try {
             $course = Course::where('id', $request->id)->first();
             $course->delete();
+
+            // Student::where('course_id', $request->id)->delete();
+            // Certificate::where('course_id', $request->id)->delete();
 
             $response = ['success' => true, 'message' => 'Course has been deleted successfully!', 'statusCode' => 200 ];
         } catch (Exception $e) {

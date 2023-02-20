@@ -33,15 +33,12 @@ class CertificateService
             ) {
                 $certificates = Certificate::all();
             } else {
-                $tenant = User::where('id', auth()->user()->id)->first();
-
-                if ($tenant) {
-                    $certificate_layout = Certificate_layout::where('tenant_id',$tenant->id)->first();
-                    $certificates = Certificate::where('certificate_layout_id',$certificate_layout->id);
-                } else {
-                
-                    $response = ['success' => false, 'message' => 'No data found', 'stausCode' => 404];
-                }
+                //$certificates = Certificate::with('Student')->where('certificate_layout_id',auth()->user()->id);
+                $certificates = Certificate::with('Student')
+                ->where('certificate_layout_id', auth()->user()->id)
+                ->whereHas('course', function ($query) {
+                    $query->whereNull('deleted_at');
+                });
             }
 
             if ($request->has('requireTotalCount')) {
@@ -62,7 +59,7 @@ class CertificateService
                 }
             }
 
-            $certificates = $certificates->get();
+            $certificates = $certificates->whereNull('deleted_at')->get();
 
             if ($certificates) {
 

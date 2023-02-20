@@ -1,5 +1,17 @@
 <template>
     <AdminLayout>
+        <v-snackbar
+            v-model="snackbar"
+            :value="true"
+            absolute
+            right
+            top
+            location="top right"
+            :color="color"
+            timeout="3000"
+        >
+        <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
+        </v-snackbar>
         <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
         <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 course-card widget-card">
             <v-btn
@@ -15,7 +27,7 @@
             <v-dialog v-model="certificateDialog" persistent max-width="700px">
                 <AddCertificate
                     @close="closeModal"
-                    @refreshGrid="refreshGrid"
+                    @data-passed="refreshGrid"
                     :certificateData="certificateData"
                     :students="students"
                 ></AddCertificate>
@@ -25,7 +37,6 @@
                 class="tenants-table"
                 :data-source="dataSource"
                 :show-borders="true"
-                key-expr="id"
             >
                 <DxSearchPanel :visible="true" />
                 <DxEditing
@@ -41,62 +52,13 @@
                         :height="375"
                         title="Certificate Info"
                     />
-                    <DxForm>
-                        <DxItem :col-count="2" :col-span="2" item-type="group">
-                            <DxItem data-field="student_id" />
-                        </DxItem>
-                        <DxItem :col-count="2" :col-span="2" item-type="group">
-                            <DxItem
-                                :col-span="2"
-                                :editor-options="{ height: 100 }"
-                                data-field="description"
-                                editor-type="dxTextArea"
-                                :validation-rules="[
-                                    {
-                                        type: 'required',
-                                        message: 'Description is required',
-                                    },
-                                ]"
-                            />
-                            <DxItem
-                                data-field="valid_from"
-                                :validation-rules="[
-                                    {
-                                        type: 'required',
-                                        message: 'Valid From Date is required',
-                                    },
-                                ]"
-                            />
-                            <DxItem
-                                data-field="valid_untill"
-                                :validation-rules="[
-                                    {
-                                        type: 'required',
-                                        message:
-                                            'Valid Untill Date is required',
-                                    },
-                                ]"
-                            />
-                        </DxItem>
-                        <DxItem :visible="false" data-field="info" />
-                    </DxForm>
                 </DxEditing>
                 <DxPaging :page-size="10" />
                 <DxPager
                     :show-page-size-selector="true"
                     :allowed-page-sizes="[10, 25, 50, 100]"
                 />
-                <DxColumn
-                    :width="125"
-                    data-field="student_id"
-                    caption="Student"
-                >
-                    <DxLookup
-                        :data-source="students"
-                        value-expr="id"
-                        display-expr="name"
-                    />
-                </DxColumn>
+                <DxColumn data-field="student.name" />
                 <DxColumn data-field="description" />
                 <DxColumn data-field="valid_from" data-type="datetime" />
                 <DxColumn data-field="valid_untill" data-type="datetime" />
@@ -127,7 +89,7 @@
     </AdminLayout>
 </template>
 <script>
-const dataGridRefKey = 'my-data-grid';
+const dataGridRefKey = "my-data-grid";
 
 import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
@@ -177,6 +139,9 @@ export default {
             students: {},
             certificateData: {},
             dataGridRefKey,
+            snackbar: false,
+            message: "",
+            color: "success",
             breadcrumbsItems: [
                 {
                     text: "Admin",
@@ -310,15 +275,18 @@ export default {
                 },
             });
         },
-        dataGrid: function() {
+        dataGrid: function () {
             return this.$refs[dataGridRefKey].instance;
-        }
+        },
     },
     methods: {
         closeModal() {
             this.certificateDialog = false;
         },
-        refreshGrid(){
+        refreshGrid(data) {
+            this.snackbar = data.snackbar;
+            this.color = data.color;
+            this.message = data.message;
             this.dataGrid.refresh();
         },
         async getStudents() {

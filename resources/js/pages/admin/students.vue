@@ -6,10 +6,11 @@
             absolute
             right
             top
+            location="top right"
             :color="color"
             timeout="3000"
         >
-            {{ message }}
+        <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
         </v-snackbar>
         <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
         <div
@@ -28,6 +29,7 @@
             <v-dialog v-model="studentDialog" persistent max-width="700px">
                 <AddStudent
                     @close="closeModal"
+                    @data-passed="refreshGrid"
                     :studentData="studentData"
                     :Courses="Courses"
                 ></AddStudent>
@@ -36,9 +38,6 @@
                 <template>
                     <v-row justify="center">
                         <v-dialog v-model="dialog" width="500">
-                            <div v-if="successMessage" class="success-message">
-                                {{ successMessage }}
-                            </div>
                             <v-card class="course-modal">
                                 <v-card-title
                                     class="d-flex align-center justify-space-between"
@@ -86,11 +85,11 @@
             </div>
 
             <DxDataGrid
+                :ref="dataGridRefKey"
                 class="tenants-table"
                 :data-source="dataSource"
                 :remote-operations="true"
                 :show-borders="true"
-                key-expr="id"
                 @exporting="onExporting"
             >
                 <DxPaging :page-size="10" />
@@ -118,6 +117,7 @@
                     :width="100"
                     data-field="course_id"
                     caption="Courses ID"
+                    alignment="left"
                 >
                     <DxLookup
                         :data-source="Courses"
@@ -129,7 +129,7 @@
                 <DxColumn data-field="email" />
                 <DxColumn data-field="birth_date" data-type="date" />
                 <DxColumn data-field="birth_place" />
-                <DxColumn data-field="Action" type="buttons">
+                <DxColumn data-field="Action" type="buttons" alignment="left">
                     <DxButton
                         name="edit"
                         hint="Edit"
@@ -150,7 +150,7 @@
                 <template #importAction>
                     <v-btn
                         elevation="0"
-                        class="primary-btn ml-2"
+                        class="primary-btn ml-2 import-btn px-1"
                         @click="importCSV"
                         ><v-icon size="large"> mdi-import </v-icon>
                     </v-btn>
@@ -160,6 +160,8 @@
     </AdminLayout>
 </template>
 <script>
+const dataGridRefKey = "my-data-grid";
+
 import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 import {
@@ -180,6 +182,7 @@ import {
 } from "devextreme-vue/data-grid";
 import { Workbook } from "exceljs";
 import { saveAs } from "file-saver-es";
+import notify from "devextreme/ui/notify";
 import { exportDataGrid } from "devextreme/excel_exporter";
 import CustomStore from "devextreme/data/custom_store";
 import AddStudent from "../../components/modals/AddStudent.vue";
@@ -209,7 +212,6 @@ export default {
     },
     data() {
         return {
-            successMessage: "",
             dialog: false,
             studentDialog: false,
             file: null,
@@ -218,6 +220,7 @@ export default {
             color: "success",
             Courses: [],
             studentData: {},
+            dataGridRefKey,
             breadcrumbsItems: [
                 {
                     text: "Admin",
@@ -286,10 +289,19 @@ export default {
                 },
             });
         },
+        dataGrid: function () {
+            return this.$refs[dataGridRefKey].instance;
+        },
     },
     methods: {
         closeModal() {
             this.studentDialog = false;
+        },
+        refreshGrid(data) {
+            this.snackbar = data.snackbar;
+            this.color = data.color;
+            this.message = data.message;
+            this.dataGrid.refresh();
         },
         editStudent(params) {
             this.studentDialog = true;
@@ -330,8 +342,10 @@ export default {
             axios
                 .post("/api/upload-student-csv", formData)
                 .then(({ data }) => {
-                    this.$router.go(this.$router.currentRoute);
-                    this.successMessage = "CSV file updated successfully!";
+                    this.dataGrid.refresh();
+                    this.snackbar = true;
+                    this.color = "success";
+                    this.message = "CSV file records updated successfully!";
                 })
                 .catch((error) => {
                     // Handle any errors that occur during the upload process
@@ -356,6 +370,9 @@ export default {
                         "students.csv"
                     );
                 });
+                this.snackbar = true;
+                this.color = "success";
+                this.message = "CSV exported successfully!";
             });
             e.cancel = true;
         },
@@ -369,6 +386,11 @@ export default {
             link.setAttribute("href", encodedUri);
             link.setAttribute("download", "import.csv");
             link.click();
+            if(link){
+                this.snackbar = true;
+                this.color = "success";
+                this.message = "Sample CSV file downloaded successfully!";
+            }
         },
     },
     mounted() {
@@ -376,3 +398,8 @@ export default {
     },
 };
 </script>
+<style>
+.import-btn{
+    min-width:34px
+}
+</style>

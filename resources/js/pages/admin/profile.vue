@@ -8,10 +8,11 @@
                 absolute
                 right
                 top
+                location="top right"
                 :color="color"
                 timeout="3000"
             >
-                {{ message }}
+                <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
             </v-snackbar>
             <v-row>
                 <v-col cols="12" md="12">

@@ -56,7 +56,7 @@
                 />
 
                 <DxSearchPanel :visible="true" />
-                <DxColumn data-field="Action" type="buttons">
+                <DxColumn data-field="Action" type="buttons" alignment="left">
                     <DxButton name="edit" />
                     <DxButton name="delete" />
                 </DxColumn>

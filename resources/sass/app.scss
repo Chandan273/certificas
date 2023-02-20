@@ -58,6 +58,7 @@ html {
             font-family: "Poppins", "Open Sans", sans-serif;
             font-weight: 700;
         }
+
         .v-btn {
             letter-spacing: 0;
             text-transform: capitalize;
@@ -118,9 +119,10 @@ html {
                 &.students-table {
                     .v-btn {
                         &.add-btn {
-                            right: 300px;
+                            right: 270px;
                         }
                     }
+
                     .dx-datagrid-search-panel {
                         margin-left: 0px;
                     }
@@ -215,6 +217,7 @@ html {
 
     .v-navigation-drawer .v-list.bg-transparent.sidebar-logo {
         border-bottom: 1px solid #e0e3e8;
+        min-height: 64px;
     }
 
     .nav-items .v-list-item__title {
@@ -237,7 +240,9 @@ html {
         --v-input-control-height: 36px;
 
         .v-field__input {
-            padding: 12px 12px;
+            padding: 6px 12px;
+            -webkit-mask-image: none;
+            mask-image: none;
         }
 
         .input--error:not(.v-input--disabled) .v-input__details .v-messages {
@@ -457,6 +462,7 @@ html {
             font-size: 14px;
 
             &.text-red {
+
                 .v-icon {
                     border: 1px solid red;
                 }
@@ -624,6 +630,9 @@ header {
     }
 }
 
+span.invalid-feedback.text-red {
+    font-size: 14px;
+}
 
 
 @media only screen and (min-width: 1600px) {

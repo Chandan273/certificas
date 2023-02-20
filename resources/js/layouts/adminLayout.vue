@@ -38,7 +38,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar class="Certificas page-header" elevation="1">
+    <v-app-bar class="Certificas page-header" elevation="" >
       <v-app-bar-nav-icon
         variant="text"
         @click="rail = !rail"

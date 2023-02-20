@@ -1,5 +1,17 @@
 <template>
     <AdminLayout>
+        <v-snackbar
+            v-model="snackbar"
+            :value="true"
+            absolute
+            right
+            top
+            location="top right"
+            :color="color"
+            timeout="3000"
+        >
+        <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
+        </v-snackbar>
         <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
         <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 course-card widget-card">
             <v-btn
@@ -15,10 +27,12 @@
             <v-dialog v-model="courseDialog" persistent max-width="700px">
                 <AddCourses
                     @close="closeModal"
+                    @data-passed="refreshGrid"
                     :courseData="courseData"
                 ></AddCourses>
             </v-dialog>
             <DxDataGrid
+                :ref="dataGridRefKey"
                 class="tenants-table"
                 :data-source="dataSource"
                 :show-borders="true"
@@ -31,67 +45,7 @@
                     :allow-adding="true"
                     :allow-deleting="true"
                     :use-icons="true"
-                    mode="popup"
                 >
-                    <DxPopup
-                        :show-title="true"
-                        :width="700"
-                        :height="400"
-                        title="Course Info"
-                    />
-                    <DxForm>
-                        <DxItem :col-count="2" :col-span="2" item-type="group">
-                            <DxItem
-                                data-field="code"
-                                :validation-rules="[
-                                    {
-                                        type: 'required',
-                                        message: 'Course Code is required',
-                                    },
-                                ]"
-                            />
-                            <DxItem
-                                data-field="name"
-                                :validation-rules="[
-                                    {
-                                        type: 'required',
-                                        message: 'Course Name is required',
-                                    },
-                                ]"
-                            />
-                            <DxItem
-                                data-field="date_from"
-                                :validation-rules="[
-                                    {
-                                        type: 'required',
-                                        message: 'Start date is required',
-                                    },
-                                ]"
-                            />
-                            <DxItem
-                                data-field="date_untill"
-                                :validation-rules="[
-                                    {
-                                        type: 'required',
-                                        message: 'End date is required',
-                                    },
-                                ]"
-                            />
-                            <DxItem
-                                :col-span="2"
-                                :editor-options="{ height: 100 }"
-                                data-field="description"
-                                editor-type="dxTextArea"
-                                :validation-rules="[
-                                    {
-                                        type: 'required',
-                                        message:
-                                            'Course Description is required',
-                                    },
-                                ]"
-                            />
-                        </DxItem>
-                    </DxForm>
                 </DxEditing>
                 <DxPaging :page-size="10" />
                 <DxPager
@@ -103,7 +57,7 @@
                 <DxColumn data-field="description" />
                 <DxColumn data-field="date_from" data-type="date" />
                 <DxColumn data-field="date_untill" data-type="date" />
-                <DxColumn data-field="Action" type="buttons">
+                <DxColumn data-field="Action" type="buttons" alignment="left">
                     <DxButton
                         name="edit"
                         hint="Edit"
@@ -117,6 +71,8 @@
     </AdminLayout>
 </template>
 <script>
+const dataGridRefKey = "my-data-grid";
+
 import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 import {
@@ -163,6 +119,10 @@ export default {
         return {
             courseDialog: false,
             courseData: {},
+            dataGridRefKey,
+            snackbar: false,
+            message: "",
+            color: "success",
             breadcrumbsItems: [
                 {
                     text: "Admin",
@@ -180,6 +140,12 @@ export default {
     methods: {
         closeModal() {
             this.courseDialog = false;
+        },
+        refreshGrid(data) {
+            this.snackbar = data.snackbar;
+            this.color = data.color;
+            this.message = data.message;
+            this.dataGrid.refresh();
         },
         editCourse(params) {
             this.courseDialog = true;
@@ -302,6 +268,9 @@ export default {
                         });
                 },
             });
+        },
+        dataGrid: function () {
+            return this.$refs[dataGridRefKey].instance;
         },
     },
 };

@@ -1,15 +1,4 @@
 <template>
-    <v-snackbar
-        v-model="snackbar"
-        :value="true"
-        absolute
-        right
-        top
-        :color="color"
-        timeout="3000"
-    >
-        {{ message }}
-    </v-snackbar>
     <v-card class="course-modal">
         <v-card-title
             class="d-flex justify-space-between align-center px-6 pt-4 pb-2"
@@ -150,8 +139,8 @@ export default {
             date_from_error: "",
             date_untill_error: "",
             description_error: "",
-            snackbar: false,
             message: "",
+            refreshGrid: true,
             color: "success",
         };
     },
@@ -184,11 +173,16 @@ export default {
                             payload
                         );
 
-                        if (result.data.statusCode == "200") {
-                            this.snackbar = true;
+                        if(result.data.statusCode == 200){
                             this.message = result.data.message;
+                            this.$emit('data-passed', {
+                                snackbar: true,
+                                message: this.message,
+                                color: this.color,
+                                refreshGrid: this.refreshGrid,
+                            });
+                            
                             this.closeModal();
-                            this.$router.go(this.$router.currentRoute);
                         }
                     } else {
                         let result = await axios.post(
@@ -196,11 +190,16 @@ export default {
                             payload
                         );
 
-                        if (result.data.statusCode == "200") {
-                            this.snackbar = true;
+                        if(result.data.statusCode == 200){
                             this.message = result.data.message;
+                            this.$emit('data-passed', {
+                                snackbar: true,
+                                message: this.message,
+                                color: this.color,
+                                refreshGrid: this.refreshGrid,
+                            });
+                            
                             this.closeModal();
-                            this.$router.go(this.$router.currentRoute);
                         }
                     }
                 } catch (error) {
