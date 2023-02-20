@@ -2,16 +2,17 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use App\Models\User;
-use App\Models\Customer;
 use App\Models\Tenant;
 use App\Models\Course;
 use App\Models\Student;
-use App\Models\Certificate_layout;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
+use App\Models\Customer;
 use Illuminate\Support\Str;
+use App\Models\Certificate;
+use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use App\Models\Certificate_layout;
 use Illuminate\Support\Facades\Storage;
 
 class StudentService
@@ -32,16 +33,15 @@ class StudentService
             else {
                 $tenant = User::where('id', auth()->user()->id)->first();
                 if($tenant) {
-                    $students = Student::where(
-                        'tenant_id',
-                        $tenant->id
-                    );
+                    $students = Student::join('courses', 'students.course_id', '=', 'courses.id')
+                        ->where('courses.tenant_id', $tenant->id)
+                        ->whereNull('courses.deleted_at')
+                        ->select('students.*');
                 }
                 else {
                     $response = ['success' => false, 'message' => 'No data found', 'statusCode' => 404];
                 }
             }
-
 
             if ($request->has('requireTotalCount')) {
                 $totalCount = $students->count();
@@ -61,14 +61,12 @@ class StudentService
                 }
             }
 
-            $students = $students->whereNull('deleted_at')->get();
+            $students = $students->get();
 
             if ($students) {
-
                 $response = ['success' => true, 'data' => $students, 'totalCount' => $totalCount, 'statusCode' => 200];
             } else {
-
-                $response = ['success' => false,'data' => [], 'totalCount' => $totalCount, 'message' => 'No Data Found!!', 'statusCode' => 404];
+                $response = ['success' => false, 'data' => [], 'totalCount' => $totalCount, 'message' => 'No Data Found!!', 'statusCode' => 404];
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());
@@ -77,7 +75,6 @@ class StudentService
         }
 
         return $response;
-
     }
 
     /**
@@ -157,6 +154,8 @@ class StudentService
         try {
             $student = Student::where('id', $request->id)->first();
             $student->delete();
+
+            $certificate = Certificate::where('student_id', $request->id)->delete();
 
             $response = ['success' => true, 'message' => 'Student has been deleted successfully!', 'statusCode' => 200];
         } catch (Exception $e) {

@@ -5,10 +5,6 @@
         >
             <h3 v-if="customer.id">Update Customer</h3>
             <h3 v-else>Add New Customer</h3>
-            <v-snackbar v-model="snackbar" :color="color" top left>
-                {{ message }}
-            </v-snackbar>
-            <v-icon icon="mdi-close" @click="closeModal"></v-icon>
         </v-card-title>
         <v-card-text class="px-3 py-0">
             <v-container>
@@ -75,7 +71,7 @@
                         <label>Contact <span class="required">*</span></label>
                         <v-text-field
                             v-model="customer.contact"
-                            placeholder="Customer contact"
+                            placeholder="Contact person"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
@@ -261,6 +257,7 @@ export default {
     },
     data() {
         return {
+            refreshGrid: "refreshGrid",
             number_error: "",
             name_error: "",
             contact_error: "",
@@ -277,8 +274,8 @@ export default {
             },
             selectedCountry: countries[0],
             countries: countries,
-            snackbar: false,
             message: "",
+            refreshGrid: true,
             color: "success",
         };
     },
@@ -323,18 +320,34 @@ export default {
                         payload
                     );
 
-                    this.closeModal();
-
-                    this.snackbar = true;
-                    this.$router.go(this.$router.currentRoute);
-                    this.message = "Customers updated successfully!!";
+                    if(result.data.statusCode == 200){
+                        this.message = result.data.message;
+                        this.$emit('data-passed', {
+                            snackbar: true,
+                            message: this.message,
+                            color: this.color,
+                            refreshGrid: this.refreshGrid,
+                        });
+                        
+                        this.closeModal();
+                    }
                 } else {
                     let result = await axios.post(
                         "/api/create-customer",
                         payload
                     );
-                    this.closeModal();
-                    this.$router.go(this.$router.currentRoute);
+
+                    if(result.data.statusCode == 200){
+                        this.message = result.data.message;
+                        this.$emit('data-passed', {
+                            snackbar: true,
+                            message: this.message,
+                            color: this.color,
+                            refreshGrid: this.refreshGrid,
+                        });
+                        
+                        this.closeModal();
+                    }
                 }
             } catch (error) {
                 if (

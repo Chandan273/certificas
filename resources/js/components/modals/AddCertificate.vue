@@ -127,7 +127,9 @@ export default {
             description_error: "",
             valid_from_error: "",
             valid_untill_error: "",
-            refreshGrid: "refreshGrid",
+            message: "",
+            refreshGrid: true,
+            color: "success",
         };
     },
     methods: {
@@ -159,16 +161,34 @@ export default {
                             payload
                         );
 
-                        this.$emit("refreshGrid", this.refreshGrid);
-                        this.closeModal();
+                        if(result.data.statusCode == 200){
+                            this.message = result.data.message;
+                            this.$emit('data-passed', {
+                                snackbar: true,
+                                message: this.message,
+                                color: this.color,
+                                refreshGrid: this.refreshGrid,
+                            });
+                            
+                            this.closeModal();
+                        }
                     } else {
                         let result = await axios.post(
                             "/api/create-certificate",
                             payload
                         );
 
-                        this.dataGrid.refresh();
-                        this.closeModal();
+                        if(result.data.statusCode == 200){
+                            this.message = result.data.message;
+                            this.$emit('data-passed', {
+                                snackbar: true,
+                                message: this.message,
+                                color: this.color,
+                                refreshGrid: this.refreshGrid,
+                            });
+                            
+                            this.closeModal();
+                        }
                     }
                 } catch (error) {
                     if (

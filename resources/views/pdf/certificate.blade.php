@@ -1,19 +1,84 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Certificate</title>
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            border: 1px solid #ddd;
+            padding: 16px
+        }
+    </style>
 </head>
+
 <body>
-    <p>Student Name: {{ $name }}</p>
-    <p>Student Email: {{ $email }}</p>
-    <p>Student DOB: {{ $birth_date }}</p>
-    <p>Student Birth Place: {{ $birth_place }}</p>
-    <img src="{{ $qrCodePath }}" alt="QR Code">
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <table width="100%" cellspacing="2" cellpadding="2">
+        <tr style="vertical-align:top">
+            <td width="100%" colspan="2" rowspan="1">
+                <table width="100%">
+                    <td width="80%">
+                        <h2
+                            style="font-family: Arial, sans-serif, 'Open Sans';margin: 0px 0px 10px; line-height: 1.6rem;text-align: center;text-transform: uppercase;">
+                            Eagle Mountain School of Fine Arts</h2>
+                        <h3
+                            style="font-family: Arial, sans-serif, 'Open Sans';margin: 10px 0px; line-height: 1.6rem;text-align: center;">
+                            Academic Session - Aug 2023</h3>
+                    </td>
+                    <td width="20%" style="vertical-align:top;text-align: right;">
+                        <img src="{{ $qrCodePath }}" alt="QR Code" width="100px" />
+                    </td>
+                </table>
+            </td>
+        </tr>
+        <tr style="vertical-align:top;">
+            <td width="50%">
+                <table width="100%">
+                    <tr>
+                        <td>
+                            <p
+                                style="font-family: Arial, sans-serif, 'Open Sans';font-size: 0.875rem; margin: 0; line-height: 1.6rem;">
+                                <b>Student Name:</b>{{ $name }}
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p
+                                style="font-family: Arial, sans-serif, 'Open Sans';font-size: 0.875rem; margin: 0; line-height: 1.6rem;">
+                                <b>Student Email:</b> {{ $email }}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td width="50%">
+                <table width="100%">
+                    <tr>
+                        <td>
+                            <p
+                                style="font-family: Arial, sans-serif, 'Open Sans';font-size: 0.875rem; margin: 0; line-height: 1.6rem;">
+                                <b>Student DOB:</b> {{ $birth_date }}
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p
+                                style="font-family: Arial, sans-serif, 'Open Sans';font-size: 0.875rem; margin: 0; line-height: 1.6rem;">
+                                <b>Student Birth Place:</b> {{ $birth_place }}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
+
 </html>
