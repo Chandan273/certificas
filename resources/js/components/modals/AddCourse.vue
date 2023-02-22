@@ -3,18 +3,21 @@
         <v-card-title
             class="d-flex justify-space-between align-center px-6 pt-4 pb-2"
         >
-            <h3 v-if="courseData.id">Update Course</h3>
-            <h3 v-else>Add New Course</h3>
+            <h3 v-if="courseData.id">{{ $t("updateCourse") }}</h3>
+            <h3 v-else>{{ $t("addNewCourse") }}</h3>
             <v-icon icon="mdi-close" @click="closeModal"></v-icon>
         </v-card-title>
         <v-card-text class="px-3 py-0">
             <v-container>
                 <v-row>
                     <v-col cols="12" sm="6" md="6">
-                        <label>Code <span class="required">*</span></label>
+                        <label
+                            >{{ $t("code") }}
+                            <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="courseData.code"
-                            placeholder="Course code"
+                            :placeholder="$t('code')"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
@@ -29,10 +32,13 @@
                         </div>
                     </v-col>
                     <v-col cols="12" sm="6" md="6">
-                        <label>Name <span class="required">*</span></label>
+                        <label
+                            >{{ $t("name") }}
+                            <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="courseData.name"
-                            placeholder="Course name"
+                            :placeholder="$t('courseName')"
                             class="mt-2"
                             hide-details="auto"
                             variant="outlined"
@@ -47,7 +53,10 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="6">
-                        <label>Date from <span class="required">*</span></label>
+                        <label
+                            >{{ $t("dateFrom") }}
+                            <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="courseData.date_from"
                             type="date"
@@ -66,7 +75,8 @@
                     </v-col>
                     <v-col cols="12" md="6">
                         <label
-                            >Date untill <span class="required">*</span></label
+                            >{{ $t("dateUntill") }}
+                            <span class="required">*</span></label
                         >
                         <v-text-field
                             v-model="courseData.date_untill"
@@ -86,11 +96,12 @@
                     </v-col>
                     <v-col cols="12" sm="12">
                         <label
-                            >Description <span class="required">*</span></label
+                            >{{ $t("description") }}
+                            <span class="required">*</span></label
                         >
                         <v-textarea
                             v-model="courseData.description"
-                            placeholder="Course description"
+                            :placeholder="$t('courseDescription')"
                             hide-details="auto"
                             class="mt-2"
                             variant="outlined"
@@ -114,20 +125,19 @@
                 variant="outlined"
                 class="primary-border-btn"
             >
-                Close
+                {{ $t("close") }}
             </v-btn>
             <v-btn
                 @click="addCourse(courseData.id ? 'update' : 'add')"
                 class="primary-btn"
             >
-                Save
+                {{ $t("save") }}
             </v-btn>
         </v-card-actions>
     </v-card>
 </template>
 <script>
 import axios from "axios";
-
 export default {
     props: {
         courseData: Object,
@@ -155,7 +165,6 @@ export default {
             this.date_untill_error = "";
             this.description_error = "";
             this.validateDates();
-
             if (!this.date_from_error && !this.date_until_error) {
                 try {
                     let payload = {
@@ -167,21 +176,19 @@ export default {
                     };
                     if (type == "update") {
                         payload.id = this.courseData.id;
-
                         let result = await axios.post(
                             "/api/update-course",
                             payload
                         );
-
-                        if(result.data.statusCode == 200){
+                        if (result.data.statusCode == 200) {
                             this.message = result.data.message;
-                            this.$emit('data-passed', {
+                            this.$emit("data-passed", {
                                 snackbar: true,
                                 message: this.message,
                                 color: this.color,
                                 refreshGrid: this.refreshGrid,
                             });
-                            
+
                             this.closeModal();
                         }
                     } else {
@@ -189,16 +196,15 @@ export default {
                             "/api/create-course",
                             payload
                         );
-
-                        if(result.data.statusCode == 200){
+                        if (result.data.statusCode == 200) {
                             this.message = result.data.message;
-                            this.$emit('data-passed', {
+                            this.$emit("data-passed", {
                                 snackbar: true,
                                 message: this.message,
                                 color: this.color,
                                 refreshGrid: this.refreshGrid,
                             });
-                            
+
                             this.closeModal();
                         }
                     }

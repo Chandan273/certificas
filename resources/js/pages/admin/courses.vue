@@ -10,7 +10,7 @@
             :color="color"
             timeout="3000"
         >
-        <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
+            <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
         </v-snackbar>
         <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
         <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 course-card widget-card">
@@ -22,7 +22,7 @@
                     courseDialog = true;
                 "
             >
-                <v-icon icon="mdi-plus"></v-icon> Add Course
+                <v-icon icon="mdi-plus"></v-icon>{{ $t("addCourse") }}
             </v-btn>
             <v-dialog v-model="courseDialog" persistent max-width="700px">
                 <AddCourses
@@ -52,12 +52,28 @@
                     :show-page-size-selector="true"
                     :allowed-page-sizes="[10, 25, 50, 100]"
                 />
-                <DxColumn data-field="code" />
-                <DxColumn data-field="name" />
-                <DxColumn data-field="description" />
-                <DxColumn data-field="date_from" data-type="date" />
-                <DxColumn data-field="date_untill" data-type="date" />
-                <DxColumn data-field="Action" type="buttons" alignment="left">
+                <DxColumn data-field="code" :caption="$t('code')" />
+                <DxColumn data-field="name" :caption="$t('name')" />
+                <DxColumn
+                    data-field="description"
+                    :caption="$t('description')"
+                />
+                <DxColumn
+                    data-field="date_from"
+                    data-type="date"
+                    :caption="$t('dateFrom')"
+                />
+                <DxColumn
+                    data-field="date_untill"
+                    data-type="date"
+                    :caption="$t('dateUntill')"
+                />
+                <DxColumn
+                    data-field="Action"
+                    type="buttons"
+                    alignment="left"
+                    :caption="$t('action')"
+                >
                     <DxButton
                         name="edit"
                         hint="Edit"
@@ -72,7 +88,6 @@
 </template>
 <script>
 const dataGridRefKey = "my-data-grid";
-
 import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 import {
@@ -92,11 +107,9 @@ import { DxItem } from "devextreme-vue/form";
 import CustomStore from "devextreme/data/custom_store";
 import notify from "devextreme/ui/notify";
 import AddCourses from "../../components/modals/AddCourse.vue";
-
 function isNotEmpty(value) {
     return value !== undefined && value !== null && value !== "";
 }
-
 export default {
     name: "courses",
     components: {
@@ -123,18 +136,6 @@ export default {
             snackbar: false,
             message: "",
             color: "success",
-            breadcrumbsItems: [
-                {
-                    text: "Admin",
-                    disabled: true,
-                    href: "dashboard",
-                },
-                {
-                    text: "Courses",
-                    disabled: false,
-                    href: "/courses",
-                },
-            ],
         };
     },
     methods: {
@@ -169,7 +170,6 @@ export default {
                             params[i] = `${JSON.stringify(loadOptions[i])}`;
                         }
                     });
-
                     return axios
                         .get(`/api/all-courses`, { params })
                         .then(({ data }) => ({
@@ -268,6 +268,20 @@ export default {
                         });
                 },
             });
+        },
+        breadcrumbsItems() {
+            return [
+                {
+                    text: this.$t("admin"),
+                    disabled: true,
+                    href: "dashboard",
+                },
+                {
+                    text: this.$t("courses"),
+                    disabled: false,
+                    href: "/courses",
+                },
+            ];
         },
         dataGrid: function () {
             return this.$refs[dataGridRefKey].instance;

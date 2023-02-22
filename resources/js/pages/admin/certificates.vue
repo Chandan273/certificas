@@ -10,7 +10,7 @@
             :color="color"
             timeout="3000"
         >
-        <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
+            <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
         </v-snackbar>
         <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
         <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 course-card widget-card">
@@ -22,7 +22,7 @@
                     certificateDialog = true;
                 "
             >
-                <v-icon icon="mdi-plus"></v-icon> Add Certificate
+                <v-icon icon="mdi-plus"></v-icon>{{ $t("addCertificate") }}
             </v-btn>
             <v-dialog v-model="certificateDialog" persistent max-width="700px">
                 <AddCertificate
@@ -58,12 +58,30 @@
                     :show-page-size-selector="true"
                     :allowed-page-sizes="[10, 25, 50, 100]"
                 />
-                <DxColumn data-field="student.name" />
-                <DxColumn data-field="description" />
-                <DxColumn data-field="valid_from" data-type="datetime" />
-                <DxColumn data-field="valid_untill" data-type="datetime" />
+                <DxColumn
+                    data-field="student.name"
+                    :caption="$t('studentName')"
+                />
+                <DxColumn
+                    data-field="description"
+                    :caption="$t('description')"
+                />
+                <DxColumn
+                    data-field="valid_from"
+                    data-type="datetime"
+                    :caption="$t('validFrom')"
+                />
+                <DxColumn
+                    data-field="valid_untill"
+                    data-type="datetime"
+                    :caption="$t('validUntill')"
+                />
                 <DxColumn :visible="false" data-field="info" />
-                <DxColumn data-field="Action" type="buttons">
+                <DxColumn
+                    data-field="Action"
+                    type="buttons"
+                    :caption="$t('action')"
+                >
                     <DxButton
                         name="edit"
                         hint="Edit"
@@ -90,7 +108,6 @@
 </template>
 <script>
 const dataGridRefKey = "my-data-grid";
-
 import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 import {
@@ -110,11 +127,9 @@ import { DxItem } from "devextreme-vue/form";
 import CustomStore from "devextreme/data/custom_store";
 import notify from "devextreme/ui/notify";
 import AddCertificate from "../../components/modals/AddCertificate.vue";
-
 function isNotEmpty(value) {
     return value !== undefined && value !== null && value !== "";
 }
-
 export default {
     name: "Certificates",
     components: {
@@ -142,18 +157,6 @@ export default {
             snackbar: false,
             message: "",
             color: "success",
-            breadcrumbsItems: [
-                {
-                    text: "Admin",
-                    disabled: true,
-                    href: "dashboard",
-                },
-                {
-                    text: "Certificates",
-                    disabled: false,
-                    href: "/certificates",
-                },
-            ],
         };
     },
     computed: {
@@ -173,7 +176,6 @@ export default {
                             params[i] = `${JSON.stringify(loadOptions[i])}`;
                         }
                     });
-
                     return axios
                         .get(`/api/all-certificates`, { params })
                         .then(({ data }) => ({
@@ -274,6 +276,20 @@ export default {
                         });
                 },
             });
+        },
+        breadcrumbsItems() {
+            return [
+                {
+                    text: this.$t("admin"),
+                    disabled: true,
+                    href: "dashboard",
+                },
+                {
+                    text: this.$t("certificates"),
+                    disabled: false,
+                    href: "/certificates",
+                },
+            ];
         },
         dataGrid: function () {
             return this.$refs[dataGridRefKey].instance;

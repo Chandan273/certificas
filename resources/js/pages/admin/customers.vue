@@ -10,7 +10,7 @@
             :color="color"
             timeout="3000"
         >
-        <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
+            <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
         </v-snackbar>
         <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
         <div
@@ -24,7 +24,7 @@
                     customerDialog = true;
                 "
             >
-                <v-icon icon="mdi-plus"></v-icon> Add Customer
+                <v-icon icon="mdi-plus"></v-icon> {{ $t("addCustomer") }}
             </v-btn>
             <v-dialog v-model="customerDialog" persistent max-width="860px">
                 <AddCustomer
@@ -54,21 +54,26 @@
                     :show-page-size-selector="true"
                     :allowed-page-sizes="[10, 25, 50, 100]"
                 />
-                <DxColumn data-field="number" />
-                <DxColumn data-field="name" />
-                <DxColumn data-field="contact" />
-                <DxColumn data-field="email" />
-                <DxColumn data-field="phone" caption="Phone Number" />
-                <DxColumn data-field="www" caption="Website" />
+                <DxColumn data-field="number" :caption="$t('number')" />
+                <DxColumn data-field="name" :caption="$t('name')" />
+                <DxColumn data-field="contact" :caption="$t('contact')" />
+                <DxColumn data-field="email" :caption="$t('email')" />
+                <DxColumn data-field="phone" :caption="$t('phoneNumber')" />
+                <DxColumn data-field="www" :caption="$t('website')" />
                 <DxColumn
                     data-field="organisation_number"
-                    caption="Organisation Number"
+                    :caption="$t('organisationNumber')"
                 />
-                <DxColumn data-field="address" />
+                <DxColumn data-field="address" :caption="$t('address')" />
                 <DxColumn :visible="false" data-field="zip" />
                 <DxColumn :visible="false" data-field="city" />
                 <DxColumn :visible="false" data-field="country" />
-                <DxColumn data-field="Action" type="buttons" alignment="left">
+                <DxColumn
+                    data-field="Action"
+                    type="buttons"
+                    alignment="left"
+                    :caption="$t('action')"
+                >
                     <DxButton
                         name="edit"
                         hint="Edit"
@@ -83,7 +88,6 @@
 </template>
 <script>
 const dataGridRefKey = "my-data-grid";
-
 import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 import AddCustomer from "../../components/modals/AddCustomer.vue";
@@ -99,16 +103,13 @@ import {
     DxForm,
     DxButton,
 } from "devextreme-vue/data-grid";
-
 import { DxTextArea } from "devextreme-vue/text-area";
 import { DxItem } from "devextreme-vue/form";
 import CustomStore from "devextreme/data/custom_store";
 import notify from "devextreme/ui/notify";
-
 function isNotEmpty(value) {
     return value !== undefined && value !== null && value !== "";
 }
-
 export default {
     name: "customers",
     components: {
@@ -135,18 +136,6 @@ export default {
             snackbar: false,
             message: "",
             color: "success",
-            breadcrumbsItems: [
-                {
-                    text: "Admin",
-                    disabled: true,
-                    href: "dashboard",
-                },
-                {
-                    text: "Customers",
-                    disabled: false,
-                    href: "/customers",
-                },
-            ],
         };
     },
     methods: {
@@ -181,7 +170,6 @@ export default {
                             params[i] = `${JSON.stringify(loadOptions[i])}`;
                         }
                     });
-
                     return axios
                         .get(`/api/all-customers`, { params })
                         .then(({ data }) => ({
@@ -217,6 +205,20 @@ export default {
                         });
                 },
             });
+        },
+        breadcrumbsItems() {
+            return [
+                {
+                    text: this.$t("admin"),
+                    disabled: true,
+                    href: "dashboard",
+                },
+                {
+                    text: this.$t("customers"),
+                    disabled: false,
+                    href: "/customers",
+                },
+            ];
         },
         dataGrid: function () {
             return this.$refs[dataGridRefKey].instance;
