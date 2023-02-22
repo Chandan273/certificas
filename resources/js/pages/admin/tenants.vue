@@ -16,19 +16,19 @@
                     data-field="username"
                     data-type="string"
                     data-sort="false"
-                    caption="User Name"
+                    :caption="$t('userName')"
                     :validation-rules="[{ type: 'required' }]"
                 />
                 <DxColumn
                     data-field="tenant.name"
                     data-type="string"
-                    caption="Tenant Name"
+                    :caption="$t('tenantName')"
                     :validation-rules="[{ type: 'required' }]"
                 />
                 <DxColumn
                     data-field="email"
                     data-type="string"
-                    caption="Email"
+                    :caption="$t('email')"
                     :validation-rules="[
                         {
                             type: 'required',
@@ -40,7 +40,7 @@
                 <DxColumn
                     data-field="tenant.paid_untill"
                     data-type="date"
-                    caption="Paid Untill"
+                    :caption="$t('paidUntill')"
                     :validation-rules="[
                         {
                             type: 'required',
@@ -56,7 +56,12 @@
                 />
 
                 <DxSearchPanel :visible="true" />
-                <DxColumn data-field="Action" type="buttons" alignment="left">
+                <DxColumn
+                    data-field="Action"
+                    type="buttons"
+                    alignment="left"
+                    :caption="$t('action')"
+                >
                     <DxButton name="edit" />
                     <DxButton name="delete" />
                 </DxColumn>
@@ -131,18 +136,6 @@ export default {
     },
     data() {
         return {
-            breadcrumbsItems: [
-                {
-                    text: "Admin",
-                    disabled: true,
-                    href: "dashboard",
-                },
-                {
-                    text: "Tenants",
-                    disabled: false,
-                    href: "/tenants",
-                },
-            ],
             tableTitle: "Tenant Details",
         };
     },
@@ -314,6 +307,20 @@ export default {
                         });
                 },
             });
+        },
+        breadcrumbsItems() {
+            return [
+                {
+                    text: this.$t("admin"),
+                    disabled: true,
+                    href: "dashboard",
+                },
+                {
+                    text: this.$t("tenants"),
+                    disabled: false,
+                    href: "/tenants",
+                },
+            ];
         },
     },
     methods: {

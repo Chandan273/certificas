@@ -1,18 +1,20 @@
 <template>
-    <div class="container">
-        <div class="row justify-center text-center p-6" >
-            <div class="col-lg-8 offset-md-2" >
-                <img src="../assets/images/404.png" >
-                <h2 data-v-d5ea9138="">OOPS! PAGE NOT FOUND</h2>
-                <p>Sorry, the page you are looking for does not exist.</p>
-                <router-link to="/" class="btn btn-primary">Home Page</router-link>
-            </div>
-        </div>
-    </div>
+    <v-container fluid>
+        <v-row justify="center" class="text-center py-6">
+            <v-col cols="12" md="8" class="offset-md-2">
+                <img src="../assets/images/404.png" style="width: 800px" />
+                <h2>{{ $t("opsPageNotFound") }}</h2>
+                <p>{{ $t("pageNotExist") }}</p>
+                <v-btn class="mt-5" to="/" color="primary">{{
+                    $t("homePage")
+                }}</v-btn>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 <script>
 export default {
-    name: 'PageNotFound'
-}
+    name: "PageNotFound",
+};
 </script>

@@ -7,10 +7,11 @@
                         <v-col cols="12" sm="6">
                             <div class="left-box px-10 py-12">
                                 <div class="logo mb-5 text-left">
-                                    <h3 class="page-title">Forgot Password</h3>
+                                    <h3 class="page-title">
+                                        {{ $t("forgotPassword") }}
+                                    </h3>
                                     <p>
-                                        Enter your registered email to reset
-                                        your password.
+                                        {{ $t("sendResetLink") }}
                                     </p>
                                 </div>
                                 <v-form
@@ -28,13 +29,17 @@
                                         {{ item }}
                                     </v-alert>
                                     <div class="mb-8">
-                                        <label for="email">Email</label>
+                                        <label for="email">{{
+                                            $t("email")
+                                        }}</label>
                                         <v-text-field
                                             variant="outlined"
                                             v-model="email"
                                             class="mt-2"
                                             name="email"
-                                            placeholder="Enter your email address"
+                                            :placeholder="
+                                                $t('enterConfirmPassword')
+                                            "
                                             hide-details="auto"
                                             prepend-icon="mdi-account"
                                         />
@@ -59,7 +64,7 @@
                                             color="light"
                                             class="mr-2"
                                         ></v-progress-circular>
-                                        Send Reset Password Link
+                                        {{ $t("sendResetLink") }}
                                     </v-btn>
                                     <div class="text-start mt-4">
                                         <span
@@ -77,7 +82,7 @@
                                     class="forgot-txt mt-12 mx-auto d-table"
                                     to="/login"
                                     ><v-icon icon="mdi-chevron-left"></v-icon>
-                                    Back</router-link
+                                    {{ $t("back") }}</router-link
                                 >
                             </div>
                         </v-col>
@@ -88,17 +93,11 @@
                                 >
                                     <div>
                                         <div class="logo mb-4">
-                                            <h2>Certificas</h2>
+                                            <h2>{{ $t("certificates") }}</h2>
                                         </div>
                                         <img
                                             src="../assets/images/forgot.png"
                                         />
-                                        <!-- <h1 class="mb-3 mt-2">Welcome Back!</h1>
-                    <p>
-                      Welcome back to the best.
-                      <br />
-                      we're always here, waiting for you.
-                    </p> -->
                                     </div>
                                 </div>
                             </div>

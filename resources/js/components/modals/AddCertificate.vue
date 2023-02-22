@@ -3,19 +3,22 @@
         <v-card-title
             class="d-flex justify-space-between align-center px-6 pt-4 pb-2"
         >
-            <h3 v-if="certificateData.id">Update Certificate</h3>
-            <h3 v-else>Add New Certificate</h3>
+            <h3 v-if="certificateData.id">{{ $t("updateCertificate") }}</h3>
+            <h3 v-else>{{ $t("addNewCertificate") }}</h3>
             <v-icon icon="mdi-close" @click="closeModal"></v-icon>
         </v-card-title>
         <v-card-text class="px-3 py-0">
             <v-container>
                 <v-row>
                     <v-col cols="12" sm="6" md="6">
-                        <label>Student <span class="required">*</span></label>
+                        <label
+                            >{{ $t("studentName") }}
+                            <span class="required">*</span></label
+                        >
                         <v-select
                             v-model="certificateData.student_id"
                             :items="students"
-                            placeholder="Student Name"
+                            :placeholder="$t('studentName')"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
@@ -32,12 +35,13 @@
                         </div>
                     </v-col>
                     <v-col cols="12" sm="12">
-                        <label
-                            >Description <span class="required">*</span></label
-                        >
+                        <label>
+                            {{ $t("description")
+                            }}<span class="required">*</span>
+                        </label>
                         <v-textarea
                             v-model="certificateData.description"
-                            placeholder="Description"
+                            :placeholder="$t('description')"
                             hide-details="auto"
                             class="mt-2"
                             variant="outlined"
@@ -52,8 +56,9 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="6">
-                        <label
-                            >Valid from <span class="required">*</span></label
+                        <label>
+                            {{ $t("validFrom")
+                            }}<span class="required">*</span></label
                         >
                         <v-text-field
                             v-model="certificateData.valid_from"
@@ -72,8 +77,9 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="6">
-                        <label
-                            >Valid untill <span class="required">*</span></label
+                        <label>
+                            {{ $t("validUntill")
+                            }}<span class="required">*</span></label
                         >
                         <v-text-field
                             v-model="certificateData.valid_untill"
@@ -101,13 +107,13 @@
                 variant="outlined"
                 class="primary-border-btn"
             >
-                Close
+                {{ $t("close") }}
             </v-btn>
             <v-btn
                 @click="addCertificates(certificateData.id ? 'update' : 'add')"
                 class="primary-btn"
             >
-                Save
+                {{ $t("save") }}
             </v-btn>
         </v-card-actions>
     </v-card>
@@ -115,7 +121,6 @@
 
 <script>
 import axios from "axios";
-
 export default {
     props: {
         certificateData: Object,
@@ -142,7 +147,6 @@ export default {
             this.valid_from_error = "";
             this.valid_untill_error = "";
             this.validateDates();
-
             if (!this.valid_from_error && !this.valid_untill_error) {
                 try {
                     let payload = {
@@ -151,25 +155,22 @@ export default {
                         valid_from: this.certificateData.valid_from,
                         valid_untill: this.certificateData.valid_untill,
                     };
-
                     if (type == "update") {
                         payload.id = this.certificateData.id;
                         payload.course_id = this.certificateData.course_id;
-
                         let result = await axios.post(
                             "/api/update-certificate",
                             payload
                         );
-
-                        if(result.data.statusCode == 200){
+                        if (result.data.statusCode == 200) {
                             this.message = result.data.message;
-                            this.$emit('data-passed', {
+                            this.$emit("data-passed", {
                                 snackbar: true,
                                 message: this.message,
                                 color: this.color,
                                 refreshGrid: this.refreshGrid,
                             });
-                            
+
                             this.closeModal();
                         }
                     } else {
@@ -177,16 +178,15 @@ export default {
                             "/api/create-certificate",
                             payload
                         );
-
-                        if(result.data.statusCode == 200){
+                        if (result.data.statusCode == 200) {
                             this.message = result.data.message;
-                            this.$emit('data-passed', {
+                            this.$emit("data-passed", {
                                 snackbar: true,
                                 message: this.message,
                                 color: this.color,
                                 refreshGrid: this.refreshGrid,
                             });
-                            
+
                             this.closeModal();
                         }
                     }
