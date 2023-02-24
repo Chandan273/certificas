@@ -15,11 +15,10 @@
                             >customersData
                             <span class="required">*</span></label
                         >
-
                         <v-select
-                            v-model="customers.id"
-                            :items="customers.name"
-                            :placeholder="Customers"
+                            v-model="studentData.customer_id"
+                            :items="customers"
+                            placeholder="customers"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
@@ -197,6 +196,7 @@ export default {
             if (!this.birth_date_error) {
                 try {
                     let payload = {
+                        customer_id: this.studentData.customer_id,
                         course_id: this.studentData.course_id,
                         name: this.studentData.name,
                         email: this.studentData.email,

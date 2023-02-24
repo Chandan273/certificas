@@ -18,40 +18,6 @@ use App\Models\Certificate_layout;
 class CourseService
 {
     /**
-     * Store a newly course resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */    
-    public static function store(Request $request)
-    {
-        try {
-
-            $tenant = User::where('id', auth()->user()->id)->first();
-            $customer = Customer::where('tenant_id', $tenant->id)->first();
-            $certificate_layout = Certificate_layout::where('tenant_id',$tenant->id)->first();
-            $course = Course::create([
-                'tenant_id' => $tenant->id,
-                'certificate_layout_id' => $certificate_layout->id,
-                'code' => $request->code,
-                'name' => $request->name,
-                'description' => $request->description,
-                'date_from' => date('Y-m-d H:i:s', strtotime($request->date_from)),
-                'date_untill' => date('Y-m-d H:i:s', strtotime($request->date_untill)),
-                'info' => null,
-            ]);
-
-            $response = ['success' => true, 'message' => 'Course created succesfully!', 'statusCode' => 200 ];
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-
-            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
-        }
-
-        return $response;
-    }
-
-    /**
      * Display a listing of the courses.
      *
      * @return \Illuminate\Http\Response
@@ -115,6 +81,36 @@ class CourseService
     }
 
     /**
+     * Store a newly course resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */    
+    public static function store(Request $request)
+    {
+        try {
+
+            $tenant = User::where('id', auth()->user()->id)->first();
+            $customer = Customer::where('tenant_id', $tenant->id)->first();
+            $certificate_layout = Certificate_layout::where('tenant_id',$tenant->id)->first();
+            $course = Course::create(array_merge($request->all(),[
+                'tenant_id' => $tenant->id,
+                'certificate_layout_id' => $certificate_layout->id,
+                'date_from' => date('Y-m-d H:i:s', strtotime($request->date_from)),
+                'date_untill' => date('Y-m-d H:i:s', strtotime($request->date_untill)),
+            ]));
+
+            $response = ['success' => true, 'message' => 'Course created succesfully!', 'statusCode' => 200 ];
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
+        }
+
+        return $response;
+    }
+
+    /**
      * Update the specified courses resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -126,12 +122,10 @@ class CourseService
         try {
 
             $course = Course::where('id', $request->id)->first();
-            $course->code = $request->code;
-            $course->name = $request->name;
-            $course->description = $request->description;
-            $course->date_from = date('Y-m-d H:i:s', strtotime($request->date_from));
-            $course->date_untill = date('Y-m-d H:i:s', strtotime($request->date_untill));
-            $course->save();
+            $customer->update(array_merge($request->all(),[
+                'date_from' => date('Y-m-d H:i:s', strtotime($request->date_from)),
+                'date_untill' => date('Y-m-d H:i:s', strtotime($request->date_untill)),
+            ]));
 
             $response = ['success' => true, 'message' => 'Course Updated Succesfully!', 'statusCode' => 200 ];
         } catch (Exception $e) {

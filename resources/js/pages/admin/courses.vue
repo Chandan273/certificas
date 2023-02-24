@@ -36,7 +36,6 @@
                 class="tenants-table"
                 :data-source="dataSource"
                 :show-borders="true"
-                key-expr="id"
                 :remote-operations="true"
             >
                 <DxSearchPanel :visible="true" :placeholder="$t('search')" />

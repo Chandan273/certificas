@@ -79,12 +79,10 @@ class TenantService
                 'paid_untill' => date('y-m-d', strtotime($request->paid_untill))
             ]);
 
-            $user = User::create([
+            $user = User::create(array_merge($request->all(),[
                 'tenant_id' => $tenant->id,
-                'username' => $request->username,
-                'email' => $request->email,
                 'password' => \Hash::make($password),
-            ]);
+            ]));
 
             $certificate_layout = Certificate_layout::create([
                 'tenant_id' => $tenant->id,
@@ -156,7 +154,7 @@ class TenantService
 
             return $response = response()->json(
                 ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500],
-                400
+                500
             );
         }
     }

@@ -232,18 +232,6 @@
                             >{{ $t("country") }}
                             <span class="required">*</span></label
                         >
-                        <!-- <v-select
-                            v-model="customer.country"
-                            :items="countries"
-                            :placeholder="$t('selectCountry')"
-                            variant="outlined"
-                            hide-details="auto"
-                            class="mt-2"
-                            required
-                            item-title="name"
-                            item-value="alpha_2"
-                        >
-                        </v-select> -->
                         <v-select
                             v-model="customer.country"
                             :items="countries"
@@ -256,15 +244,11 @@
                             item-value="alpha_2"
                         >
                             <template v-slot:prepend-item>
-                                <v-list-item>
-                                    <v-list-item-content>
-                                        <v-text-field
-                                            v-model="searchTerm"
-                                            placeholder="Search"
-                                            @input="searchCountries"
-                                        ></v-text-field>
-                                    </v-list-item-content>
-                                </v-list-item>
+                                <v-text-field
+                                    v-model="searchTerm"
+                                    placeholder="Search"
+                                    @input="searchCountries"
+                                ></v-text-field>
                                 <v-divider class="mt-2"></v-divider>
                             </template>
                         </v-select>

@@ -124,13 +124,9 @@ class StudentService
         try {
 
             $student = Student::where('id', $request->id)->first();
-            $student->course_id = $request->course_id;
-            $student->name = $request->name;
-            $student->email = $request->email;
-            $student->birth_date = date('Y-m-d H:i:s', strtotime($request->birth_date));
-            $student->birth_place = $request->birth_place;
-            $student->info = json_encode($request->info);
-            $student->save();
+            $student->update(array_merge($request->all(), [
+                'birth_date' => date('Y-m-d H:i:s', strtotime($request->birth_date)),
+            ]));
 
             $response = ['success' => true, 'message' => 'Student Updated Succesfully!', 'statusCode' => 200 ];
         } catch (Exception $e) {
