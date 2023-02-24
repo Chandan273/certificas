@@ -1,0 +1,12 @@
+{
+    "headerTitle":"Certificas",
+    "homePage":"Home Page",
+    "courses": "Courses",
+    "customers": "Customers",
+    "students": "Students",
+    "certificates": "Certificates",
+    "aboutPage":"About Page",
+    "welcome": "Hello {name}",
+    "userName": "User Name",
+    "personalInformation": "Personal Information"
+}

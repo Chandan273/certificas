@@ -137,7 +137,6 @@
     </v-card>
 </template>
 <script>
-import axios from "axios";
 export default {
     props: {
         courseData: Object,
@@ -176,7 +175,7 @@ export default {
                     };
                     if (type == "update") {
                         payload.id = this.courseData.id;
-                        let result = await axios.post(
+                        let result = await this.axios.post(
                             "/api/update-course",
                             payload
                         );
@@ -192,7 +191,7 @@ export default {
                             this.closeModal();
                         }
                     } else {
-                        let result = await axios.post(
+                        let result = await this.axios.post(
                             "/api/create-course",
                             payload
                         );

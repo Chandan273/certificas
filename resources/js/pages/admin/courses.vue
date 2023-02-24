@@ -36,10 +36,9 @@
                 class="tenants-table"
                 :data-source="dataSource"
                 :show-borders="true"
-                key-expr="id"
                 :remote-operations="true"
             >
-                <DxSearchPanel :visible="true" />
+                <DxSearchPanel :visible="true" :placeholder="$t('search')" />
                 <DxEditing
                     :allow-updating="true"
                     :allow-adding="true"
@@ -88,7 +87,6 @@
 </template>
 <script>
 const dataGridRefKey = "my-data-grid";
-import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 import {
     DxDataGrid,
@@ -154,7 +152,7 @@ export default {
         },
     },
     computed: {
-        dataSource: () => {
+        dataSource: function () {
             return new CustomStore({
                 load: (loadOptions) => {
                     let params = {};
@@ -170,7 +168,7 @@ export default {
                             params[i] = `${JSON.stringify(loadOptions[i])}`;
                         }
                     });
-                    return axios
+                    return this.axios
                         .get(`/api/all-courses`, { params })
                         .then(({ data }) => ({
                             data: data.data,
@@ -180,75 +178,11 @@ export default {
                             throw new Error("Data Loading Error");
                         });
                 },
-                insert: (values) => {
-                    const payload = {
-                        code: values.code,
-                        name: values.name,
-                        date_from: values.date_from,
-                        date_untill: values.date_untill,
-                        description: values.description,
-                    };
-                    return axios
-                        .post(`/api/create-course`, payload)
-                        .then(({ data }) => {
-                            notify(
-                                {
-                                    position: "top right",
-                                    message:
-                                        "Course has been added successfully!!",
-                                    width: 300,
-                                    shading: true,
-                                },
-                                "success",
-                                2000
-                            );
-                            return data;
-                        })
-                        .catch((error) => {
-                            throw new Error("Data Loading Error");
-                        });
-                },
-                update: (key, values) => {
-                    const payload = {
-                        id: key.id,
-                        tenant_id: key.tenant_id,
-                        certificate_layout_id: key.certificate_layout_id,
-                        code: values.code ? values.code : key.code,
-                        name: values.name ? values.name : key.name,
-                        description: values.description
-                            ? values.description
-                            : key.description,
-                        date_from: values.date_from
-                            ? values.date_from
-                            : key.date_from,
-                        date_untill: values.date_untill
-                            ? values.date_untill
-                            : key.date_untill,
-                    };
-                    return axios
-                        .post(`/api/update-course`, payload)
-                        .then(({ data }) => {
-                            notify(
-                                {
-                                    position: "top right",
-                                    message: "Course Updated Successfully!!",
-                                    width: 300,
-                                    shading: true,
-                                },
-                                "success",
-                                3000
-                            );
-                            return data;
-                        })
-                        .catch((error) => {
-                            throw new Error("Data Loading Error");
-                        });
-                },
                 remove: (key) => {
                     const payload = {
                         id: key.id,
                     };
-                    return axios
+                    return this.axios
                         .post(`/api/delete-course`, payload)
                         .then(({ data }) => {
                             notify(

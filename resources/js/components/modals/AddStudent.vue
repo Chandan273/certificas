@@ -12,6 +12,29 @@
                 <v-row>
                     <v-col cols="12" sm="6" md="6">
                         <label
+                            >customersData
+                            <span class="required">*</span></label
+                        >
+                        <v-select
+                            v-model="studentData.customer_id"
+                            :items="customers"
+                            placeholder="Customer Name"
+                            variant="outlined"
+                            hide-details="auto"
+                            class="mt-2"
+                            item-title="name"
+                            item-value="id"
+                        ></v-select>
+                        <div class="text-start">
+                            <span
+                                v-if="course_id_error"
+                                class="invalid-feedback text-red"
+                                >{{ course_id_error }}</span
+                            >
+                        </div>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                        <label
                             >{{ $t("courses") }}
                             <span class="required">*</span></label
                         >
@@ -141,10 +164,10 @@
     </v-card>
 </template>
 <script>
-import axios from "axios";
 export default {
     props: {
         studentData: Object,
+        customers: Object,
         Courses: Object,
     },
     data() {
@@ -173,6 +196,7 @@ export default {
             if (!this.birth_date_error) {
                 try {
                     let payload = {
+                        customer_id: this.studentData.customer_id,
                         course_id: this.studentData.course_id,
                         name: this.studentData.name,
                         email: this.studentData.email,
@@ -181,7 +205,7 @@ export default {
                     };
                     if (type == "update") {
                         payload.id = this.studentData.id;
-                        let result = await axios.post(
+                        let result = await this.axios.post(
                             "/api/update-student",
                             payload
                         );
@@ -197,7 +221,7 @@ export default {
                             this.closeModal();
                         }
                     } else {
-                        let result = await axios.post(
+                        let result = await this.axios.post(
                             "/api/create-student",
                             payload
                         );

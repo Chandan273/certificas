@@ -120,7 +120,6 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
     props: {
         certificateData: Object,
@@ -158,7 +157,7 @@ export default {
                     if (type == "update") {
                         payload.id = this.certificateData.id;
                         payload.course_id = this.certificateData.course_id;
-                        let result = await axios.post(
+                        let result = await this.axios.post(
                             "/api/update-certificate",
                             payload
                         );
@@ -174,7 +173,7 @@ export default {
                             this.closeModal();
                         }
                     } else {
-                        let result = await axios.post(
+                        let result = await this.axios.post(
                             "/api/create-certificate",
                             payload
                         );

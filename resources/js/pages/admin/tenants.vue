@@ -55,7 +55,7 @@
                     ]"
                 />
 
-                <DxSearchPanel :visible="true" />
+                <DxSearchPanel :visible="true" :placeholder="$t('search')" />
                 <DxColumn
                     data-field="Action"
                     type="buttons"
@@ -84,8 +84,6 @@
     </AdminLayout>
 </template>
 <script>
-import axios from "axios";
-
 import AdminLayout from "../../layouts/adminLayout.vue";
 import { DxTextArea } from "devextreme-vue/text-area";
 import {
@@ -140,8 +138,7 @@ export default {
         };
     },
     computed: {
-        dataSource: () => {
-            let that = this;
+        dataSource: function () {
             return new CustomStore({
                 load: (loadOptions) => {
                     let params = {};
@@ -158,7 +155,7 @@ export default {
                         }
                     });
 
-                    return axios
+                    return this.axios
                         .get(`/api/all-tenants`, { params })
                         .then(({ data }) => ({
                             data: data.data,
@@ -175,7 +172,7 @@ export default {
                         username: values.username,
                         paid_untill: values.tenant.paid_untill,
                     };
-                    return axios
+                    return this.axios
                         .post(`/api/create-tenant`, payload)
                         .then(({ data }) => {
                             notify(
@@ -245,7 +242,7 @@ export default {
                                 ? values.tenant.paid_untill
                                 : key.tenant.paid_untill,
                     };
-                    return axios
+                    return this.axios
                         .post(`/api/update-tenant`, payload)
                         .then(({ data }) => {
                             notify(
@@ -286,7 +283,7 @@ export default {
                     const payload = {
                         id: key.tenant_id,
                     };
-                    return axios
+                    return this.axios
                         .post(`/api/delete-tenant`, payload)
                         .then(({ data }) => {
                             notify(

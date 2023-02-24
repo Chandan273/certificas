@@ -139,8 +139,8 @@ export default {
                     }
                 });
         },
-        changeLanguage(e) {
-            localStorage.setItem("language", e.target.value);
+        changeLanguage(obj) {
+            localStorage.setItem("language", obj.target.value);
         },
     },
     mounted() {

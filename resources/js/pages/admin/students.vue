@@ -8,7 +8,7 @@
             top
             location="top right"
             :color="color"
-            timeout="3000"
+            timeout="4000"
         >
             <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
         </v-snackbar>
@@ -32,6 +32,7 @@
                     @data-passed="refreshGrid"
                     :studentData="studentData"
                     :Courses="Courses"
+                    :customers="customers"
                 ></AddStudent>
             </v-dialog>
             <div class="text-center">
@@ -102,7 +103,7 @@
                     :allow-export-selected-data="false"
                     :formats="['CSV']"
                 />
-                <DxSearchPanel :visible="true" />
+                <DxSearchPanel :visible="true" :placeholder="$t('search')" />
                 <DxEditing
                     :allow-updating="true"
                     :allow-adding="false"
@@ -173,7 +174,6 @@
 </template>
 <script>
 const dataGridRefKey = "my-data-grid";
-import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 import {
     DxDataGrid,
@@ -230,11 +230,12 @@ export default {
             color: "success",
             Courses: [],
             studentData: {},
+            customers: {},
             dataGridRefKey,
         };
     },
     computed: {
-        dataSource: () => {
+        dataSource: function () {
             return new CustomStore({
                 load: (loadOptions) => {
                     let params = {};
@@ -250,7 +251,7 @@ export default {
                             params[i] = `${JSON.stringify(loadOptions[i])}`;
                         }
                     });
-                    return axios
+                    return this.axios
                         .get(`/api/all-students`, { params })
                         .then(({ data }) => ({
                             data: data.data,
@@ -264,7 +265,7 @@ export default {
                     const payload = {
                         id: key.id,
                     };
-                    return axios
+                    return this.axios
                         .post(`/api/delete-student`, payload)
                         .then(({ data }) => {
                             notify(
@@ -321,9 +322,13 @@ export default {
         importCSV() {
             this.dialog = !this.dialog;
         },
+        async getCustomers() {
+            const result = await this.axios.get(`/api/all-customers`);
+            this.customers = result.data.data;
+        },
         async getCourses() {
             try {
-                const { data } = await axios.get(`/api/student-courses`);
+                const { data } = await this.axios.get(`/api/student-courses`);
                 this.Courses = data.courses;
             } catch (err) {}
         },
@@ -347,13 +352,21 @@ export default {
                 return;
             }
             formData.append("file", file);
-            axios
+            this.axios
                 .post("/api/upload-student-csv", formData)
                 .then(({ data }) => {
-                    this.dataGrid.refresh();
-                    this.snackbar = true;
-                    this.color = "success";
-                    this.message = "CSV file records updated successfully!";
+                    if (data.success == false && data.statusCode == "401") {
+                        this.dataGrid.refresh();
+                        this.snackbar = true;
+                        this.color = "error";
+                        this.message = data.message;
+                    }
+                    if (data.success == true && data.statusCode == "200") {
+                        this.dataGrid.refresh();
+                        this.snackbar = true;
+                        this.color = "success";
+                        this.message = data.message;
+                    }
                 })
                 .catch((error) => {
                     // Handle any errors that occur during the upload process
@@ -402,6 +415,7 @@ export default {
     },
     mounted() {
         this.getCourses();
+        this.getCustomers();
     },
 };
 </script>

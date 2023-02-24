@@ -204,7 +204,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 
 export default {
@@ -246,7 +245,10 @@ export default {
                     name: this.tenant ? this.tenant.name : "name",
                     email: this.user.email,
                 };
-                let result = await axios.post("/api/update-profile", payload);
+                let result = await this.axios.post(
+                    "/api/update-profile",
+                    payload
+                );
 
                 if (result.data.success == true) {
                     if (this.userRole == "company") {
@@ -309,7 +311,10 @@ export default {
                     password: this.update.newPassword,
                     confirm_password: this.update.confirmPassword,
                 };
-                let result = await axios.post("/api/profile-password", payload);
+                let result = await this.axios.post(
+                    "/api/profile-password",
+                    payload
+                );
                 if (result.data.success == true) {
                     this.$refs.passwordForm.reset();
 

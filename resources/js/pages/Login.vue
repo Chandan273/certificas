@@ -14,43 +14,84 @@
                                         {{ $t("loginTitle") }}
                                     </p>
                                 </div>
-                                <v-form ref="form" @submit.prevent="login" class="login-form">
+                                <v-form
+                                    ref="form"
+                                    @submit.prevent="login"
+                                    class="login-form"
+                                >
                                     <div class="mb-5">
                                         <label for="email">{{
                                             $t("email")
                                         }}</label>
-                                        <v-text-field variant="outlined" v-model="loginForm.email" required name="email"
-                                            :placeholder="$t('enterYourEmail')" hide-details="auto"
-                                            prepend-icon="mdi-account" class="mt-2" />
+                                        <v-text-field
+                                            variant="outlined"
+                                            v-model="loginForm.email"
+                                            required
+                                            name="email"
+                                            :placeholder="$t('enterYourEmail')"
+                                            hide-details="auto"
+                                            prepend-icon="mdi-account"
+                                            class="mt-2"
+                                        />
                                         <div class="text-start">
-                                            <span v-if="email_error" class="invalid-feedback text-red">{{ email_error
-                                            }}</span>
+                                            <span
+                                                v-if="email_error"
+                                                class="invalid-feedback text-red"
+                                                >{{ email_error }}</span
+                                            >
                                         </div>
                                     </div>
                                     <div class="mb-5">
                                         <label>{{ $t("password") }}</label>
-                                        <v-text-field variant="outlined" type="Password" v-model="loginForm.password"
-                                            required :placeholder="
+                                        <v-text-field
+                                            variant="outlined"
+                                            type="Password"
+                                            v-model="loginForm.password"
+                                            required
+                                            :placeholder="
                                                 $t('enterYourPassword')
-                                            " hide-details="auto" prepend-icon="mdi-lock" class="mt-2" />
+                                            "
+                                            hide-details="auto"
+                                            prepend-icon="mdi-lock"
+                                            class="mt-2"
+                                        />
                                         <div class="text-start">
-                                            <span v-if="password_error" class="invalid-feedback text-red">{{ password_error
-                                            }}</span>
-                                            <span v-if="error" class="invalid-feedback text-red">{{ error }}</span>
+                                            <span
+                                                v-if="password_error"
+                                                class="invalid-feedback text-red"
+                                                >{{ password_error }}</span
+                                            >
+                                            <span
+                                                v-if="error"
+                                                class="invalid-feedback text-red"
+                                                >{{ error }}</span
+                                            >
                                         </div>
                                     </div>
-                                    <div class="mb-5 d-flex justify-end align-center flex-wrap">
-                                        <router-link class="forgot-txt" to="/forgot-password">
+                                    <div
+                                        class="mb-5 d-flex justify-end align-center flex-wrap"
+                                    >
+                                        <router-link
+                                            class="forgot-txt"
+                                            to="/forgot-password"
+                                        >
                                             {{ $t("forgotPassword?") }}
                                         </router-link>
                                     </div>
-                                    <v-btn type="submit" block class="primary-btn">{{ $t("logIn") }}</v-btn>
+                                    <v-btn
+                                        type="submit"
+                                        block
+                                        class="primary-btn"
+                                        >{{ $t("logIn") }}</v-btn
+                                    >
                                 </v-form>
                             </div>
                         </v-col>
                         <v-col cols="12" sm="6" class="d-none d-sm-block">
                             <div class="right-box text-center">
-                                <div class="box pa-7 d-flex justify-center align-center">
+                                <div
+                                    class="box pa-7 d-flex justify-center align-center"
+                                >
                                     <div>
                                         <div class="logo mb-4">
                                             <h2>{{ $t("welcome") }}</h2>
@@ -66,11 +107,9 @@
         </div>
     </div>
 </template>
-
 <script>
 import { mapGetters } from "vuex";
 import Auth from "../Auth.js";
-import axios from "axios";
 
 export default {
     auth: false,
@@ -92,6 +131,7 @@ export default {
             loginForm: {
                 email: "",
                 password: "",
+                lang: "en",
             },
             checkbox: false,
             alert: false,
@@ -103,7 +143,7 @@ export default {
             this.error = "";
             this.email_error = "";
             this.password_error = "";
-            axios
+            this.axios
                 .post("/api/login", this.loginForm)
                 .then(({ data }) => {
                     if (data.statusCode == 401) {
@@ -173,7 +213,6 @@ export default {
 <style lang="scss">
 a.forgot-txt {
     color: #008cff;
-
     &:hover {
         text-shadow: 1px 1px 1px #008cff2e;
     }

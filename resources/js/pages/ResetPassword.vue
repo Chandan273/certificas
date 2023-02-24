@@ -112,8 +112,6 @@
     </div>
 </template>
 <script>
-import axios from "axios";
-
 export default {
     auth: false,
     name: "Login",
@@ -139,7 +137,7 @@ export default {
                 confirm_password: this.confirmPassword,
                 email: this.$route.query.email,
             };
-            axios
+            this.axios
                 .post("/api/reset-password", payload)
                 .then(({ data }) => {
                     if (data.success == true) {

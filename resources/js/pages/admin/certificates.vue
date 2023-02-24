@@ -38,7 +38,7 @@
                 :data-source="dataSource"
                 :show-borders="true"
             >
-                <DxSearchPanel :visible="true" />
+                <DxSearchPanel :visible="true" :placeholder="$t('search')" />
                 <DxEditing
                     :allow-updating="true"
                     :allow-adding="true"
@@ -108,7 +108,6 @@
 </template>
 <script>
 const dataGridRefKey = "my-data-grid";
-import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 import {
     DxDataGrid,
@@ -160,7 +159,7 @@ export default {
         };
     },
     computed: {
-        dataSource: () => {
+        dataSource: function () {
             return new CustomStore({
                 load: (loadOptions) => {
                     let params = {};
@@ -176,7 +175,7 @@ export default {
                             params[i] = `${JSON.stringify(loadOptions[i])}`;
                         }
                     });
-                    return axios
+                    return this.axios
                         .get(`/api/all-certificates`, { params })
                         .then(({ data }) => ({
                             data: data.data,
@@ -186,76 +185,11 @@ export default {
                             throw new Error("Data Loading Error");
                         });
                 },
-                insert: (values) => {
-                    const payload = {
-                        student_id: values.student_id,
-                        description: values.description,
-                        valid_from: values.valid_from,
-                        valid_untill: values.valid_untill,
-                    };
-                    return axios
-                        .post(`/api/create-certificate`, payload)
-                        .then(({ data }) => {
-                            notify(
-                                {
-                                    position: "top right",
-                                    message: "Certificate added successfully!!",
-                                    width: 300,
-                                    shading: true,
-                                },
-                                "success",
-                                2000
-                            );
-                            return data;
-                        })
-                        .catch((error) => {
-                            throw new Error("Data Loading Error");
-                        });
-                },
-                update: (key, values) => {
-                    const payload = {
-                        id: key.id,
-                        student_id: values.student_id
-                            ? values.student_id
-                            : key.student_id,
-                        course_id: values.course_id
-                            ? values.course_id
-                            : key.course_id,
-                        description: values.description
-                            ? values.description
-                            : key.description,
-                        valid_from: values.valid_from
-                            ? values.valid_from
-                            : key.valid_from,
-                        valid_untill: values.valid_untill
-                            ? values.valid_untill
-                            : key.valid_untill,
-                    };
-                    return axios
-                        .post(`/api/update-certificate`, payload)
-                        .then(({ data }) => {
-                            notify(
-                                {
-                                    position: "top right",
-                                    message:
-                                        "Certificate updated successfully!!",
-                                    width: 300,
-                                    shading: true,
-                                },
-                                "success",
-                                3000
-                            );
-                            return data;
-                        })
-                        .catch((error) => {
-                            throw new Error("Data Loading Error");
-                        });
-                },
                 remove: (key) => {
                     const payload = {
                         id: key.id,
                     };
-                    return axios
+                    return this.axios
                         .post(`/api/delete-certificate`, payload)
                         .then(({ data }) => {
                             notify(
@@ -307,7 +241,7 @@ export default {
         },
         async getStudents() {
             try {
-                const { data } = await axios.get(`/api/all-students`);
+                const { data } = await this.axios.get(`/api/all-students`);
                 this.students = data.data;
             } catch (error) {}
         },

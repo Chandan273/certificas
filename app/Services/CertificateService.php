@@ -94,7 +94,6 @@ class CertificateService
                 'certificate_layout_id' => $certificate_layout->id,
                 'valid_from' => date('Y-m-d H:i:s', strtotime($request->valid_from)),
                 'valid_untill' => date('Y-m-d H:i:s', strtotime($request->valid_untill)),
-                'info' => null,
             ]));
 
             $response = ['success' => true, 'statusCode' => 200, 'message' => 'Certificate created succesfully!' ];

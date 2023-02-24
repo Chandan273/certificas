@@ -243,6 +243,14 @@
                             item-title="name"
                             item-value="alpha_2"
                         >
+                            <template v-slot:prepend-item>
+                                <v-text-field
+                                    v-model="searchTerm"
+                                    placeholder="Search"
+                                    @input="searchCountries"
+                                ></v-text-field>
+                                <v-divider class="mt-2"></v-divider>
+                            </template>
                         </v-select>
                         <div class="text-start">
                             <span
@@ -276,7 +284,6 @@
 
 <script>
 import countries from "../../assets/data/country-iso";
-import axios from "axios";
 export default {
     props: {
         customerData: Object,
@@ -303,6 +310,8 @@ export default {
             message: "",
             refreshGrid: true,
             color: "success",
+            searchTerm: "",
+            countriesCopy: [],
         };
     },
     methods: {
@@ -338,7 +347,7 @@ export default {
                 if (type == "update") {
                     payload.id = this.customerData.id;
                     payload.tenant_id = this.customerData.tenant_id;
-                    let result = await axios.post(
+                    let result = await this.axios.post(
                         "/api/update-customer",
                         payload
                     );
@@ -354,7 +363,7 @@ export default {
                         this.closeModal();
                     }
                 } else {
-                    let result = await axios.post(
+                    let result = await this.axios.post(
                         "/api/create-customer",
                         payload
                     );
@@ -451,6 +460,22 @@ export default {
                 }
             }
         },
+        searchCountries() {
+            if (!this.searchTerm) {
+                this.countries = this.countriesCopy;
+            } else {
+                this.countries = this.countriesCopy.filter((country) => {
+                    return (
+                        country.name
+                            .toLowerCase()
+                            .indexOf(this.searchTerm.toLowerCase()) > -1
+                    );
+                });
+            }
+        },
+    },
+    mounted() {
+        this.countriesCopy = [...this.countries];
     },
 };
 </script>

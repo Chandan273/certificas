@@ -124,13 +124,9 @@ class StudentService
         try {
 
             $student = Student::where('id', $request->id)->first();
-            $student->course_id = $request->course_id;
-            $student->name = $request->name;
-            $student->email = $request->email;
-            $student->birth_date = date('Y-m-d H:i:s', strtotime($request->birth_date));
-            $student->birth_place = $request->birth_place;
-            $student->info = json_encode($request->info);
-            $student->save();
+            $student->update(array_merge($request->all(), [
+                'birth_date' => date('Y-m-d H:i:s', strtotime($request->birth_date)),
+            ]));
 
             $response = ['success' => true, 'message' => 'Student Updated Succesfully!', 'statusCode' => 200 ];
         } catch (Exception $e) {
@@ -168,7 +164,7 @@ class StudentService
     }
 
     /**
-     * Import a newly student resource in storage.
+     * Import Student CSV resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -210,12 +206,23 @@ class StudentService
                     $num = count($filedata);
 
                     if ($i == 0) {
-                        if ($filedata[0] == "Courses" || $filedata[1] == "Name" || $filedata[2] == "Email" || $filedata[3] == "Birth date" || $filedata[4] == "Birth place") {
+
+                        if ($filedata[0] == "Cursus-ID" || $filedata[1] == "Naam" || $filedata[2] == "E-mail" || $filedata[3] == "Geboortedatum" || $filedata[4] == "Geboorte plaats") {
+                            $i++;
+                            continue;
+                        } else if ($filedata[0] == "Courses" || $filedata[1] == "Name" || $filedata[2] == "Email" || $filedata[3] == "Birth date" || $filedata[4] == "Birth place") {
                             $i++;
                             continue;
                         } else {
                             $response = ['success' => false, 'message' => "Please upload a valid csv file", 'statusCode' => 401];
                         }
+                    }
+
+                    // Check if any field is empty
+                    if (empty($filedata[0]) || empty($filedata[1]) || empty($filedata[2]) || empty($filedata[3]) || empty($filedata[4])) {
+                        fclose($file);
+                        unlink($filepath);
+                        return ['success' => false, 'message' => "Please ensure all fields are filled in the CSV file", 'statusCode' => 401];
                     }
 
                     $student = Student::withTrashed()->where('email', $filedata[2])->first();

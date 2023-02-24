@@ -87,7 +87,6 @@ class CustomerService
         try {
             $customer = Customer::create(array_merge($request->all(), [
                 'tenant_id' => auth()->user()->id,
-                'info' => null,
             ]));
 
             //$customer->assignRole("customer");

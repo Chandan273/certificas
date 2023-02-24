@@ -38,9 +38,8 @@
                 class="tenants-table"
                 :data-source="dataSource"
                 :show-borders="true"
-                key-expr="id"
             >
-                <DxSearchPanel :visible="true" />
+                <DxSearchPanel :visible="true" :placeholder="$t('search')" />
                 <DxEditing
                     :allow-updating="true"
                     :allow-adding="true"
@@ -88,7 +87,6 @@
 </template>
 <script>
 const dataGridRefKey = "my-data-grid";
-import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 import AddCustomer from "../../components/modals/AddCustomer.vue";
 import {
@@ -154,7 +152,7 @@ export default {
         },
     },
     computed: {
-        dataSource: () => {
+        dataSource: function () {
             return new CustomStore({
                 load: (loadOptions) => {
                     let params = {};
@@ -170,7 +168,7 @@ export default {
                             params[i] = `${JSON.stringify(loadOptions[i])}`;
                         }
                     });
-                    return axios
+                    return this.axios
                         .get(`/api/all-customers`, { params })
                         .then(({ data }) => ({
                             data: data.data,
@@ -184,7 +182,7 @@ export default {
                     const payload = {
                         id: key.id,
                     };
-                    return axios
+                    return this.axios
                         .post(`/api/delete-customer`, payload)
                         .then(({ data }) => {
                             notify(

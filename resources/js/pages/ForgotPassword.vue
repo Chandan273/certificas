@@ -109,8 +109,6 @@
     </div>
 </template>
 <script>
-import axios from "axios";
-
 export default {
     auth: false,
     name: "Login",
@@ -132,7 +130,7 @@ export default {
             this.loader = true;
             this.errors = "";
             this.success = "";
-            axios
+            this.axios
                 .post("/api/forgot-password", { email: this.email })
                 .then(({ data }) => {
                     if (data.statusCode == 200) {
