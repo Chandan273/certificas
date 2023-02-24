@@ -18,7 +18,7 @@
                         <v-select
                             v-model="studentData.customer_id"
                             :items="customers"
-                            placeholder="customers"
+                            placeholder="Customer Name"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
