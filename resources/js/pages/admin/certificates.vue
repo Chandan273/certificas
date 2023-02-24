@@ -10,7 +10,7 @@
             :color="color"
             timeout="3000"
         >
-        <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
+            <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
         </v-snackbar>
         <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
         <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 course-card widget-card">
@@ -22,7 +22,7 @@
                     certificateDialog = true;
                 "
             >
-                <v-icon icon="mdi-plus"></v-icon> Add Certificate
+                <v-icon icon="mdi-plus"></v-icon>{{ $t("addCertificate") }}
             </v-btn>
             <v-dialog v-model="certificateDialog" persistent max-width="700px">
                 <AddCertificate
@@ -38,7 +38,7 @@
                 :data-source="dataSource"
                 :show-borders="true"
             >
-                <DxSearchPanel :visible="true" />
+                <DxSearchPanel :visible="true" :placeholder="$t('search')" />
                 <DxEditing
                     :allow-updating="true"
                     :allow-adding="true"
@@ -58,12 +58,30 @@
                     :show-page-size-selector="true"
                     :allowed-page-sizes="[10, 25, 50, 100]"
                 />
-                <DxColumn data-field="student.name" />
-                <DxColumn data-field="description" />
-                <DxColumn data-field="valid_from" data-type="datetime" />
-                <DxColumn data-field="valid_untill" data-type="datetime" />
+                <DxColumn
+                    data-field="student.name"
+                    :caption="$t('studentName')"
+                />
+                <DxColumn
+                    data-field="description"
+                    :caption="$t('description')"
+                />
+                <DxColumn
+                    data-field="valid_from"
+                    data-type="datetime"
+                    :caption="$t('validFrom')"
+                />
+                <DxColumn
+                    data-field="valid_untill"
+                    data-type="datetime"
+                    :caption="$t('validUntill')"
+                />
                 <DxColumn :visible="false" data-field="info" />
-                <DxColumn data-field="Action" type="buttons">
+                <DxColumn
+                    data-field="Action"
+                    type="buttons"
+                    :caption="$t('action')"
+                >
                     <DxButton
                         name="edit"
                         hint="Edit"
@@ -90,8 +108,6 @@
 </template>
 <script>
 const dataGridRefKey = "my-data-grid";
-
-import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 import {
     DxDataGrid,
@@ -110,11 +126,9 @@ import { DxItem } from "devextreme-vue/form";
 import CustomStore from "devextreme/data/custom_store";
 import notify from "devextreme/ui/notify";
 import AddCertificate from "../../components/modals/AddCertificate.vue";
-
 function isNotEmpty(value) {
     return value !== undefined && value !== null && value !== "";
 }
-
 export default {
     name: "Certificates",
     components: {
@@ -142,22 +156,10 @@ export default {
             snackbar: false,
             message: "",
             color: "success",
-            breadcrumbsItems: [
-                {
-                    text: "Admin",
-                    disabled: true,
-                    href: "dashboard",
-                },
-                {
-                    text: "Certificates",
-                    disabled: false,
-                    href: "/certificates",
-                },
-            ],
         };
     },
     computed: {
-        dataSource: () => {
+        dataSource: function () {
             return new CustomStore({
                 load: (loadOptions) => {
                     let params = {};
@@ -173,8 +175,7 @@ export default {
                             params[i] = `${JSON.stringify(loadOptions[i])}`;
                         }
                     });
-
-                    return axios
+                    return this.axios
                         .get(`/api/all-certificates`, { params })
                         .then(({ data }) => ({
                             data: data.data,
@@ -184,76 +185,11 @@ export default {
                             throw new Error("Data Loading Error");
                         });
                 },
-                insert: (values) => {
-                    const payload = {
-                        student_id: values.student_id,
-                        description: values.description,
-                        valid_from: values.valid_from,
-                        valid_untill: values.valid_untill,
-                    };
-                    return axios
-                        .post(`/api/create-certificate`, payload)
-                        .then(({ data }) => {
-                            notify(
-                                {
-                                    position: "top right",
-                                    message: "Certificate added successfully!!",
-                                    width: 300,
-                                    shading: true,
-                                },
-                                "success",
-                                2000
-                            );
-                            return data;
-                        })
-                        .catch((error) => {
-                            throw new Error("Data Loading Error");
-                        });
-                },
-                update: (key, values) => {
-                    const payload = {
-                        id: key.id,
-                        student_id: values.student_id
-                            ? values.student_id
-                            : key.student_id,
-                        course_id: values.course_id
-                            ? values.course_id
-                            : key.course_id,
-                        description: values.description
-                            ? values.description
-                            : key.description,
-                        valid_from: values.valid_from
-                            ? values.valid_from
-                            : key.valid_from,
-                        valid_untill: values.valid_untill
-                            ? values.valid_untill
-                            : key.valid_untill,
-                    };
-                    return axios
-                        .post(`/api/update-certificate`, payload)
-                        .then(({ data }) => {
-                            notify(
-                                {
-                                    position: "top right",
-                                    message:
-                                        "Certificate updated successfully!!",
-                                    width: 300,
-                                    shading: true,
-                                },
-                                "success",
-                                3000
-                            );
-                            return data;
-                        })
-                        .catch((error) => {
-                            throw new Error("Data Loading Error");
-                        });
-                },
                 remove: (key) => {
                     const payload = {
                         id: key.id,
                     };
-                    return axios
+                    return this.axios
                         .post(`/api/delete-certificate`, payload)
                         .then(({ data }) => {
                             notify(
@@ -275,6 +211,20 @@ export default {
                 },
             });
         },
+        breadcrumbsItems() {
+            return [
+                {
+                    text: this.$t("admin"),
+                    disabled: true,
+                    href: "dashboard",
+                },
+                {
+                    text: this.$t("certificates"),
+                    disabled: false,
+                    href: "/certificates",
+                },
+            ];
+        },
         dataGrid: function () {
             return this.$refs[dataGridRefKey].instance;
         },
@@ -291,7 +241,7 @@ export default {
         },
         async getStudents() {
             try {
-                const { data } = await axios.get(`/api/all-students`);
+                const { data } = await this.axios.get(`/api/all-students`);
                 this.students = data.data;
             } catch (error) {}
         },

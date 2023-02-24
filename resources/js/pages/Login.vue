@@ -7,9 +7,11 @@
                         <v-col cols="12" sm="6">
                             <div class="left-box px-10 py-12">
                                 <div class="logo mb-5 text-left">
-                                    <h3 class="page-title">Login</h3>
+                                    <h3 class="page-title">
+                                        {{ $t("login") }}
+                                    </h3>
                                     <p>
-                                        Please login to your account to continue
+                                        {{ $t("loginTitle") }}
                                     </p>
                                 </div>
                                 <v-form
@@ -18,13 +20,15 @@
                                     class="login-form"
                                 >
                                     <div class="mb-5">
-                                        <label for="email">Email</label>
+                                        <label for="email">{{
+                                            $t("email")
+                                        }}</label>
                                         <v-text-field
                                             variant="outlined"
                                             v-model="loginForm.email"
                                             required
                                             name="email"
-                                            placeholder="Enter your email address"
+                                            :placeholder="$t('enterYourEmail')"
                                             hide-details="auto"
                                             prepend-icon="mdi-account"
                                             class="mt-2"
@@ -38,13 +42,15 @@
                                         </div>
                                     </div>
                                     <div class="mb-5">
-                                        <label>Password</label>
+                                        <label>{{ $t("password") }}</label>
                                         <v-text-field
                                             variant="outlined"
                                             type="Password"
                                             v-model="loginForm.password"
                                             required
-                                            placeholder="Enter your password"
+                                            :placeholder="
+                                                $t('enterYourPassword')
+                                            "
                                             hide-details="auto"
                                             prepend-icon="mdi-lock"
                                             class="mt-2"
@@ -69,14 +75,14 @@
                                             class="forgot-txt"
                                             to="/forgot-password"
                                         >
-                                            Forgot Password?
+                                            {{ $t("forgotPassword?") }}
                                         </router-link>
                                     </div>
                                     <v-btn
                                         type="submit"
                                         block
                                         class="primary-btn"
-                                        >Log In</v-btn
+                                        >{{ $t("logIn") }}</v-btn
                                     >
                                 </v-form>
                             </div>
@@ -88,7 +94,7 @@
                                 >
                                     <div>
                                         <div class="logo mb-4">
-                                            <h2>Welcome to Certificas</h2>
+                                            <h2>{{ $t("welcome") }}</h2>
                                         </div>
                                         <img src="../assets/images/login.svg" />
                                     </div>
@@ -104,7 +110,6 @@
 <script>
 import { mapGetters } from "vuex";
 import Auth from "../Auth.js";
-import axios from "axios";
 
 export default {
     auth: false,
@@ -126,6 +131,7 @@ export default {
             loginForm: {
                 email: "",
                 password: "",
+                lang: "en",
             },
             checkbox: false,
             alert: false,
@@ -137,7 +143,7 @@ export default {
             this.error = "";
             this.email_error = "";
             this.password_error = "";
-            axios
+            this.axios
                 .post("/api/login", this.loginForm)
                 .then(({ data }) => {
                     if (data.statusCode == 401) {
@@ -190,6 +196,7 @@ export default {
         },
     },
     mounted() {
+        this.$i18n.locale = "nl";
         let userInfo = localStorage.getItem("user");
         if (userInfo) {
             let userRole = localStorage.getItem("role");

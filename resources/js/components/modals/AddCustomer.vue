@@ -3,20 +3,23 @@
         <v-card-title
             class="d-flex justify-space-between align-center px-6 pt-4 pb-2"
         >
-            <h3 v-if="customer.id">Update Customer</h3>
-            <h3 v-else>Add New Customer</h3>
+            <h3 v-if="customer.id">{{ $t("updateCustomer") }}</h3>
+            <h3 v-else>{{ $t("addNewCustomer") }}</h3>
         </v-card-title>
         <v-card-text class="px-3 py-0">
             <v-container>
                 <v-row>
                     <v-col cols="12" class="pb-0">
-                        <h4>Customer Information</h4>
+                        <h4>{{ $t("customerInformation") }}</h4>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
-                        <label>Number <span class="required">*</span></label>
+                        <label
+                            >{{ $t("number") }}
+                            <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="customer.number"
-                            placeholder="Customer number"
+                            :placeholder="$t('customerNumber')"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
@@ -31,10 +34,13 @@
                         </div>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
-                        <label>Name <span class="required">*</span></label>
+                        <label
+                            >{{ $t("name") }}
+                            <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="customer.name"
-                            placeholder="Customer name"
+                            :placeholder="$t('customerName')"
                             class="mt-2"
                             hide-details="auto"
                             variant="outlined"
@@ -49,10 +55,13 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="4">
-                        <label>Email <span class="required">*</span></label>
+                        <label
+                            >{{ $t("email") }}
+                            <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="customer.email"
-                            placeholder="Customer email"
+                            :placeholder="$t('customerEmail')"
                             type="email"
                             hide-details="auto"
                             class="mt-2"
@@ -68,10 +77,13 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="4">
-                        <label>Contact <span class="required">*</span></label>
+                        <label
+                            >{{ $t("contact") }}
+                            <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="customer.contact"
-                            placeholder="Contact person"
+                            :placeholder="$t('contactPerson')"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
@@ -87,12 +99,12 @@
                     </v-col>
                     <v-col cols="12" sm="4">
                         <label
-                            >Organisation Number
+                            >{{ $t("organisationNumber") }}
                             <span class="required">*</span></label
                         >
                         <v-text-field
                             v-model="customer.organisation_number"
-                            placeholder="Organisation number"
+                            :placeholder="$t('organisationNumber')"
                             hide-details="auto"
                             class="mt-2"
                             variant="outlined"
@@ -107,10 +119,13 @@
                         </div>
                     </v-col>
                     <v-col cols="12" sm="4">
-                        <label>Website <span class="required">*</span></label>
+                        <label
+                            >{{ $t("website") }}
+                            <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="customer.www"
-                            placeholder="Website"
+                            :placeholder="$t('website')"
                             hide-details="auto"
                             class="mt-2"
                             variant="outlined"
@@ -127,13 +142,15 @@
                 </v-row>
                 <v-row class="mt-6">
                     <v-col cols="12" class="pb-0">
-                        <h4>Customer Address</h4>
+                        <h4>{{ $t("customerAddress") }}</h4>
                     </v-col>
                     <v-col cols="12">
-                        <label>Address <span class="required">*</span></label>
+                        <label
+                            >{{ $t("address") }}<span class="required">*</span>
+                        </label>
                         <v-textarea
                             v-model="customer.address"
-                            placeholder="Customer address"
+                            :placeholder="$t('customerAddress')"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
@@ -149,11 +166,12 @@
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
                         <label
-                            >Phone Number <span class="required">*</span></label
+                            >{{ $t("phoneNumber")
+                            }}<span class="required">*</span></label
                         >
                         <v-text-field
                             v-model="customer.phone"
-                            placeholder="Phone number"
+                            :placeholder="$t('phoneNumber')"
                             class="mt-2"
                             hide-details="auto"
                             variant="outlined"
@@ -168,10 +186,13 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="4">
-                        <label>Zip <span class="required">*</span></label>
+                        <label
+                            >{{ $t("zip") }}
+                            <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="customer.zip"
-                            placeholder="Zip"
+                            :placeholder="$t('zip')"
                             hide-details="auto"
                             class="mt-2"
                             variant="outlined"
@@ -186,10 +207,13 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="4">
-                        <label>City <span class="required">*</span></label>
+                        <label
+                            >{{ $t("city") }}
+                            <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="customer.city"
-                            placeholder="City"
+                            :placeholder="$t('city')"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
@@ -204,11 +228,14 @@
                         </div>
                     </v-col>
                     <v-col cols="12" sm="4">
-                        <label>Country <span class="required">*</span></label>
-                        <v-select
+                        <label
+                            >{{ $t("country") }}
+                            <span class="required">*</span></label
+                        >
+                        <!-- <v-select
                             v-model="customer.country"
                             :items="countries"
-                            placeholder="Select country"
+                            :placeholder="$t('selectCountry')"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
@@ -216,6 +243,30 @@
                             item-title="name"
                             item-value="alpha_2"
                         >
+                        </v-select> -->
+                        <v-select
+                            v-model="customer.country"
+                            :items="countries"
+                            :placeholder="$t('selectCountry')"
+                            variant="outlined"
+                            hide-details="auto"
+                            class="mt-2"
+                            required
+                            item-title="name"
+                            item-value="alpha_2"
+                        >
+                            <template v-slot:prepend-item>
+                                <v-list-item>
+                                    <v-list-item-content>
+                                        <v-text-field
+                                            v-model="searchTerm"
+                                            placeholder="Search"
+                                            @input="searchCountries"
+                                        ></v-text-field>
+                                    </v-list-item-content>
+                                </v-list-item>
+                                <v-divider class="mt-2"></v-divider>
+                            </template>
                         </v-select>
                         <div class="text-start">
                             <span
@@ -235,13 +286,13 @@
                 variant="outlined"
                 class="primary-border-btn"
             >
-                Close
+                {{ $t("close") }}
             </v-btn>
             <v-btn
                 @click="addCustomer(customerData.id ? 'update' : 'add')"
                 class="primary-btn"
             >
-                Save
+                {{ $t("save") }}
             </v-btn>
         </v-card-actions>
     </v-card>
@@ -249,8 +300,6 @@
 
 <script>
 import countries from "../../assets/data/country-iso";
-import axios from "axios";
-
 export default {
     props: {
         customerData: Object,
@@ -277,6 +326,8 @@ export default {
             message: "",
             refreshGrid: true,
             color: "success",
+            searchTerm: "",
+            countriesCopy: [],
         };
     },
     methods: {
@@ -295,7 +346,6 @@ export default {
             this.zip_error = "";
             this.city_error = "";
             this.country_error = "";
-
             try {
                 let payload = {
                     number: this.customerData.number,
@@ -310,42 +360,38 @@ export default {
                     city: this.customerData.city,
                     country: this.customerData.country,
                 };
-
                 if (type == "update") {
                     payload.id = this.customerData.id;
                     payload.tenant_id = this.customerData.tenant_id;
-
-                    let result = await axios.post(
+                    let result = await this.axios.post(
                         "/api/update-customer",
                         payload
                     );
-
-                    if(result.data.statusCode == 200){
+                    if (result.data.statusCode == 200) {
                         this.message = result.data.message;
-                        this.$emit('data-passed', {
+                        this.$emit("data-passed", {
                             snackbar: true,
                             message: this.message,
                             color: this.color,
                             refreshGrid: this.refreshGrid,
                         });
-                        
+
                         this.closeModal();
                     }
                 } else {
-                    let result = await axios.post(
+                    let result = await this.axios.post(
                         "/api/create-customer",
                         payload
                     );
-
-                    if(result.data.statusCode == 200){
+                    if (result.data.statusCode == 200) {
                         this.message = result.data.message;
-                        this.$emit('data-passed', {
+                        this.$emit("data-passed", {
                             snackbar: true,
                             message: this.message,
                             color: this.color,
                             refreshGrid: this.refreshGrid,
                         });
-                        
+
                         this.closeModal();
                     }
                 }
@@ -430,6 +476,22 @@ export default {
                 }
             }
         },
+        searchCountries() {
+            if (!this.searchTerm) {
+                this.countries = this.countriesCopy;
+            } else {
+                this.countries = this.countriesCopy.filter((country) => {
+                    return (
+                        country.name
+                            .toLowerCase()
+                            .indexOf(this.searchTerm.toLowerCase()) > -1
+                    );
+                });
+            }
+        },
+    },
+    mounted() {
+        this.countriesCopy = [...this.countries];
     },
 };
 </script>

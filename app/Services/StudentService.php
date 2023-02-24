@@ -168,7 +168,7 @@ class StudentService
     }
 
     /**
-     * Import a newly student resource in storage.
+     * Import Student CSV resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -210,12 +210,23 @@ class StudentService
                     $num = count($filedata);
 
                     if ($i == 0) {
-                        if ($filedata[0] == "Courses" || $filedata[1] == "Name" || $filedata[2] == "Email" || $filedata[3] == "Birth date" || $filedata[4] == "Birth place") {
+
+                        if ($filedata[0] == "Cursus-ID" || $filedata[1] == "Naam" || $filedata[2] == "E-mail" || $filedata[3] == "Geboortedatum" || $filedata[4] == "Geboorte plaats") {
+                            $i++;
+                            continue;
+                        } else if ($filedata[0] == "Courses" || $filedata[1] == "Name" || $filedata[2] == "Email" || $filedata[3] == "Birth date" || $filedata[4] == "Birth place") {
                             $i++;
                             continue;
                         } else {
                             $response = ['success' => false, 'message' => "Please upload a valid csv file", 'statusCode' => 401];
                         }
+                    }
+
+                    // Check if any field is empty
+                    if (empty($filedata[0]) || empty($filedata[1]) || empty($filedata[2]) || empty($filedata[3]) || empty($filedata[4])) {
+                        fclose($file);
+                        unlink($filepath);
+                        return ['success' => false, 'message' => "Please ensure all fields are filled in the CSV file", 'statusCode' => 401];
                     }
 
                     $student = Student::withTrashed()->where('email', $filedata[2])->first();

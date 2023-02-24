@@ -1,6 +1,6 @@
 <template>
     <AdminLayout>
-        <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
+        <v-breadcrumbs class="ps-0" :items="translatedItems"></v-breadcrumbs>
         <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 widget-card profile-page">
             <v-snackbar
                 v-model="snackbar"
@@ -17,19 +17,23 @@
             <v-row>
                 <v-col cols="12" md="12">
                     <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 personal-info">
-                        <h3 class="mb-2 pb-2">Personal Information</h3>
+                        <h3 class="mb-2 pb-2">
+                            {{ $t("personalInformation") }}
+                        </h3>
                         <v-form ref="myForm">
                             <v-row>
                                 <v-col cols="12" sm="3">
                                     <div class="mb-4">
-                                        <label for="fname">User Name</label>
+                                        <label for="fname">{{
+                                            $t("userName")
+                                        }}</label>
                                         <v-text-field
                                             variant="outlined"
                                             v-model="user.username"
                                             type="text"
                                             name="fname"
                                             class="mt-2"
-                                            placeholder="User Name"
+                                            :placeholder="$t('userName')"
                                             white
                                             autocomplete="off"
                                             hide-details="auto"
@@ -45,12 +49,12 @@
                                 </v-col>
                                 <v-col cols="12" sm="3">
                                     <div class="mb-4">
-                                        <label>Email</label>
+                                        <label>{{ $t("email") }}</label>
                                         <v-text-field
                                             v-model="user.email"
                                             variant="outlined"
                                             class="mt-2"
-                                            placeholder="Email Address"
+                                            :placeholder="$t('email')"
                                             hide-details="auto"
                                         ></v-text-field>
                                         <div class="text-start">
@@ -63,12 +67,12 @@
                                     </div>
                                 </v-col>
                                 <v-col sm="3" v-if="userRole == 'company'">
-                                    <label>Company Name</label>
+                                    <label>{{ $t("companyName") }}</label>
                                     <v-text-field
                                         v-model="tenant.name"
                                         variant="outlined"
                                         class="mt-2"
-                                        placeholder="Company Name"
+                                        :placeholder="$t('companyName')"
                                         hide-details="auto"
                                     ></v-text-field>
                                     <div class="text-start">
@@ -89,14 +93,14 @@
                                         variant="outlined"
                                         elevation="0"
                                     >
-                                        Reset
+                                        {{ $t("reset") }}
                                     </v-btn>
                                     <v-btn
                                         type="button"
                                         v-on:click="updateProfile"
                                         class="primary-btn px-6"
                                     >
-                                        Save
+                                        {{ $t("save") }}
                                     </v-btn>
                                 </v-col>
                             </v-row>
@@ -108,21 +112,21 @@
             <v-row class="mt-0">
                 <v-col cols="12" md="12" class="pt-0">
                     <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 pt-lg-0">
-                        <h3 class="mb-2 pb-2">Update Password</h3>
+                        <h3 class="mb-2 pb-2">{{ $t("updatePassword") }}</h3>
                         <v-form ref="passwordForm">
                             <v-row>
                                 <v-col cols="12" sm="3">
                                     <div class="mb-4">
-                                        <label for="fname"
-                                            >Current Password</label
-                                        >
+                                        <label for="fname">{{
+                                            $t("currentPassword")
+                                        }}</label>
                                         <v-text-field
                                             v-model="update.currentPassword"
                                             type="password"
                                             name="fname"
                                             variant="outlined"
                                             class="mt-2"
-                                            placeholder="Current Password"
+                                            :placeholder="$t('currentPassword')"
                                             white
                                             autocomplete="off"
                                             hide-details="auto"
@@ -141,13 +145,13 @@
 
                                 <v-col cols="12" sm="3">
                                     <div class="mb-4">
-                                        <label>New Password</label>
+                                        <label>{{ $t("newPassword") }}</label>
                                         <v-text-field
                                             v-model="update.newPassword"
                                             type="password"
                                             variant="outlined"
                                             class="mt-2"
-                                            placeholder="New Password"
+                                            :placeholder="$t('newPassword')"
                                             hide-details="auto"
                                         ></v-text-field>
                                         <div class="text-start">
@@ -161,13 +165,15 @@
                                 </v-col>
                                 <v-col sm="3">
                                     <div>
-                                        <label>Confirm Password</label>
+                                        <label>{{
+                                            $t("confirmPassword")
+                                        }}</label>
                                         <v-text-field
                                             v-model="update.confirmPassword"
                                             variant="outlined"
                                             type="password"
                                             class="mt-2"
-                                            placeholder="Confirm Password"
+                                            :placeholder="$t('confirmPassword')"
                                             hide-details="auto"
                                         ></v-text-field>
                                     </div>
@@ -185,7 +191,7 @@
                                         v-on:click="updatePassword"
                                         class="primary-btn px-6"
                                     >
-                                        Save
+                                        {{ $t("save") }}
                                     </v-btn>
                                 </v-col>
                             </v-row>
@@ -198,25 +204,12 @@
 </template>
 
 <script>
-import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 
 export default {
     name: "profile",
     data() {
         return {
-            breadcrumbsItems: [
-                {
-                    text: "Admin",
-                    disabled: true,
-                    href: "dashboard",
-                },
-                {
-                    text: "Profile",
-                    disabled: false,
-                    href: "/profile",
-                },
-            ],
             emailErr: "",
             usernameErr: "",
             nameErr: "",
@@ -252,7 +245,10 @@ export default {
                     name: this.tenant ? this.tenant.name : "name",
                     email: this.user.email,
                 };
-                let result = await axios.post("/api/update-profile", payload);
+                let result = await this.axios.post(
+                    "/api/update-profile",
+                    payload
+                );
 
                 if (result.data.success == true) {
                     if (this.userRole == "company") {
@@ -315,7 +311,10 @@ export default {
                     password: this.update.newPassword,
                     confirm_password: this.update.confirmPassword,
                 };
-                let result = await axios.post("/api/profile-password", payload);
+                let result = await this.axios.post(
+                    "/api/profile-password",
+                    payload
+                );
                 if (result.data.success == true) {
                     this.$refs.passwordForm.reset();
 
@@ -352,6 +351,22 @@ export default {
                     this.password_err = error.response.data.error.password[0];
                 }
             }
+        },
+    },
+    computed: {
+        translatedItems() {
+            return [
+                {
+                    text: this.$t("admin"),
+                    disabled: true,
+                    href: "dashboard",
+                },
+                {
+                    text: this.$t("profile"),
+                    disabled: false,
+                    href: "/profile",
+                },
+            ];
         },
     },
 };

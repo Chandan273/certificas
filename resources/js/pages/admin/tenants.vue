@@ -16,19 +16,19 @@
                     data-field="username"
                     data-type="string"
                     data-sort="false"
-                    caption="User Name"
+                    :caption="$t('userName')"
                     :validation-rules="[{ type: 'required' }]"
                 />
                 <DxColumn
                     data-field="tenant.name"
                     data-type="string"
-                    caption="Tenant Name"
+                    :caption="$t('tenantName')"
                     :validation-rules="[{ type: 'required' }]"
                 />
                 <DxColumn
                     data-field="email"
                     data-type="string"
-                    caption="Email"
+                    :caption="$t('email')"
                     :validation-rules="[
                         {
                             type: 'required',
@@ -40,7 +40,7 @@
                 <DxColumn
                     data-field="tenant.paid_untill"
                     data-type="date"
-                    caption="Paid Untill"
+                    :caption="$t('paidUntill')"
                     :validation-rules="[
                         {
                             type: 'required',
@@ -55,8 +55,13 @@
                     ]"
                 />
 
-                <DxSearchPanel :visible="true" />
-                <DxColumn data-field="Action" type="buttons" alignment="left">
+                <DxSearchPanel :visible="true" :placeholder="$t('search')" />
+                <DxColumn
+                    data-field="Action"
+                    type="buttons"
+                    alignment="left"
+                    :caption="$t('action')"
+                >
                     <DxButton name="edit" />
                     <DxButton name="delete" />
                 </DxColumn>
@@ -79,8 +84,6 @@
     </AdminLayout>
 </template>
 <script>
-import axios from "axios";
-
 import AdminLayout from "../../layouts/adminLayout.vue";
 import { DxTextArea } from "devextreme-vue/text-area";
 import {
@@ -131,24 +134,11 @@ export default {
     },
     data() {
         return {
-            breadcrumbsItems: [
-                {
-                    text: "Admin",
-                    disabled: true,
-                    href: "dashboard",
-                },
-                {
-                    text: "Tenants",
-                    disabled: false,
-                    href: "/tenants",
-                },
-            ],
             tableTitle: "Tenant Details",
         };
     },
     computed: {
-        dataSource: () => {
-            let that = this;
+        dataSource: function () {
             return new CustomStore({
                 load: (loadOptions) => {
                     let params = {};
@@ -165,7 +155,7 @@ export default {
                         }
                     });
 
-                    return axios
+                    return this.axios
                         .get(`/api/all-tenants`, { params })
                         .then(({ data }) => ({
                             data: data.data,
@@ -182,7 +172,7 @@ export default {
                         username: values.username,
                         paid_untill: values.tenant.paid_untill,
                     };
-                    return axios
+                    return this.axios
                         .post(`/api/create-tenant`, payload)
                         .then(({ data }) => {
                             notify(
@@ -252,7 +242,7 @@ export default {
                                 ? values.tenant.paid_untill
                                 : key.tenant.paid_untill,
                     };
-                    return axios
+                    return this.axios
                         .post(`/api/update-tenant`, payload)
                         .then(({ data }) => {
                             notify(
@@ -293,7 +283,7 @@ export default {
                     const payload = {
                         id: key.tenant_id,
                     };
-                    return axios
+                    return this.axios
                         .post(`/api/delete-tenant`, payload)
                         .then(({ data }) => {
                             notify(
@@ -314,6 +304,20 @@ export default {
                         });
                 },
             });
+        },
+        breadcrumbsItems() {
+            return [
+                {
+                    text: this.$t("admin"),
+                    disabled: true,
+                    href: "dashboard",
+                },
+                {
+                    text: this.$t("tenants"),
+                    disabled: false,
+                    href: "/tenants",
+                },
+            ];
         },
     },
     methods: {

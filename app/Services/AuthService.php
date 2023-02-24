@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Lang;
 
 class AuthService {
     /**
@@ -23,6 +25,9 @@ class AuthService {
                 'password' => $request->password
             ];
 
+            App::setLocale($request->lang);
+            session()->put('locale', $request->lang);
+
             if(auth()->attempt($data)){
                 $token = auth()->user()->createToken("Token")->accessToken;
                 $user = auth()->user();
@@ -31,7 +36,7 @@ class AuthService {
 
                 $response = ["success" => true, "accessToken"=> $token, 'user' => $user, 'role'=>$role, 'tenant'=> $tenant, 'statusCode'=> 200];
             }else{
-                $response = ['success'=> false, 'error' => 'Incorrect Password', 'message' => "Please check Login details", 'statusCode'=> 401];
+                $response = ['success'=> false, 'error' => Lang::get('messages.loginErr'), 'message' => "Please check Login details", 'statusCode'=> 401];
             }
         }
         catch(Exception $e){

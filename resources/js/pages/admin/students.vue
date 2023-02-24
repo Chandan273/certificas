@@ -8,9 +8,9 @@
             top
             location="top right"
             :color="color"
-            timeout="3000"
+            timeout="4000"
         >
-        <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
+            <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
         </v-snackbar>
         <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
         <div
@@ -24,7 +24,7 @@
                     studentDialog = true;
                 "
             >
-                <v-icon icon="mdi-plus"></v-icon> Add Student
+                <v-icon icon="mdi-plus"></v-icon> {{ $t("addStudent") }}
             </v-btn>
             <v-dialog v-model="studentDialog" persistent max-width="700px">
                 <AddStudent
@@ -32,6 +32,7 @@
                     @data-passed="refreshGrid"
                     :studentData="studentData"
                     :Courses="Courses"
+                    :customers="customers"
                 ></AddStudent>
             </v-dialog>
             <div class="text-center">
@@ -41,14 +42,14 @@
                             <v-card class="course-modal">
                                 <v-card-title
                                     class="d-flex align-center justify-space-between"
-                                    ><h3>Import CSV File</h3>
+                                    ><h3>{{ $t("importCsvFile") }}</h3>
                                     <v-icon @click="dialog = false">
                                         mdi-close
                                     </v-icon></v-card-title
                                 >
 
                                 <v-card-text class="import-csv py-4">
-                                    <label>Import file</label>
+                                    <label>{{ $t("importFile") }}</label>
                                     <input
                                         type="file"
                                         ref="fileInput"
@@ -67,7 +68,7 @@
                                         @click="downloadCSV"
                                     >
                                         <v-icon icon="mdi-download"></v-icon>
-                                        Download Sample
+                                        {{ $t("downloadSample") }}
                                     </v-btn>
 
                                     <v-btn
@@ -75,7 +76,7 @@
                                         text
                                         @click="updateFile"
                                     >
-                                        Import CSV
+                                        {{ $t("importCSV") }}
                                     </v-btn>
                                 </v-card-actions>
                             </v-card>
@@ -102,7 +103,7 @@
                     :allow-export-selected-data="false"
                     :formats="['CSV']"
                 />
-                <DxSearchPanel :visible="true" />
+                <DxSearchPanel :visible="true" :placeholder="$t('search')" />
                 <DxEditing
                     :allow-updating="true"
                     :allow-adding="false"
@@ -116,7 +117,7 @@
                     :visible="true"
                     :width="100"
                     data-field="course_id"
-                    caption="Courses ID"
+                    :caption="$t('courseId')"
                     alignment="left"
                 >
                     <DxLookup
@@ -125,11 +126,23 @@
                         display-expr="id"
                     />
                 </DxColumn>
-                <DxColumn data-field="name" />
-                <DxColumn data-field="email" />
-                <DxColumn data-field="birth_date" data-type="date" />
-                <DxColumn data-field="birth_place" />
-                <DxColumn data-field="Action" type="buttons" alignment="left">
+                <DxColumn data-field="name" :caption="$t('name')" />
+                <DxColumn data-field="email" :caption="$t('email')" />
+                <DxColumn
+                    data-field="birth_date"
+                    data-type="date"
+                    :caption="$t('birthDate')"
+                />
+                <DxColumn
+                    data-field="birth_place"
+                    :caption="$t('birthPlace')"
+                />
+                <DxColumn
+                    data-field="Action"
+                    type="buttons"
+                    alignment="left"
+                    :caption="$t('action')"
+                >
                     <DxButton
                         name="edit"
                         hint="Edit"
@@ -161,8 +174,6 @@
 </template>
 <script>
 const dataGridRefKey = "my-data-grid";
-
-import axios from "axios";
 import AdminLayout from "../../layouts/adminLayout.vue";
 import {
     DxDataGrid,
@@ -189,7 +200,6 @@ import AddStudent from "../../components/modals/AddStudent.vue";
 function isNotEmpty(value) {
     return value !== undefined && value !== null && value !== "";
 }
-
 export default {
     name: "students",
     components: {
@@ -220,23 +230,12 @@ export default {
             color: "success",
             Courses: [],
             studentData: {},
+            customers: {},
             dataGridRefKey,
-            breadcrumbsItems: [
-                {
-                    text: "Admin",
-                    disabled: true,
-                    href: "dashboard",
-                },
-                {
-                    text: "Students",
-                    disabled: false,
-                    href: "/students",
-                },
-            ],
         };
     },
     computed: {
-        dataSource: () => {
+        dataSource: function () {
             return new CustomStore({
                 load: (loadOptions) => {
                     let params = {};
@@ -252,8 +251,7 @@ export default {
                             params[i] = `${JSON.stringify(loadOptions[i])}`;
                         }
                     });
-
-                    return axios
+                    return this.axios
                         .get(`/api/all-students`, { params })
                         .then(({ data }) => ({
                             data: data.data,
@@ -267,7 +265,7 @@ export default {
                     const payload = {
                         id: key.id,
                     };
-                    return axios
+                    return this.axios
                         .post(`/api/delete-student`, payload)
                         .then(({ data }) => {
                             notify(
@@ -288,6 +286,20 @@ export default {
                         });
                 },
             });
+        },
+        breadcrumbsItems() {
+            return [
+                {
+                    text: this.$t("admin"),
+                    disabled: true,
+                    href: "dashboard",
+                },
+                {
+                    text: this.$t("students"),
+                    disabled: false,
+                    href: "/students",
+                },
+            ];
         },
         dataGrid: function () {
             return this.$refs[dataGridRefKey].instance;
@@ -310,9 +322,13 @@ export default {
         importCSV() {
             this.dialog = !this.dialog;
         },
+        async getCustomers() {
+            const result = await this.axios.get(`/api/all-customers`);
+            this.customers = result.data.data;
+        },
         async getCourses() {
             try {
-                const { data } = await axios.get(`/api/student-courses`);
+                const { data } = await this.axios.get(`/api/student-courses`);
                 this.Courses = data.courses;
             } catch (err) {}
         },
@@ -323,29 +339,34 @@ export default {
             let formData = new FormData();
             let input = this.$refs.fileInput;
             let file = input.files[0];
-
             if (!file) {
                 this.snackbar = true;
                 this.color = "error";
                 this.message = "Please choose CSV file";
                 return;
             }
-
             if (file.type !== "text/csv") {
                 this.snackbar = true;
                 this.color = "error";
                 this.message = "Please upload valid CSV file";
                 return;
             }
-
             formData.append("file", file);
-            axios
+            this.axios
                 .post("/api/upload-student-csv", formData)
                 .then(({ data }) => {
-                    this.dataGrid.refresh();
-                    this.snackbar = true;
-                    this.color = "success";
-                    this.message = "CSV file records updated successfully!";
+                    if (data.success == false && data.statusCode == "401") {
+                        this.dataGrid.refresh();
+                        this.snackbar = true;
+                        this.color = "error";
+                        this.message = data.message;
+                    }
+                    if (data.success == true && data.statusCode == "200") {
+                        this.dataGrid.refresh();
+                        this.snackbar = true;
+                        this.color = "success";
+                        this.message = data.message;
+                    }
                 })
                 .catch((error) => {
                     // Handle any errors that occur during the upload process
@@ -356,7 +377,6 @@ export default {
         onExporting(e) {
             const workbook = new Workbook();
             const worksheet = workbook.addWorksheet("Employees");
-
             exportDataGrid({
                 component: e.component,
                 worksheet: worksheet,
@@ -386,7 +406,7 @@ export default {
             link.setAttribute("href", encodedUri);
             link.setAttribute("download", "import.csv");
             link.click();
-            if(link){
+            if (link) {
                 this.snackbar = true;
                 this.color = "success";
                 this.message = "Sample CSV file downloaded successfully!";
@@ -395,11 +415,12 @@ export default {
     },
     mounted() {
         this.getCourses();
+        this.getCustomers();
     },
 };
 </script>
 <style>
-.import-btn{
-    min-width:34px
+.import-btn {
+    min-width: 34px;
 }
 </style>

@@ -3,20 +3,23 @@
         <v-card-title
             class="d-flex justify-space-between align-center px-6 pt-4 pb-2"
         >
-            <h3 v-if="studentData.id">Update Student</h3>
-            <h3 v-else>Add New Student</h3>
+            <h3 v-if="studentData.id">{{ $t("updateStudent") }}</h3>
+            <h3 v-else>{{ $t("addNewStudent") }}</h3>
             <v-icon icon="mdi-close" @click="closeModal"></v-icon>
         </v-card-title>
         <v-card-text class="px-3 py-0">
             <v-container>
                 <v-row>
                     <v-col cols="12" sm="6" md="6">
-                        <label>Courses <span class="required">*</span></label>
+                        <label
+                            >customersData
+                            <span class="required">*</span></label
+                        >
 
                         <v-select
-                            v-model="studentData.course_id"
-                            :items="Courses"
-                            placeholder="Course Name"
+                            v-model="customers.id"
+                            :items="customers.name"
+                            :placeholder="Customers"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
@@ -32,10 +35,37 @@
                         </div>
                     </v-col>
                     <v-col cols="12" sm="6" md="6">
-                        <label>Name <span class="required">*</span></label>
+                        <label
+                            >{{ $t("courses") }}
+                            <span class="required">*</span></label
+                        >
+
+                        <v-select
+                            v-model="studentData.course_id"
+                            :items="Courses"
+                            :placeholder="$t('courseName')"
+                            variant="outlined"
+                            hide-details="auto"
+                            class="mt-2"
+                            item-title="name"
+                            item-value="id"
+                        ></v-select>
+                        <div class="text-start">
+                            <span
+                                v-if="course_id_error"
+                                class="invalid-feedback text-red"
+                                >{{ course_id_error }}</span
+                            >
+                        </div>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                        <label
+                            >{{ $t("name") }}
+                            <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="studentData.name"
-                            placeholder="Student name"
+                            :placeholder="$t('studentName')"
                             class="mt-2"
                             hide-details="auto"
                             variant="outlined"
@@ -50,10 +80,13 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="6">
-                        <label>Email <span class="required">*</span></label>
+                        <label
+                            >{{ $t("email") }}
+                            <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="studentData.email"
-                            placeholder="Student email"
+                            :placeholder="$t('studentEmail')"
                             type="email"
                             hide-details="auto"
                             class="mt-2"
@@ -68,10 +101,13 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="6">
-                        <label>DOB <span class="required">*</span></label>
+                        <label
+                            >{{ $t("dob") }}
+                            <span class="required">*</span></label
+                        >
                         <v-text-field
                             v-model="studentData.birth_date"
-                            placeholder="Date of birth"
+                            :placeholder="$t('dob')"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
@@ -88,11 +124,12 @@
                     </v-col>
                     <v-col cols="6" sm="6">
                         <label
-                            >Birth place <span class="required">*</span></label
+                            >{{ $t("birthPlace") }}
+                            <span class="required">*</span></label
                         >
                         <v-text-field
                             v-model="studentData.birth_place"
-                            placeholder="Birth place"
+                            :placeholder="$t('birthPlace')"
                             hide-details="auto"
                             class="mt-2"
                             variant="outlined"
@@ -116,23 +153,22 @@
                 variant="outlined"
                 class="primary-border-btn"
             >
-                Close
+                {{ $t("close") }}
             </v-btn>
             <v-btn
                 @click="addStudent(studentData.id ? 'update' : 'add')"
                 class="primary-btn"
             >
-                Save
+                {{ $t("save") }}
             </v-btn>
         </v-card-actions>
     </v-card>
 </template>
 <script>
-import axios from "axios";
-
 export default {
     props: {
         studentData: Object,
+        customers: Object,
         Courses: Object,
     },
     data() {
@@ -158,7 +194,6 @@ export default {
             this.birth_date_error = "";
             this.birth_place_error = "";
             this.dobErrorMessage();
-
             if (!this.birth_date_error) {
                 try {
                     let payload = {
@@ -168,42 +203,37 @@ export default {
                         birth_date: this.studentData.birth_date,
                         birth_place: this.studentData.birth_place,
                     };
-
                     if (type == "update") {
                         payload.id = this.studentData.id;
-
-                        let result = await axios.post(
+                        let result = await this.axios.post(
                             "/api/update-student",
                             payload
                         );
-
-                        if(result.data.statusCode == 200){
+                        if (result.data.statusCode == 200) {
                             this.message = result.data.message;
-                            this.$emit('data-passed', {
+                            this.$emit("data-passed", {
                                 snackbar: true,
                                 message: this.message,
                                 color: this.color,
                                 refreshGrid: this.refreshGrid,
                             });
-                            
+
                             this.closeModal();
                         }
-
                     } else {
-                        let result = await axios.post(
+                        let result = await this.axios.post(
                             "/api/create-student",
                             payload
                         );
-
-                        if(result.data.statusCode == 200){
+                        if (result.data.statusCode == 200) {
                             this.message = result.data.message;
-                            this.$emit('data-passed', {
+                            this.$emit("data-passed", {
                                 snackbar: true,
                                 message: this.message,
                                 color: this.color,
                                 refreshGrid: this.refreshGrid,
                             });
-                            
+
                             this.closeModal();
                         }
                     }
