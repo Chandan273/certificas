@@ -18,6 +18,7 @@ class StudentController extends Controller
     public function store(Request $request){
 
         $validator = Validator::make($request->all(), [
+            'customer_id' => 'required',
             'course_id' => 'required',
             'name' => 'required',
             'email' => 'required|email',
@@ -59,7 +60,7 @@ class StudentController extends Controller
             return response()->json(['error'=>$validator->errors()], 422);
         }
 
-        return StudentService::update($request);
+        return response()->json(StudentService::update($request));
     }
 
     /**

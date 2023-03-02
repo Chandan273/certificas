@@ -1,0 +1,22 @@
+.drop-down-cls{
+    position: absolute;
+    top: 22px;
+    z-index: 99;
+    width: 500px;
+    .v-field__append-inner{
+        padding: 6px 0;
+    }
+    .v-input{
+        .v-input__control{
+            height:38px;
+            border: 1px solid #ddd;
+            .v-field__outline{
+                --v-field-border-width:0px;
+            }
+            .v-field__overlay{
+                background: transparent;
+            }
+        }
+    }
+  
+}

@@ -17,6 +17,29 @@
             <v-row>
                 <v-col cols="12" md="12">
                     <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 personal-info">
+                        <h3 class="mb-2 pb-2">{{ $t("selectLanguage") }}</h3>
+                        <v-row>
+                            <v-col cols="12" sm="3">
+                                <div class="mb-4">
+                                    <select
+                                        v-model="$i18n.locale"
+                                        @change="changeLanguage"
+                                    >
+                                        <option value="en">English</option>
+                                        <option value="nl">Dutch</option>
+                                    </select>
+                                    <!-- <v-select
+                                        v-model="$i18n.locale"
+                                        :items="languages"
+                                        item-title="name"
+                                        item-value="value"
+                                        @change="changeLanguage"
+                                    ></v-select> -->
+                                </div>
+                            </v-col>
+                        </v-row>
+                    </div>
+                    <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 personal-info">
                         <h3 class="mb-2 pb-2">
                             {{ $t("personalInformation") }}
                         </h3>
@@ -227,6 +250,10 @@ export default {
                 newPassword: null,
                 confirmPassword: null,
             },
+            // languages: [
+            //     { id: "en", name: "English" },
+            //     { id: "nl", name: "Dutch" },
+            // ],
         };
     },
     components: {
@@ -300,6 +327,9 @@ export default {
         resetForm() {
             this.$refs.myForm.reset();
         },
+        changeLanguage(obj) {
+            localStorage.setItem("language", obj.target.value);
+        },
         async updatePassword() {
             this.confirm_password_err = "";
             this.current_password_err = "";
@@ -369,5 +399,18 @@ export default {
             ];
         },
     },
+    mounted() {
+        const defaultLanguage = localStorage.getItem("language");
+        if (defaultLanguage) {
+            this.$i18n.locale = defaultLanguage;
+        }
+    },
 };
 </script>
+
+<style>
+select {
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+}
+</style>

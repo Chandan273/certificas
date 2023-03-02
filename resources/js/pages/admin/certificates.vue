@@ -44,14 +44,10 @@
                     :allow-adding="true"
                     :allow-deleting="true"
                     :use-icons="true"
-                    mode="popup"
                 >
-                    <DxPopup
-                        :show-title="true"
-                        :width="700"
-                        :height="375"
-                        title="Certificate Info"
-                    />
+                    <DxTexts
+                        confirmDeleteMessage="<p><h3 style='text-align:center'>Are you sure you want to delete this record? </h3></p><p> <b>Note:</b> Existing related records will not affected.</p>"
+                    ></DxTexts>
                 </DxEditing>
                 <DxPaging :page-size="10" />
                 <DxPager
@@ -120,6 +116,7 @@ import {
     DxLookup,
     DxForm,
     DxButton,
+    DxTexts,
 } from "devextreme-vue/data-grid";
 import { DxTextArea } from "devextreme-vue/text-area";
 import { DxItem } from "devextreme-vue/form";
@@ -146,6 +143,7 @@ export default {
         DxItem,
         DxTextArea,
         AddCertificate,
+        DxTexts,
     },
     data() {
         return {

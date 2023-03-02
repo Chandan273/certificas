@@ -32,10 +32,7 @@
                         </div>
                     </v-col>
                     <v-col cols="12" sm="6" md="6">
-                        <label
-                            >{{ $t("name") }}
-                            <span class="required">*</span></label
-                        >
+                        <label>{{ $t("name") }} </label>
                         <v-text-field
                             v-model="courseData.name"
                             :placeholder="$t('courseName')"
@@ -53,10 +50,7 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="6">
-                        <label
-                            >{{ $t("dateFrom") }}
-                            <span class="required">*</span></label
-                        >
+                        <label>{{ $t("dateFrom") }} </label>
                         <v-text-field
                             v-model="courseData.date_from"
                             type="date"
@@ -74,10 +68,7 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="6">
-                        <label
-                            >{{ $t("dateUntill") }}
-                            <span class="required">*</span></label
-                        >
+                        <label>{{ $t("dateUntill") }} </label>
                         <v-text-field
                             v-model="courseData.date_untill"
                             variant="outlined"
@@ -95,10 +86,7 @@
                         </div>
                     </v-col>
                     <v-col cols="12" sm="12">
-                        <label
-                            >{{ $t("description") }}
-                            <span class="required">*</span></label
-                        >
+                        <label>{{ $t("description") }} </label>
                         <v-textarea
                             v-model="courseData.description"
                             :placeholder="$t('courseDescription')"
@@ -120,6 +108,19 @@
         </v-card-text>
         <v-card-actions class="px-6 py-3">
             <v-spacer></v-spacer>
+            <v-btn
+                @click="courseModal()"
+                variant="outlined"
+                class="primary-btn left"
+            >
+                <v-icon icon="mdi-plus"></v-icon>
+                <v-tooltip
+                    activator="parent"
+                    location="left">
+                    To assign course to student click here 
+                </v-tooltip>
+                {{ "Assign Course" }}
+            </v-btn>
             <v-btn
                 @click="closeModal()"
                 variant="outlined"
@@ -157,6 +158,15 @@ export default {
         closeModal() {
             this.$emit("close");
         },
+        async courseModal() {
+            try {
+                const response = await this.addCourse();
+                if(response.success == true){
+                    this.$router.push("/assign-course");
+                }
+            } catch (error) {}
+        },
+
         async addCourse(type) {
             this.code_error = "";
             this.name_error = "";
@@ -205,6 +215,7 @@ export default {
                             });
 
                             this.closeModal();
+                            return result.data;
                         }
                     }
                 } catch (error) {

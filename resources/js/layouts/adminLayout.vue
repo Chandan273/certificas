@@ -47,10 +47,6 @@
                 icon="mdi-format-align-left"
             ></v-app-bar-nav-icon>
             <v-spacer />
-            <select v-model="$i18n.locale" @change="changeLanguage">
-                <option value="en">English</option>
-                <option value="nl">Dutch</option>
-            </select>
             <!-- profile dropdown  -->
             <v-menu class="profile-dropdown-menu">
                 <template v-slot:activator="{ props }">
@@ -138,9 +134,6 @@ export default {
                         this.$router.push("/login");
                     }
                 });
-        },
-        changeLanguage(obj) {
-            localStorage.setItem("language", obj.target.value);
         },
     },
     mounted() {

@@ -45,6 +45,9 @@
                     :allow-deleting="true"
                     :use-icons="true"
                 >
+                    <DxTexts
+                        confirmDeleteMessage="<p><h3 style='text-align:center'>Are you sure you want to delete this record? </h3></p><p> <b>Note:</b> Existing related records such as certificates are not affected.</p>"
+                    ></DxTexts>
                 </DxEditing>
                 <DxPaging :page-size="10" />
                 <DxPager
@@ -99,6 +102,7 @@ import {
     DxLookup,
     DxForm,
     DxButton,
+    DxTexts,
 } from "devextreme-vue/data-grid";
 import { DxTextArea } from "devextreme-vue/text-area";
 import { DxItem } from "devextreme-vue/form";
@@ -125,6 +129,7 @@ export default {
         DxTextArea,
         DxButton,
         AddCourses,
+        DxTexts,
     },
     data() {
         return {

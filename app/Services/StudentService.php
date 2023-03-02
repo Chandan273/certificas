@@ -27,6 +27,9 @@ class StudentService
     {
         try {
             $totalCount = 0;
+            $customer_id = $request->get('customer_id');
+            $course_id = $request->get('course_id');
+
             if(auth()->user()->hasRole('superadmin')) {
                 $students = Student::all();
             }
@@ -37,9 +40,17 @@ class StudentService
                         ->where('courses.tenant_id', $tenant->id)
                         ->whereNull('courses.deleted_at')
                         ->select('students.*');
+
+                    // Add filter based on customer_id
+                    if ($customer_id) {
+                        $students->where('students.customer_id', $customer_id);
+                    }
+                    if ($course_id) {
+                        $students->where('students.course_id', $course_id);
+                    }
                 }
                 else {
-                    $response = ['success' => false, 'message' => 'No data found', 'statusCode' => 404];
+                    $response = ['success' => false, 'message' => 'No data found', 'statusCode' => 401];
                 }
             }
 
@@ -66,7 +77,7 @@ class StudentService
             if ($students) {
                 $response = ['success' => true, 'data' => $students, 'totalCount' => $totalCount, 'statusCode' => 200];
             } else {
-                $response = ['success' => false, 'data' => [], 'totalCount' => $totalCount, 'message' => 'No Data Found!!', 'statusCode' => 404];
+                $response = ['success' => false, 'data' => [], 'totalCount' => $totalCount, 'message' => 'No Data Found!!', 'statusCode' => 401];
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());
@@ -78,7 +89,7 @@ class StudentService
     }
 
     /**
-     * Store a newly student resource in storage.
+     * Store student resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -122,7 +133,6 @@ class StudentService
     public static function update(Request $request)
     {
         try {
-
             $student = Student::where('id', $request->id)->first();
             $student->update(array_merge($request->all(), [
                 'birth_date' => date('Y-m-d H:i:s', strtotime($request->birth_date)),
@@ -207,10 +217,10 @@ class StudentService
 
                     if ($i == 0) {
 
-                        if ($filedata[0] == "Cursus-ID" || $filedata[1] == "Naam" || $filedata[2] == "E-mail" || $filedata[3] == "Geboortedatum" || $filedata[4] == "Geboorte plaats") {
+                        if ($filedata[0] == "Klanten ID" || $filedata[1] == "Cursus-ID" || $filedata[2] == "Naam" || $filedata[3] == "E-mail" || $filedata[4] == "Geboortedatum" || $filedata[5] == "Geboorte plaats") {
                             $i++;
                             continue;
-                        } else if ($filedata[0] == "Courses" || $filedata[1] == "Name" || $filedata[2] == "Email" || $filedata[3] == "Birth date" || $filedata[4] == "Birth place") {
+                        } else if ($filedata[0] == "Customer ID" || $filedata[1] == "Course ID" || $filedata[2] == "Name" || $filedata[3] == "Email" || $filedata[4] == "Birth date" || $filedata[5] == "Birth place") {
                             $i++;
                             continue;
                         } else {
@@ -219,13 +229,13 @@ class StudentService
                     }
 
                     // Check if any field is empty
-                    if (empty($filedata[0]) || empty($filedata[1]) || empty($filedata[2]) || empty($filedata[3]) || empty($filedata[4])) {
+                    if (empty($filedata[0]) || empty($filedata[1]) || empty($filedata[2]) || empty($filedata[3]) || empty($filedata[4]) || empty($filedata[5])) {
                         fclose($file);
                         unlink($filepath);
                         return ['success' => false, 'message' => "Please ensure all fields are filled in the CSV file", 'statusCode' => 401];
                     }
 
-                    $student = Student::withTrashed()->where('email', $filedata[2])->first();
+                    $student = Student::withTrashed()->where('course_id', $filedata[1])->where('email', $filedata[3])->first();
 
                     if ($student) {
                         // If the student is soft deleted, restore it
@@ -234,19 +244,23 @@ class StudentService
                         }
 
                         // Update the student data
-                        $student->course_id = $filedata[0];
-                        $student->name = $filedata[1];
-                        $student->birth_date = date('Y-m-d', strtotime($filedata[3]));
-                        $student->birth_place = $filedata[4];
+                        $student->customer_id = $filedata[0];
+                        //$student->course_id = $filedata[1];
+                        $student->name = $filedata[2];
+                        $student->birth_date = date('Y-m-d', strtotime($filedata[4]));
+                        $student->birth_place = $filedata[5];
                         $student->save();
+                        
                     } else {
+
                         $importData_arr[] = [
                             'tenant_id' => auth()->user()->id,
-                            'course_id' => $filedata[0],
-                            'name' => $filedata[1],
-                            'email' => $filedata[2],
-                            'birth_date' => date('Y-m-d', strtotime($filedata[3])),
-                            'birth_place' => $filedata[4],
+                            'customer_id' => $filedata[0],
+                            'course_id' => $filedata[1],
+                            'name' => $filedata[2],
+                            'email' => $filedata[3],
+                            'birth_date' => date('Y-m-d', strtotime($filedata[4])),
+                            'birth_place' => $filedata[5],
                             'created_at' => date('Y-m-d H:i:s'),
                             'updated_at' => date('Y-m-d H:i:s'),
                         ];
