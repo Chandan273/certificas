@@ -75,6 +75,12 @@ const routes = [
         meta: { requiresAuth: true },
         component: () => import("./pages/admin/certificates.vue"),
     },
+    {
+        name: "assign-course",
+        path: "/assign-course",
+        meta: { requiresAuth: true },
+        component: () => import("./pages/admin/AssignCourse.vue"),
+    },
 ];
 
 const router = createRouter({

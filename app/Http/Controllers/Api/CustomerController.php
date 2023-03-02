@@ -24,12 +24,14 @@ class CustomerController extends Controller
             'contact' => 'required|string',
             'organisation_number' => 'required',
             'email' => 'required|email|unique:customers',
-            'www' => 'required|url',
-            'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
+            'www'   => 'regex:/^(?:https?:\/\/)?(?:www\.)?([-a-z0-9]+\.)+[a-z]{2,}(?:\/.*)?$/i',
+            'phone' => 'regex:/^([0-9\s\-\+\(\)]*)$/',
             'address' => 'required',
-            'zip' => 'required',
-            'city' => 'required|string',
+            'zip' => 'min:5|max:8',
+            'city' => 'string',
             'country' => 'required',
+        ], [
+            'www' => 'Please enter valid URL',
         ]);
 
         if ($validator->fails()) {
@@ -67,11 +69,11 @@ class CustomerController extends Controller
             'contact' => 'required',
             'organisation_number' => 'required',
             'email' => 'required|email',
-            'www' => 'required|url',
-            'phone' => 'required',
+            'www' => 'url',
+            'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/',
             'address' => 'required',
-            'zip' => 'required',
-            'city' => 'required',
+            'zip' => 'min:5|max:8',
+            'city' => 'string',
             'country' => 'required',
         ]);
 

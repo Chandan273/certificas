@@ -119,10 +119,7 @@
                         </div>
                     </v-col>
                     <v-col cols="12" sm="4">
-                        <label
-                            >{{ $t("website") }}
-                            <span class="required">*</span></label
-                        >
+                        <label>{{ $t("website") }} </label>
                         <v-text-field
                             v-model="customer.www"
                             :placeholder="$t('website')"
@@ -130,6 +127,12 @@
                             class="mt-2"
                             variant="outlined"
                             required
+                            @input="
+                                customer.www = customer.www.replace(
+                                    /^https?:\/\//i,
+                                    ''
+                                )
+                            "
                         ></v-text-field>
                         <div class="text-start">
                             <span
@@ -152,6 +155,7 @@
                             v-model="customer.address"
                             :placeholder="$t('customerAddress')"
                             variant="outlined"
+                            rows="2"
                             hide-details="auto"
                             class="mt-2"
                             required
@@ -165,10 +169,7 @@
                         </div>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
-                        <label
-                            >{{ $t("phoneNumber")
-                            }}<span class="required">*</span></label
-                        >
+                        <label>{{ $t("phoneNumber") }}</label>
                         <v-text-field
                             v-model="customer.phone"
                             :placeholder="$t('phoneNumber')"
@@ -186,10 +187,7 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="4">
-                        <label
-                            >{{ $t("zip") }}
-                            <span class="required">*</span></label
-                        >
+                        <label>{{ $t("zip") }} </label>
                         <v-text-field
                             v-model="customer.zip"
                             :placeholder="$t('zip')"
@@ -197,6 +195,7 @@
                             class="mt-2"
                             variant="outlined"
                             required
+                            @input="customer.zip = customer.zip.toUpperCase()"
                         ></v-text-field>
                         <div class="text-start">
                             <span
@@ -207,10 +206,7 @@
                         </div>
                     </v-col>
                     <v-col cols="12" md="4">
-                        <label
-                            >{{ $t("city") }}
-                            <span class="required">*</span></label
-                        >
+                        <label>{{ $t("city") }} </label>
                         <v-text-field
                             v-model="customer.city"
                             :placeholder="$t('city')"
@@ -242,6 +238,7 @@
                             required
                             item-title="name"
                             item-value="alpha_2"
+                            :value="defaultCountry"
                         >
                             <template v-slot:prepend-item>
                                 <v-text-field
@@ -471,6 +468,13 @@ export default {
                             .indexOf(this.searchTerm.toLowerCase()) > -1
                     );
                 });
+            }
+        },
+    },
+    computed: {
+        defaultCountry() {
+            if (localStorage.getItem("language") === "nl") {
+                return "Norway";
             }
         },
     },

@@ -45,8 +45,10 @@
                     :allow-adding="true"
                     :allow-deleting="true"
                     :use-icons="true"
-                    mode="popup"
                 >
+                    <DxTexts
+                        confirmDeleteMessage="<p><h3 style='text-align:center'>Are you sure you want to delete this record? </h3></p><p> <b>Note:</b> Existing related records such as certificates are not affected.</p>"
+                    ></DxTexts>
                 </DxEditing>
                 <DxPaging :page-size="10" />
                 <DxPager
@@ -64,9 +66,6 @@
                     :caption="$t('organisationNumber')"
                 />
                 <DxColumn data-field="address" :caption="$t('address')" />
-                <DxColumn :visible="false" data-field="zip" />
-                <DxColumn :visible="false" data-field="city" />
-                <DxColumn :visible="false" data-field="country" />
                 <DxColumn
                     data-field="Action"
                     type="buttons"
@@ -100,6 +99,7 @@ import {
     DxLookup,
     DxForm,
     DxButton,
+    DxTexts,
 } from "devextreme-vue/data-grid";
 import { DxTextArea } from "devextreme-vue/text-area";
 import { DxItem } from "devextreme-vue/form";
@@ -125,6 +125,7 @@ export default {
         DxTextArea,
         AddCustomer,
         DxButton,
+        DxTexts,
     },
     data() {
         return {

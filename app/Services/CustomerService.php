@@ -38,7 +38,7 @@ class CustomerService
                     );
                 } else {
 
-                    $response = ['success' => false, 'message' => 'No data found', 'stausCode' => 400];
+                    $response = ['success' => false, 'message' => 'No data found', 'statusCode' => 400];
                 }
             }
 
@@ -63,7 +63,7 @@ class CustomerService
             $customers = $customers->get();
 
             if ($customers) {
-                $response = ['success' => true, 'data' => $customers, 'totalCount' => $totalCount, 'stausCode' => 200];
+                $response = ['success' => true, 'data' => $customers, 'totalCount' => $totalCount, 'statusCode' => 200];
             } else {
                 $response = ['success' => false, 'data' => [], 'totalCount' => $totalCount, 'message' => 'No Data Found!!','statusCode' => 404 ];
             }
@@ -88,13 +88,6 @@ class CustomerService
             $customer = Customer::create(array_merge($request->all(), [
                 'tenant_id' => auth()->user()->id,
             ]));
-
-            //$customer->assignRole("customer");
-            // $mailData = ["username"=>$user->username, "password"=>$password];
-            // Mail::send('mails.password', $mailData, function ($message) use ($user) {
-            //     $message->from('admin@certificas.com', 'Certificas');
-            //     $message->to($user->email)->subject('Account created');
-            // });
 
             $response = ['success' => true, 'message' => 'Customer Created Succesfully!', 'statusCode' => 200];
         } catch (Exception $e) {

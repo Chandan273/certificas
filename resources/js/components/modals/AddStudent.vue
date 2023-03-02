@@ -12,13 +12,13 @@
                 <v-row>
                     <v-col cols="12" sm="6" md="6">
                         <label
-                            >customersData
+                            >{{ $t("customerName") }}
                             <span class="required">*</span></label
                         >
                         <v-select
                             v-model="studentData.customer_id"
                             :items="customers"
-                            placeholder="Customer Name"
+                            :placeholder="$t('customerName')"
                             variant="outlined"
                             hide-details="auto"
                             class="mt-2"
@@ -27,9 +27,9 @@
                         ></v-select>
                         <div class="text-start">
                             <span
-                                v-if="course_id_error"
+                                v-if="customer_id_error"
                                 class="invalid-feedback text-red"
-                                >{{ course_id_error }}</span
+                                >{{ customer_id_error }}</span
                             >
                         </div>
                     </v-col>
@@ -172,6 +172,7 @@ export default {
     },
     data() {
         return {
+            customer_id_error: "",
             course_id_error: "",
             name_error: "",
             email_error: "",
@@ -187,6 +188,7 @@ export default {
             this.$emit("close");
         },
         async addStudent(type) {
+            this.customer_id_error = "";
             this.course_id_error = "";
             this.name_error = "";
             this.email_error = "";
@@ -238,6 +240,14 @@ export default {
                         }
                     }
                 } catch (error) {
+                    if (
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.customer_id
+                    ) {
+                        this.customer_id_error =
+                            "The Customer field is required.";
+                    }
                     if (
                         error.response.data &&
                         error.response.data.error &&

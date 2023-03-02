@@ -14,12 +14,6 @@ export const i18n = createI18n({
     messages,
 });
 
-export const i18n = createI18n({
-    locale: "nl",
-    fallbackLocale: "nl",
-    messages,
-});
-
 const app = createApp(App);
 app.config.globalProperties.axios = axios;
 app.use(router);

@@ -90,14 +90,17 @@ class CourseService
     {
         try {
 
+            $date_from = empty($request->date_from) ? Null : date('Y-m-d H:i:s', strtotime($request->date_from));
+            $date_untill = empty($request->date_untill) ? Null : date('Y-m-d H:i:s', strtotime($request->date_untill));
+            
             $tenant = User::where('id', auth()->user()->id)->first();
             $customer = Customer::where('tenant_id', $tenant->id)->first();
             $certificate_layout = Certificate_layout::where('tenant_id',$tenant->id)->first();
             $course = Course::create(array_merge($request->all(),[
                 'tenant_id' => $tenant->id,
                 'certificate_layout_id' => $certificate_layout->id,
-                'date_from' => date('Y-m-d H:i:s', strtotime($request->date_from)),
-                'date_untill' => date('Y-m-d H:i:s', strtotime($request->date_untill)),
+                'date_from' => $date_from,
+                'date_untill' => $date_untill,
             ]));
 
             $response = ['success' => true, 'message' => 'Course created succesfully!', 'statusCode' => 200 ];
@@ -121,10 +124,13 @@ class CourseService
     {
         try {
 
+            $date_from = empty($request->date_from) ? Null : date('Y-m-d H:i:s', strtotime($request->date_from));
+            $date_untill = empty($request->date_untill) ? Null : date('Y-m-d H:i:s', strtotime($request->date_untill));
+
             $course = Course::where('id', $request->id)->first();
-            $customer->update(array_merge($request->all(),[
-                'date_from' => date('Y-m-d H:i:s', strtotime($request->date_from)),
-                'date_untill' => date('Y-m-d H:i:s', strtotime($request->date_untill)),
+            $course->update(array_merge($request->all(),[
+                'date_from' => $date_from,
+                'date_untill' => $date_untill,
             ]));
 
             $response = ['success' => true, 'message' => 'Course Updated Succesfully!', 'statusCode' => 200 ];

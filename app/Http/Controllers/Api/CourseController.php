@@ -19,10 +19,6 @@ class CourseController extends Controller
 
         $validator = Validator::make($request->all(),[
             'code' => 'required',
-            'name' => 'required',
-            'description' => 'required',
-            'date_from' => 'required',
-            'date_untill' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -52,10 +48,6 @@ class CourseController extends Controller
 
         $validator = Validator::make($request->all(),[
             'code' => 'required',
-            'name' => 'required',
-            'description' => 'required',
-            'date_from' => 'required',
-            'date_untill' => 'required'
         ]);
 
         if ($validator->fails()) {

@@ -16,6 +16,26 @@
         <div
             class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 course-card students-table widget-card"
         >
+            <v-row align-items-center class="drop-down-cls">
+                <v-col lg="6">
+                    <v-select
+                        :placeholder="$t('selectCustomer')"
+                        v-model="selectedCustomer"
+                        :items="customers"
+                        item-title="name"
+                        item-value="id"
+                    ></v-select>
+                </v-col>
+                <v-col lg="6">
+                    <v-select
+                        :placeholder="$t('selectCourse')"
+                        v-model="selectedCourse"
+                        :items="Courses"
+                        item-title="name"
+                        item-value="id"
+                    ></v-select>
+                </v-col>
+            </v-row>
             <v-btn
                 class="primary-btn add-btn"
                 elevation="0"
@@ -110,23 +130,43 @@
                     :allow-deleting="true"
                     :use-icons="true"
                 >
+                    <DxTexts
+                        confirmDeleteMessage="<p><h3 style='text-align:center'>Are you sure you want to delete this record? </h3></p><p> <b>Note:</b> Existing related records such as certificates are not affected.</p>"
+                    ></DxTexts>
                 </DxEditing>
-
                 <DxColumn
                     :allow-exporting="true"
                     :visible="true"
-                    :width="100"
+                    :width="125"
+                    data-field="customer_id"
+                    :caption="$t('customerName')"
+                    alignment="left"
+                >
+                    <DxLookup
+                        :data-source="customers"
+                        value-expr="id"
+                        display-expr="name"
+                    />
+                </DxColumn>
+                <DxColumn
+                    :allow-exporting="true"
+                    :visible="true"
+                    :width="125"
                     data-field="course_id"
-                    :caption="$t('courseId')"
+                    :caption="$t('courseName')"
                     alignment="left"
                 >
                     <DxLookup
                         :data-source="Courses"
                         value-expr="id"
-                        display-expr="id"
+                        display-expr="name"
                     />
                 </DxColumn>
-                <DxColumn data-field="name" :caption="$t('name')" />
+                <DxColumn
+                    data-field="name"
+                    :width="125"
+                    :caption="$t('studentName')"
+                />
                 <DxColumn data-field="email" :caption="$t('email')" />
                 <DxColumn
                     data-field="birth_date"
@@ -190,6 +230,7 @@ import {
     DxButton,
     DxTextArea,
     DxItem,
+    DxTexts,
 } from "devextreme-vue/data-grid";
 import { Workbook } from "exceljs";
 import { saveAs } from "file-saver-es";
@@ -219,6 +260,7 @@ export default {
         DxToolbar,
         DxButton,
         AddStudent,
+        DxTexts,
     },
     data() {
         return {
@@ -231,14 +273,31 @@ export default {
             Courses: [],
             studentData: {},
             customers: {},
+            students: [],
+            totalCount: 0,
             dataGridRefKey,
+            selectedCustomer: null,
+            selectedCourse: null,
         };
     },
     computed: {
+        studentOptions() {
+            return this.students.map((student) => ({
+                name: student.name,
+                id: student.id,
+            }));
+        },
         dataSource: function () {
             return new CustomStore({
                 load: (loadOptions) => {
                     let params = {};
+                    if (this.selectedCustomer) {
+                        params.customer_id = this.selectedCustomer;
+                    }
+                    if (this.selectedCourse) {
+                        params.course_id = this.selectedCourse;
+                    }
+
                     [
                         "skip",
                         "take",
@@ -253,10 +312,14 @@ export default {
                     });
                     return this.axios
                         .get(`/api/all-students`, { params })
-                        .then(({ data }) => ({
-                            data: data.data,
-                            totalCount: data.totalCount,
-                        }))
+                        .then(({ data }) => {
+                            this.students = data.data;
+                            this.totalCount = data.totalCount;
+                            return {
+                                data: data.data,
+                                totalCount: data.totalCount,
+                            };
+                        })
                         .catch((error) => {
                             throw new Error("Data Loading Error");
                         });
@@ -398,7 +461,7 @@ export default {
         },
         downloadCSV() {
             const csvContent =
-                "Courses,Name,Email,Birth date,Birth place\n1,abc,abc@gmail.com,2023-02-08T05:30:00+05:30,Abc Location\n1,pqr,pqr@gmail.com,2023-02-08T05:30:00+05:30,Pqr Location\n1,xyz,xyz@gmail.com,2023-02-08T05:30:00+05:30,Xyz Location";
+                "Customer ID,Course ID,Name,Email,Birth date,Birth place\n1,1,abc,abc@gmail.com,2023-02-08T05:30:00+05:30,Abc Location\n1,1,pqr,pqr@gmail.com,2023-02-08T05:30:00+05:30,Pqr Location\n1,1,xyz,xyz@gmail.com,2023-02-08T05:30:00+05:30,Xyz Location";
             const encodedUri = encodeURI(
                 `data:text/csv;charset=utf-8,${csvContent}`
             );
@@ -417,10 +480,25 @@ export default {
         this.getCourses();
         this.getCustomers();
     },
+    watch: {
+        selectedCustomer(newVal) {
+            this.dataGrid.refresh();
+            if (newVal) {
+                this.selectedCourse = null;
+            }
+        },
+        selectedCourse() {
+            this.dataGrid.refresh();
+        },
+    },
 };
 </script>
 <style>
 .import-btn {
     min-width: 34px;
+}
+span.v-select__selection-text {
+    white-space: nowrap;
+    overflow: hidden;
 }
 </style>
