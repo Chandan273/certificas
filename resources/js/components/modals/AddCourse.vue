@@ -107,20 +107,19 @@
             </v-container>
         </v-card-text>
         <v-card-actions class="px-6 py-3">
-            <v-spacer></v-spacer>
             <v-btn
+                v-if="!courseData.id"
                 @click="courseModal()"
                 variant="outlined"
                 class="primary-btn left"
             >
                 <v-icon icon="mdi-plus"></v-icon>
-                <v-tooltip
-                    activator="parent"
-                    location="left">
-                    To assign course to student click here 
+                <v-tooltip activator="parent" location="left">
+                    To assign course to student click here
                 </v-tooltip>
                 {{ "Assign Course" }}
             </v-btn>
+            <v-spacer></v-spacer>
             <v-btn
                 @click="closeModal()"
                 variant="outlined"
@@ -161,7 +160,7 @@ export default {
         async courseModal() {
             try {
                 const response = await this.addCourse();
-                if(response.success == true){
+                if (response.success == true) {
                     this.$router.push("/assign-course");
                 }
             } catch (error) {}
