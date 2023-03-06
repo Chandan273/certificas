@@ -49,4 +49,6 @@ Route::middleware("auth:api")->group(function(){
     Route::get("all-certificates", [App\Http\Controllers\Api\CertificateController::class, 'index']);
     Route::post('update-certificate', [App\Http\Controllers\Api\CertificateController::class, 'update']);
     Route::post('delete-certificate', [App\Http\Controllers\Api\CertificateController::class, 'destroy']);
+    Route::post('get-students', [App\Http\Controllers\Api\StudentController::class, 'getStudents']);
+    Route::post('create-tenant-courses', [App\Http\Controllers\Api\StudentController::class, 'createTenantCourses']);
 });

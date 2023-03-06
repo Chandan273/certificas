@@ -1,0 +1,207 @@
+<template>
+    <v-container>
+        <v-row>
+            <v-col cols="12" sm="6" md="6">
+                <label>{{ $t("name") }} <span class="required">*</span></label>
+                <v-text-field
+                    v-model="studentData.name"
+                    :placeholder="$t('studentName')"
+                    class="mt-2"
+                    hide-details="auto"
+                    variant="outlined"
+                    required
+                ></v-text-field>
+                <div class="text-start">
+                    <span v-if="name_error" class="invalid-feedback text-red">{{
+                        name_error
+                    }}</span>
+                </div>
+            </v-col>
+            <v-col cols="12" md="6">
+                <label>{{ $t("email") }} <span class="required">*</span></label>
+                <v-text-field
+                    v-model="studentData.email"
+                    :placeholder="$t('studentEmail')"
+                    type="email"
+                    hide-details="auto"
+                    class="mt-2"
+                    variant="outlined"
+                ></v-text-field>
+                <div class="text-start">
+                    <span
+                        v-if="email_error"
+                        class="invalid-feedback text-red"
+                        >{{ email_error }}</span
+                    >
+                </div>
+            </v-col>
+            <v-col cols="12" md="6">
+                <label>{{ $t("dob") }} <span class="required">*</span></label>
+                <v-text-field
+                    v-model="studentData.birth_date"
+                    :placeholder="$t('dob')"
+                    variant="outlined"
+                    hide-details="auto"
+                    class="mt-2"
+                    type="date"
+                    required
+                ></v-text-field>
+                <div class="text-start">
+                    <span
+                        v-if="birth_date_error"
+                        class="invalid-feedback text-red"
+                        >{{ birth_date_error }}</span
+                    >
+                </div>
+            </v-col>
+            <v-col cols="6" sm="6">
+                <label
+                    >{{ $t("birthPlace") }}
+                    <span class="required">*</span></label
+                >
+                <v-text-field
+                    v-model="studentData.birth_place"
+                    :placeholder="$t('birthPlace')"
+                    hide-details="auto"
+                    class="mt-2"
+                    variant="outlined"
+                    required
+                ></v-text-field>
+                <div class="text-start">
+                    <span
+                        v-if="birth_place_error"
+                        class="invalid-feedback text-red"
+                        >{{ birth_place_error }}</span
+                    >
+                </div>
+            </v-col>
+        </v-row>
+    </v-container>
+    <v-card-actions class="px-6 py-3">
+        <v-spacer></v-spacer>
+        <v-btn
+            @click="closeModal()"
+            variant="outlined"
+            class="primary-border-btn"
+        >
+            {{ $t("close") }}
+        </v-btn>
+        <v-btn @click="addStudent()" class="primary-btn">
+            {{ $t("save") }}
+        </v-btn>
+    </v-card-actions>
+</template>
+<script>
+export default {
+    name: "AddNewStudent",
+    data() {
+        return {
+            studentData: {
+                name: "",
+                email: "",
+                birth_date: "",
+                birth_place: "",
+            },
+            name_error: "",
+            email_error: "",
+            birth_date_error: "",
+            birth_place_error: "",
+            message: "",
+            color: "success",
+        };
+    },
+    methods: {
+        closeModal() {
+            this.$emit("close");
+        },
+        async addStudent() {
+            this.name_error = "";
+            this.email_error = "";
+            this.birth_date_error = "";
+            this.birth_place_error = "";
+            this.dobErrorMessage();
+
+            try {
+                let payload = {
+                    name: this.studentData.name,
+                    email: this.studentData.email,
+                    birth_date: this.studentData.birth_date,
+                    birth_place: this.studentData.birth_place,
+                };
+
+                let result = await this.axios.post(
+                    `/api/create-student`,
+                    payload
+                );
+                if (result.data.statusCode == 200) {
+                    this.message = result.data.message;
+                    this.$emit("data-passed", {
+                        snackbar: true,
+                        message: this.message,
+                        color: this.color,
+                    });
+
+                    this.closeModal();
+                }
+            } catch (error) {
+                if (
+                    error.response.data &&
+                    error.response.data.error &&
+                    error.response.data.error.customer_id
+                ) {
+                    this.customer_id_error = "The Customer field is required.";
+                }
+                if (
+                    error.response.data &&
+                    error.response.data.error &&
+                    error.response.data.error.course_id
+                ) {
+                    this.course_id_error = "The Course field is required.";
+                }
+                if (
+                    error.response.data &&
+                    error.response.data.error &&
+                    error.response.data.error.name
+                ) {
+                    this.name_error = error.response.data.error.name[0];
+                }
+                if (
+                    error.response.data &&
+                    error.response.data.error &&
+                    error.response.data.error.email
+                ) {
+                    this.email_error = error.response.data.error.email[0];
+                }
+                if (
+                    error.response.data &&
+                    error.response.data.error &&
+                    error.response.data.error.birth_date
+                ) {
+                    this.birth_date_error =
+                        error.response.data.error.birth_date[0];
+                }
+                if (
+                    error.response.data &&
+                    error.response.data.error &&
+                    error.response.data.error.birth_place
+                ) {
+                    this.birth_place_error =
+                        error.response.data.error.birth_place[0];
+                }
+            }
+        },
+        dobErrorMessage() {
+            if (this.studentData.birth_date) {
+                let dob = new Date(this.studentData.birth_date);
+                let ageInYears = Math.floor((new Date() - dob) / 31557600000);
+                if (ageInYears < 15) {
+                    this.birth_date_error =
+                        "You must be at least 15 years old.";
+                } else {
+                    this.birth_date_error = "";
+                }
+            }
+        },
+    },
+};
+</script>

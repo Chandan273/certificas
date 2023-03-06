@@ -271,8 +271,8 @@ export default {
             message: "",
             color: "success",
             Courses: [],
-            studentData: {},
-            customers: {},
+            studentData: [],
+            customers: [],
             students: [],
             totalCount: 0,
             dataGridRefKey,
@@ -399,6 +399,7 @@ export default {
             this.file = event.target.files[0];
         },
         updateFile() {
+            console.log(this.selectedCustomer,this.selectedCourse);
             let formData = new FormData();
             let input = this.$refs.fileInput;
             let file = input.files[0];
@@ -414,6 +415,8 @@ export default {
                 this.message = "Please upload valid CSV file";
                 return;
             }
+            formData.append("customer_id", this.selectedCustomer);
+            formData.append("course_id", this.selectedCourse);
             formData.append("file", file);
             this.axios
                 .post("/api/upload-student-csv", formData)
