@@ -1,96 +1,59 @@
 <template>
-    <v-container>
-        <v-row>
-            <v-col cols="12" sm="6" md="6">
-                <label>{{ $t("name") }} <span class="required">*</span></label>
-                <v-text-field
-                    v-model="studentData.name"
-                    :placeholder="$t('studentName')"
-                    class="mt-2"
-                    hide-details="auto"
-                    variant="outlined"
-                    required
-                ></v-text-field>
-                <div class="text-start">
-                    <span v-if="name_error" class="invalid-feedback text-red">{{
+<v-card class="course-modal">
+    <v-card-title class="d-flex justify-space-between align-center px-6 pt-4 pb-2">
+        <h3 v-if="studentData.id">{{ $t("updateStudent") }}</h3>
+        <h3 v-else>{{ $t("addNewStudent") }}</h3>
+        <v-icon icon="mdi-close" @click="closeModal"></v-icon>
+    </v-card-title>
+    <v-card-text class="px-3 py-0">
+        <v-container>
+            <v-row>
+                <v-col cols="12" sm="6" md="6">
+                    <label>{{ $t("name") }} <span class="required">*</span></label>
+                    <v-text-field v-model="studentData.name" :placeholder="$t('studentName')" class="mt-2" hide-details="auto" variant="outlined" required></v-text-field>
+                    <div class="text-start">
+                        <span v-if="name_error" class="invalid-feedback text-red">{{
                         name_error
                     }}</span>
-                </div>
-            </v-col>
-            <v-col cols="12" md="6">
-                <label>{{ $t("email") }} <span class="required">*</span></label>
-                <v-text-field
-                    v-model="studentData.email"
-                    :placeholder="$t('studentEmail')"
-                    type="email"
-                    hide-details="auto"
-                    class="mt-2"
-                    variant="outlined"
-                ></v-text-field>
-                <div class="text-start">
-                    <span
-                        v-if="email_error"
-                        class="invalid-feedback text-red"
-                        >{{ email_error }}</span
-                    >
-                </div>
-            </v-col>
-            <v-col cols="12" md="6">
-                <label>{{ $t("dob") }} <span class="required">*</span></label>
-                <v-text-field
-                    v-model="studentData.birth_date"
-                    :placeholder="$t('dob')"
-                    variant="outlined"
-                    hide-details="auto"
-                    class="mt-2"
-                    type="date"
-                    required
-                ></v-text-field>
-                <div class="text-start">
-                    <span
-                        v-if="birth_date_error"
-                        class="invalid-feedback text-red"
-                        >{{ birth_date_error }}</span
-                    >
-                </div>
-            </v-col>
-            <v-col cols="6" sm="6">
-                <label
-                    >{{ $t("birthPlace") }}
-                    <span class="required">*</span></label
-                >
-                <v-text-field
-                    v-model="studentData.birth_place"
-                    :placeholder="$t('birthPlace')"
-                    hide-details="auto"
-                    class="mt-2"
-                    variant="outlined"
-                    required
-                ></v-text-field>
-                <div class="text-start">
-                    <span
-                        v-if="birth_place_error"
-                        class="invalid-feedback text-red"
-                        >{{ birth_place_error }}</span
-                    >
-                </div>
-            </v-col>
-        </v-row>
-    </v-container>
+                    </div>
+                </v-col>
+                <v-col cols="12" md="6">
+                    <label>{{ $t("email") }} <span class="required">*</span></label>
+                    <v-text-field v-model="studentData.email" :placeholder="$t('studentEmail')" type="email" hide-details="auto" class="mt-2" variant="outlined"></v-text-field>
+                    <div class="text-start">
+                        <span v-if="email_error" class="invalid-feedback text-red">{{ email_error }}</span>
+                    </div>
+                </v-col>
+                <v-col cols="12" md="6">
+                    <label>{{ $t("dob") }} <span class="required">*</span></label>
+                    <v-text-field v-model="studentData.birth_date" :placeholder="$t('dob')" variant="outlined" hide-details="auto" class="mt-2" type="date" required></v-text-field>
+                    <div class="text-start">
+                        <span v-if="birth_date_error" class="invalid-feedback text-red">{{ birth_date_error }}</span>
+                    </div>
+                </v-col>
+                <v-col cols="6" sm="6">
+                    <label>{{ $t("birthPlace") }}
+                        <span class="required">*</span></label>
+                    <v-text-field v-model="studentData.birth_place" :placeholder="$t('birthPlace')" hide-details="auto" class="mt-2" variant="outlined" required></v-text-field>
+                    <div class="text-start">
+                        <span v-if="birth_place_error" class="invalid-feedback text-red">{{ birth_place_error }}</span>
+                    </div>
+                </v-col>
+            </v-row>
+        </v-container>
+    </v-card-text>
     <v-card-actions class="px-6 py-3">
         <v-spacer></v-spacer>
-        <v-btn
-            @click="closeModal()"
-            variant="outlined"
-            class="primary-border-btn"
-        >
+        <v-btn @click="closeModal()" variant="outlined" class="primary-border-btn">
             {{ $t("close") }}
         </v-btn>
         <v-btn @click="addStudent()" class="primary-btn">
             {{ $t("save") }}
         </v-btn>
     </v-card-actions>
+</v-card>
 </template>
+
 <script>
 export default {
     name: "AddNewStudent",
@@ -108,6 +71,8 @@ export default {
             birth_place_error: "",
             message: "",
             color: "success",
+            refreshGrid: "refreshGrid",
+            refreshGrid: true,
         };
     },
     methods: {
@@ -139,6 +104,7 @@ export default {
                         snackbar: true,
                         message: this.message,
                         color: this.color,
+                        refreshGrid: this.refreshGrid,
                     });
 
                     this.closeModal();

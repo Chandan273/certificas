@@ -37,10 +37,8 @@ class StudentService
             else {
                 $tenant = User::where('id', auth()->user()->id)->first();
                 if($tenant) {
-                    $students = Student::join('courses', 'students.course_id', '=', 'courses.id')
-                        ->where('courses.tenant_id', $tenant->id)
-                        ->whereNull('courses.deleted_at')
-                        ->select('students.*');
+                    $students = Student::where('tenant_id', $tenant->id)
+                        ->whereNull('deleted_at');
 
                     // Add filter based on customer_id
                     if ($customer_id) {
