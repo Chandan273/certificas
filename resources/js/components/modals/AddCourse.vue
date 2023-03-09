@@ -107,18 +107,12 @@
             </v-container>
         </v-card-text>
         <v-card-actions class="px-6 py-3">
-            <v-btn
-                v-if="!courseData.id"
-                @click="courseModal()"
-                variant="outlined"
-                class="primary-btn left"
-            >
-                <v-icon icon="mdi-plus"></v-icon>
-                <v-tooltip activator="parent" location="left">
-                    To assign course to student click here
-                </v-tooltip>
-                {{ "Assign Course" }}
-            </v-btn>
+            <v-checkbox
+                v-model="selectTenantCourse"
+                label="Click To Assign Course to Tenant"
+                value="1"
+                >
+            </v-checkbox>
             <v-spacer></v-spacer>
             <v-btn
                 @click="closeModal()"
@@ -133,6 +127,18 @@
             >
                 {{ $t("save") }}
             </v-btn>
+            <v-btn
+                v-if="!courseData.id"
+                @click="courseModal()"
+                variant="outlined"
+                class="primary-btn left"
+            >
+                <v-icon icon="mdi-plus"></v-icon>
+                <v-tooltip activator="parent" location="right">
+                    To assign course to student click here
+                </v-tooltip>
+                {{ "Assign Course" }}
+            </v-btn>
         </v-card-actions>
     </v-card>
 </template>
@@ -143,6 +149,7 @@ export default {
     },
     data() {
         return {
+            selectTenantCourse: null,
             code_error: "",
             name_error: "",
             date_from_error: "",
