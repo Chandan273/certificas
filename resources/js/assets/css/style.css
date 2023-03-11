@@ -3,7 +3,7 @@
   }
   .link-box a {
     text-decoration: none;
-    color: #0096ef;
+   
     font-weight: 500;
   }
   .link-box a:hover {
@@ -16,6 +16,8 @@
     min-height: 41px;
   }
 
+
+/* 
 .v-card {
     &.course-card {
         position: relative;
@@ -27,4 +29,9 @@
         z-index: 2;
         right: 230px;
     }
+} */
+
+.page-header  button.v-btn.v-theme--light.v-btn--density-default.v-btn--size-default.v-btn--variant-text span.v-btn__content {
+  background:#008cff;
+  padding:5px;
 }

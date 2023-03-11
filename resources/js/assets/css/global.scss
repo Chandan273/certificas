@@ -1,22 +1,100 @@
-.drop-down-cls{
+.drop-down-cls {
     position: absolute;
     top: 22px;
     z-index: 99;
     width: 500px;
-    .v-field__append-inner{
+    .v-field__append-inner {
         padding: 6px 0;
     }
-    .v-input{
-        .v-input__control{
-            height:38px;
-            border: 1px solid #ddd;
-            .v-field__outline{
-                --v-field-border-width:0px;
+    .v-input {
+        .v-input__control {
+            height: 36px;
+            border: 1px solid #cac9c9;
+            border-radius: 5px;
+            background-color: #FFF;
+            font-size: 14px;
+            line-height: 22px;
+
+            .v-field__outline {
+                --v-field-border-width: 0px;
             }
-            .v-field__overlay{
+
+            .v-field__overlay {
                 background: transparent;
+            }
+
+            .v-field__input {
+                font-size: 14px;
             }
         }
     }
-  
+}
+.v-row .v-col-sm-3.v-col-12 select.border.rounded-lg.languages_selection {
+    background: white;
+    border: 1px solid #cac9c9;
+    box-shadow: -2px 0px 5px 0px rgba(0, 0, 0, 0.37);
+}
+.personal-info {
+    border-radius: 5px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+.update_password {
+    
+    border-radius: 5px;
+    margin-top: 20px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+.sidebar-text {
+    color: white;
+}
+.header_button  {
+    background-color: #008cff;
+    color:#FFF;
+
+}
+.personal-info   h3 , .update_password h3 {
+    color:#008cff;
+    background-color:#f5fbff ;
+}
+input#input-10,
+input#input-12,
+input#input-14,
+input#input-18,
+input#input-20,
+input#input-22 {
+    background: #FFF;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px 0px;
+
+}
+.v-toolbar__content {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px 0px;
+}
+.languages_selection  {
+
+    .v-input__details {
+        display:none;
+    }
+} 
+.v-sheet.v-theme--light.d-flex.breadcrunms_and_languagechange {
+    background:transparent;
+}
+.v-sheet.v-theme--light.ma-2.pa-2.me-auto {
+    background:transparent;
+}
+.v-sheet.v-theme--light.ma-2.pa-2.d-flex.align-center {
+    background:transparent;
+}
+.v-sheet.v-theme--light.ma-2.pa-2 {
+    background:transparent
+}
+.languages_selection {
+    height: 36px;
+    border: 1px solid #cac9c9;
+    border-radius: 5px;
+    background-color: transparent;
+    font-size: 14px;
+    line-height: 20px;
+}
+.languages_selection .v-field__append-inner {
+    padding-top:6px;
 }

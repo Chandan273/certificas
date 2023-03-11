@@ -12,6 +12,7 @@ use App\Models\Customer;
 use App\Models\Certificate;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\Tenant_course;
 use Spatie\Permission\Models\Role;
 use App\Models\Certificate_layout;
 
@@ -103,7 +104,7 @@ class CourseService
                 'date_untill' => $date_untill,
             ]));
 
-            $response = ['success' => true, 'message' => 'Course created succesfully!', 'statusCode' => 200 ];
+            $response = ['success' => true, 'course'=> $course, 'message' => 'Course created succesfully!', 'statusCode' => 200 ];
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
@@ -144,6 +145,40 @@ class CourseService
     }
 
     /**
+     * Store a newly tenant courses resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public static function createTenantCourses(Request $request){
+        try {
+            $tenant_course = Tenant_course::withTrashed()
+                ->where('course_id', $request->course_id)
+                ->where('tenant_id', auth()->user()->id)
+                ->first();
+
+            if ($tenant_course) {
+                $tenant_course->fill($request->all())->save();
+
+                $response = ['success' => true, 'message' => "Tenant Course updated successfully!", 'statusCode' => 200];
+            } else {
+                $tenant_course = Tenant_course::create(array_merge($request->all(), [
+                    'tenant_id' => auth()->user()->id,
+                    'students' => json_encode($request->students),
+                ]));
+
+                $response = ['success' => true, 'message' => "Tenant Course created successfully!", 'statusCode' => 200];
+            }
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
+        }
+
+        return $response;
+    } 
+
+    /**
      * Delete record with the course id in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -167,6 +202,16 @@ class CourseService
         }
 
         return $response;
+    }
+
+    /**
+     * List of tenant student courses.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public static function tenantCourse(Request $request){
+        return $tenantCourse = Tenant_course::where('course_id',  $request->course_id)->first();
     }
 }
 

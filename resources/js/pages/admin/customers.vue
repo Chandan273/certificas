@@ -8,14 +8,11 @@
             top
             location="top right"
             :color="color"
-            timeout="3000"
-        >
+            timeout="3000">
             <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
         </v-snackbar>
         <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
-        <div
-            class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 course-card widget-card widget-card"
-        >
+        <div class="pa-5 pa-sm-4 pa-md-4 pa-lg-6 course-card widget-card">
             <v-btn
                 class="primary-btn add-btn"
                 elevation="0"
@@ -66,15 +63,11 @@
                     :caption="$t('organisationNumber')"
                 />
                 <DxColumn data-field="address" :caption="$t('address')" />
-                <DxColumn
-                    data-field="Action"
-                    type="buttons"
-                    alignment="left"
-                    :caption="$t('action')"
-                >
+                <DxColumn data-field="Action" type="buttons" alignment="left" 
+                    :caption="$t('action')">
                     <DxButton
                         name="edit"
-                        hint="Edit"
+                        hint="Edit Customer Details"
                         icon="edit"
                         @click="editCustomer"
                     />
@@ -225,3 +218,4 @@ export default {
     },
 };
 </script>
+

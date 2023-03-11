@@ -81,6 +81,18 @@ const routes = [
         meta: { requiresAuth: true },
         component: () => import("./pages/admin/AssignCourse.vue"),
     },
+    {
+        name: "update-assign-course",
+        path: "/update-assign-course/:id",
+        meta: { requiresAuth: true },
+        component: () => import("./pages/admin/UpdateAssignCourse.vue"),
+    },
+    {
+        name: "student-info",
+        path: "/student-info/:id",
+        meta: { requiresAuth: true },
+        component: () => import("./pages/admin/StudentInfo.vue"),
+    },
 ];
 
 const router = createRouter({

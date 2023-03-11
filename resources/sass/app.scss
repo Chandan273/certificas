@@ -17,7 +17,7 @@
 
 a.mainPrimary,
 .mainPrimary {
-    color: var(--main-primary);
+    color:var(--white) ;
 }
 
 * {
@@ -100,10 +100,9 @@ html {
         }
 
         .widget-card {
-            background: var(--white);
-            border-radius: 10px;
-            border-bottom: 1px solid #e0e3e8;
-            box-shadow: 0 1px 4px rgb(0 0 0 / 10%);
+            // background: var(--white);
+            // border-radius: 0;
+            // box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 
             &.course-card {
                 position: relative;
@@ -177,7 +176,6 @@ html {
 
                     .v-input {
                         --v-input-control-height: 38px;
-
                         .v-input__control {
                             .v-field__append-inner {
                                 padding-top: 8px;
@@ -188,17 +186,34 @@ html {
 
                 .v-card-actions {
                     border-top: 1px solid #ebebeb;
+
+                    .tenant-checkbox {
+                        font-size: 14px;
+
+                        .v-label {
+                            font-size: 13px;
+                            color: #000;
+                            opacity: 1;
+                        }
+                    }
                 }
             }
         }
 
         .left-sidebar {
+            background-color: #008cff;
+
             .v-list {
                 .v-list-item {
                     min-height: 44px;
+                    .v-list-item__prepend{
+                        color: #fff;
+                    }
 
                     .v-list-item-title {
                         font-size: 16px;
+                        color: #fff;
+                        z-index:9999;
                     }
                 }
             }
@@ -210,7 +225,7 @@ html {
         }
 
         a.v-list-item.v-list-item--active {
-            color: var(--main-primary);
+            color:#000000;
         }
 
     }
@@ -456,6 +471,24 @@ html {
 
 }
 
+.student-select {
+
+    .v-field__append-inner {
+        padding-top: 8px;
+    }
+
+    .v-field__clearable {
+        font-size: 14px;
+        padding-top: 10px;
+    }
+}
+.assign-course-table{
+.dx-header-row{
+    background: var(--main-primary);
+    color: #fff;
+}
+}
+
 .login-page {
     span {
         &.invalid-feedback {
@@ -533,23 +566,15 @@ html {
 }
 
 .profile-page {
-    .personal-info {
-        form {
-            border-bottom: 1px solid #ddd;
-        }
-    }
-
     h3 {
         font-weight: 600;
         font-size: 20px;
     }
-
     form.v-form {
         label {
             font-weight: 600;
             color: var(--body-font)
         }
-
         .v-input {
             .v-field__outline {
                 .v-field__outline__start {
@@ -564,7 +589,6 @@ html {
             }
         }
     }
-
     .v-btn {
         box-shadow: 0 2px 8px rgb(0 0 0 / 16%);
         border-radius: 4px;
@@ -595,6 +619,7 @@ ul {
 .tenants-table {
     .dx-datagrid {
         .dx-datagrid-header-panel {
+                //  margin:20px auto;
             .dx-toolbar-button {
                 .dx-item-content {
                     .dx-button {
@@ -624,8 +649,17 @@ ul {
 header {
     &.v-toolbar {
         &.v-app-bar.page-header {
-            background: #008cff;
+            background: #fff;
             color: #fff;
+
+            button {
+                &.v-app-bar-nav-icon {
+                    background: var(--main-primary);
+                    border-radius: 0;
+                    width: 40px;
+                    height: 40px;
+                }
+            }
         }
     }
 }
@@ -633,20 +667,16 @@ header {
 span.invalid-feedback.text-red {
     font-size: 14px;
 }
-
-
 @media only screen and (min-width: 1600px) {
     .container.admin-container {
         max-width: 1500px;
     }
 }
-
 @media (min-width: 1400px) {
     .container.main-container {
         max-width: 1320px;
     }
 }
-
 @media (max-width: 991px) {
     html {
         body {

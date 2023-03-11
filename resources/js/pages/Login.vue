@@ -1,7 +1,24 @@
 <template>
-    <div class="auth-wrapper login-page">
-        <div class="d-flex align-center parent" style="height: 100vh">
+    <div class="auth-wrapper login-page" style="height: 100vh">
+
+        <v-sheet class="d-flex breadcrunms_and_languagechange">
+            <v-sheet class="ma-2 pa-2 me-auto">
+            </v-sheet>
+            <v-sheet class="ma-2 pa-2 d-flex align-center  ">
+                <p class="text-body-1 
+                 font-weight-black  text-blue 
+                    ">{{ $t("selectLanguage") }}</p>
+            </v-sheet>
+            <v-sheet class="ma-2 pa-2">
+                <select v-model="$i18n.locale" @change="changeLanguage">
+                    <option value="en">English</option>
+                    <option value="nl">Dutch</option>
+                </select>
+            </v-sheet>
+        </v-sheet>
+        <div class="d-flex align-center parent justify-content my-auto py-auto" style="height:80%;">
             <v-container>
+
                 <div class="white child-wrapper">
                     <v-row no-gutters>
                         <v-col cols="12" sm="6">
@@ -14,84 +31,43 @@
                                         {{ $t("loginTitle") }}
                                     </p>
                                 </div>
-                                <v-form
-                                    ref="form"
-                                    @submit.prevent="login"
-                                    class="login-form"
-                                >
+                                <v-form ref="form" @submit.prevent="login" class="login-form">
                                     <div class="mb-5">
                                         <label for="email">{{
                                             $t("email")
                                         }}</label>
-                                        <v-text-field
-                                            variant="outlined"
-                                            v-model="loginForm.email"
-                                            required
-                                            name="email"
-                                            :placeholder="$t('enterYourEmail')"
-                                            hide-details="auto"
-                                            prepend-icon="mdi-account"
-                                            class="mt-2"
-                                        />
+                                        <v-text-field variant="outlined" v-model="loginForm.email" required name="email"
+                                            :placeholder="$t('enterYourEmail')" hide-details="auto"
+                                            prepend-icon="mdi-account" class="mt-2" />
                                         <div class="text-start">
-                                            <span
-                                                v-if="email_error"
-                                                class="invalid-feedback text-red"
-                                                >{{ email_error }}</span
-                                            >
+                                            <span v-if="email_error" class="invalid-feedback text-red">{{ email_error
+                                            }}</span>
                                         </div>
                                     </div>
                                     <div class="mb-5">
                                         <label>{{ $t("password") }}</label>
-                                        <v-text-field
-                                            variant="outlined"
-                                            type="Password"
-                                            v-model="loginForm.password"
-                                            required
-                                            :placeholder="
+                                        <v-text-field variant="outlined" type="Password" v-model="loginForm.password"
+                                            required :placeholder="
                                                 $t('enterYourPassword')
-                                            "
-                                            hide-details="auto"
-                                            prepend-icon="mdi-lock"
-                                            class="mt-2"
-                                        />
+                                            " hide-details="auto" prepend-icon="mdi-lock" class="mt-2" />
                                         <div class="text-start">
-                                            <span
-                                                v-if="password_error"
-                                                class="invalid-feedback text-red"
-                                                >{{ password_error }}</span
-                                            >
-                                            <span
-                                                v-if="error"
-                                                class="invalid-feedback text-red"
-                                                >{{ error }}</span
-                                            >
+                                            <span v-if="password_error" class="invalid-feedback text-red">{{ password_error
+                                            }}</span>
+                                            <span v-if="error" class="invalid-feedback text-red">{{ error }}</span>
                                         </div>
                                     </div>
-                                    <div
-                                        class="mb-5 d-flex justify-end align-center flex-wrap"
-                                    >
-                                        <router-link
-                                            class="forgot-txt"
-                                            to="/forgot-password"
-                                        >
+                                    <div class="mb-5 d-flex justify-end align-center flex-wrap">
+                                        <router-link class="forgot-txt" to="/forgot-password">
                                             {{ $t("forgotPassword?") }}
                                         </router-link>
                                     </div>
-                                    <v-btn
-                                        type="submit"
-                                        block
-                                        class="primary-btn"
-                                        >{{ $t("logIn") }}</v-btn
-                                    >
+                                    <v-btn type="submit" block class="primary-btn">{{ $t("logIn") }}</v-btn>
                                 </v-form>
                             </div>
                         </v-col>
                         <v-col cols="12" sm="6" class="d-none d-sm-block">
                             <div class="right-box text-center">
-                                <div
-                                    class="box pa-7 d-flex justify-center align-center"
-                                >
+                                <div class="box pa-7 d-flex justify-center align-center">
                                     <div>
                                         <div class="logo mb-4">
                                             <h2>{{ $t("welcome") }}</h2>
@@ -108,6 +84,7 @@
     </div>
 </template>
 <script>
+
 import { mapGetters } from "vuex";
 import Auth from "../Auth.js";
 
@@ -194,9 +171,20 @@ export default {
                     }
                 });
         },
+        changeLanguage(obj) {
+            localStorage.setItem("language", obj.target.value);
+        },
     },
     mounted() {
         this.$i18n.locale = "nl";
+
+        const defaultLanguage = localStorage.getItem("language");
+        if (defaultLanguage) {
+            this.$i18n.locale = defaultLanguage;
+        } else {
+            localStorage.setItem("language", "nl");
+        }
+
         let userInfo = localStorage.getItem("user");
         if (userInfo) {
             let userRole = localStorage.getItem("role");

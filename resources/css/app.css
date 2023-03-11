@@ -1,0 +1,27 @@
+
+
+button.v-btn.v-theme--light.v-btn--density-default.v-btn--size-default.v-btn--variant-text span.v-btn__content {
+    background:#008cff;
+}
+
+
+
+.v-toolbar__content  button.v-btn.v-theme--light.v-btn--density-default.v-btn--size-default.v-btn--variant-text.px-0.px-1 {
+    background:#008cff;
+}
+
+.languages_selection .v-input__details {
+    display:none;
+}
+
+a.dx-link.dx-icon-trash.dx-link-icon {
+    color:#ff00009c;
+}
+
+
+.personal-info, .update_password {
+    background-color: #FFF;
+    box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
+    border-radius:5px;
+
+}
