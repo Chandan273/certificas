@@ -103,31 +103,13 @@ class StudentController extends Controller
         return StudentService::courses($request);
     }
 
-    /**
-     * Display the specified Customer student resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public static function getStudents(Request $request){
-        return StudentService::getStudents($request);
-    }
 
-    /**
-     * Store a newly tenant courses resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */  
-    public static function createTenantCourses(Request $request){
-        $validator = Validator::make($request->all(), [
-            'course_id' => 'required',
-            'students' => 'required',
-        ]);
+    // public function getStudentByCourse(Request $request){
+    //     try{
+    //         $allStudents = StudentService::index($request);
+    //         $courseStudents = StudentService::index();
+    //     }catch(\Exception $e){
 
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 422);
-        }
-        return StudentService::createTenantCourses($request);
-    }
+    //     }
+    // }
 }

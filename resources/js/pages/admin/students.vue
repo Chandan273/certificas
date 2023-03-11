@@ -1,101 +1,64 @@
 <template>
     <AdminLayout>
-        <v-snackbar
-            v-model="snackbar"
-            :value="true"
-            absolute
-            right
-            top
-            location="top right"
-            :color="color"
-            timeout="4000"
-        >
+        <v-snackbar v-model="snackbar" :value="true" absolute right top location="top right" :color="color" timeout="4000">
             <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
         </v-snackbar>
-        <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
-        <div
-            class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 course-card students-table widget-card"
-        >
-            <v-row align-items-center class="drop-down-cls">
-                <v-col lg="6">
-                    <v-select
-                        :placeholder="$t('selectCustomer')"
-                        v-model="selectedCustomer"
-                        :items="customers"
-                        item-title="name"
-                        item-value="id"
-                    ></v-select>
+        <v-breadcrumbs class="ps-0 " :items="breadcrumbsItems"></v-breadcrumbs>
+        <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 course-card students-table widget-card">
+            <v-row align-items-center class="drop-down-cls ">
+
+
+                <v-col lg="6 pb-0" id="studentinputFeld">
+                    <v-select class="" selected-class="students_tableinputs rounded" :placeholder="$t('selectCustomer')"
+                        v-model="selectedCustomer" :items="customers" item-title="name" item-value="id"></v-select>
                 </v-col>
                 <v-col lg="6">
-                    <v-select
-                        :placeholder="$t('selectCourse')"
-                        v-model="selectedCourse"
-                        :items="Courses"
-                        item-title="name"
-                        item-value="id"
-                    ></v-select>
+                    <v-select :placeholder="$t('selectCourse')" v-model="selectedCourse" :items="Courses" item-title="name"
+                        item-value="id"></v-select>
                 </v-col>
             </v-row>
-            <v-btn
-                class="primary-btn add-btn"
-                elevation="0"
-                @click="
-                    studentData = {};
-                    studentDialog = true;
-                "
-            >
+            <v-btn class="primary-btn add-btn" elevation="0" @click="
+                studentData = {};
+            studentDialog = true;">
+                <!-- <v-tooltip content-class="tooltip_styling" color="#999" activator="parent" location="top"><span>add
+                        student</span></v-tooltip> -->
                 <v-icon icon="mdi-plus"></v-icon> {{ $t("addStudent") }}
             </v-btn>
             <v-dialog v-model="studentDialog" persistent max-width="700px">
-                <AddStudent
-                    @close="closeModal"
-                    @data-passed="refreshGrid"
-                    :studentData="studentData"
-                    :Courses="Courses"
-                    :customers="customers"
-                ></AddStudent>
+                <AddStudent @close="closeModal" @data-passed="refreshGrid" :studentData="studentData" :Courses="Courses"
+                    :customers="customers"></AddStudent>
             </v-dialog>
             <div class="text-center">
                 <template>
                     <v-row justify="center">
                         <v-dialog v-model="dialog" width="500">
                             <v-card class="course-modal">
-                                <v-card-title
-                                    class="d-flex align-center justify-space-between"
-                                    ><h3>{{ $t("importCsvFile") }}</h3>
+                                <v-card-title class="d-flex align-center justify-space-between">
+                                    <h3>{{ $t("importCsvFile") }} </h3>
                                     <v-icon @click="dialog = false">
                                         mdi-close
-                                    </v-icon></v-card-title
-                                >
+                                    </v-icon>
+                                </v-card-title>
 
                                 <v-card-text class="import-csv py-4">
                                     <label>{{ $t("importFile") }}</label>
-                                    <input
-                                        type="file"
-                                        ref="fileInput"
-                                        @change="setFile"
-                                        class="file-input"
-                                    />
+                                    <input type="file" ref="fileInput" @change="setFile" class="file-input" />
+
                                 </v-card-text>
 
                                 <v-card-actions class="px-6">
                                     <v-spacer></v-spacer>
-                                    <v-btn
-                                        variant="outlined"
-                                        title="Download sample CSV file"
-                                        class="primary-border-btn"
-                                        text
-                                        @click="downloadCSV"
-                                    >
+                                    <v-btn variant="outlined" title="Download sample CSV file" class="primary-border-btn"
+                                        text @click="downloadCSV">
+
+
+
                                         <v-icon icon="mdi-download"></v-icon>
                                         {{ $t("downloadSample") }}
+
                                     </v-btn>
 
-                                    <v-btn
-                                        class="primary-red"
-                                        text
-                                        @click="updateFile"
-                                    >
+                                    <v-btn class="primary-red" text @click="updateFile">
                                         {{ $t("importCSV") }}
                                     </v-btn>
                                 </v-card-actions>
@@ -105,91 +68,38 @@
                 </template>
             </div>
 
-            <DxDataGrid
-                :ref="dataGridRefKey"
-                class="tenants-table"
-                :data-source="dataSource"
-                :remote-operations="true"
-                :show-borders="true"
-                @exporting="onExporting"
-            >
+            <DxDataGrid :ref="dataGridRefKey" class="tenants-table" :data-source="dataSource" :remote-operations="true"
+                :show-borders="true" @exporting="onExporting">
                 <DxPaging :page-size="10" />
-                <DxPager
-                    :show-page-size-selector="true"
-                    :allowed-page-sizes="[10, 25, 50, 100]"
-                />
-                <DxExport
-                    :enabled="true"
-                    :allow-export-selected-data="false"
-                    :formats="['CSV']"
-                />
+                <DxPager :show-page-size-selector="true" :allowed-page-sizes="[10, 25, 50, 100]" />
+                <DxExport :enabled="true" :allow-export-selected-data="false" :formats="['CSV']" />
                 <DxSearchPanel :visible="true" :placeholder="$t('search')" />
-                <DxEditing
-                    :allow-updating="true"
-                    :allow-adding="false"
-                    :allow-deleting="true"
-                    :use-icons="true"
-                >
+                <DxEditing :allow-updating="true" :allow-adding="false" :allow-deleting="true" :use-icons="true">
                     <DxTexts
-                        confirmDeleteMessage="<p><h3 style='text-align:center'>Are you sure you want to delete this record? </h3></p><p> <b>Note:</b> Existing related records such as certificates are not affected.</p>"
-                    ></DxTexts>
+                        confirmDeleteMessage="<p><h3 style='text-align:center'>Are you sure you want to delete this record? </h3></p><p> <b>Note:</b> Existing related records such as certificates are not affected.</p>">
+                    </DxTexts>
                 </DxEditing>
-                <DxColumn
-                    :allow-exporting="true"
-                    :visible="true"
-                    :width="125"
-                    data-field="customer_id"
-                    :caption="$t('customerName')"
-                    alignment="left"
-                >
-                    <DxLookup
-                        :data-source="customers"
-                        value-expr="id"
-                        display-expr="name"
-                    />
+                <DxColumn :allow-exporting="true" :visible="true" :width="125" data-field="customer_id"
+                    :caption="$t('customerName')" alignment="left">
+                    <DxLookup :data-source="customers" value-expr="id" display-expr="name" />
                 </DxColumn>
-                <DxColumn
-                    :allow-exporting="true"
-                    :visible="true"
-                    :width="125"
-                    data-field="course_id"
-                    :caption="$t('courseName')"
-                    alignment="left"
-                >
-                    <DxLookup
-                        :data-source="Courses"
-                        value-expr="id"
-                        display-expr="name"
-                    />
+                <DxColumn :allow-exporting="true" :visible="true" :width="125" data-field="course_id"
+                    :caption="$t('courseName')" alignment="left">
+                    <DxLookup :data-source="Courses" value-expr="id" display-expr="name" />
                 </DxColumn>
-                <DxColumn
-                    data-field="name"
-                    :width="125"
-                    :caption="$t('studentName')"
-                />
+                <DxColumn data-field="name" hint="participant name" :width="125" :caption="$t('studentName')" />
                 <DxColumn data-field="email" :caption="$t('email')" />
-                <DxColumn
-                    data-field="birth_date"
-                    data-type="date"
-                    :caption="$t('birthDate')"
-                />
-                <DxColumn
-                    data-field="birth_place"
-                    :caption="$t('birthPlace')"
-                />
-                <DxColumn
-                    data-field="Action"
-                    type="buttons"
-                    alignment="left"
-                    :caption="$t('action')"
-                >
-                    <DxButton
-                        name="edit"
-                        hint="Edit"
-                        icon="edit"
-                        @click="editStudent"
-                    />
-                    <DxButton name="delete" />
+                <DxColumn data-field="birth_date" data-type="date" :caption="$t('birthDate')" />
+                <DxColumn data-field="birth_place" :caption="$t('birthPlace')" />
+                <DxColumn data-field="Action" type="buttons" alignment="left" :caption="$t('action')">
+                    <DxButton name="edit" icon="edit" @click="editStudent" id="editButton" />
+
+                    <DxButton name="delete" icon="trash" />
+                    <!-- <DxTooltip target="#editButton">
+                    <template>
+                        ExcelRemote IR dxgdsg
+                    </template>
+                    </DxTooltip> -->
                 </DxColumn>
                 <DxColumn :visible="false" data-field="info" />
                 <DxToolbar>
@@ -201,11 +111,11 @@
                     <DxItem name="applyFilterButton" />
                 </DxToolbar>
                 <template #importAction>
-                    <v-btn
-                        elevation="0"
-                        class="primary-btn ml-2 import-btn px-1"
-                        @click="importCSV"
-                        ><v-icon size="large"> mdi-import </v-icon>
+                    <v-btn elevation="0" class="primary-btn ml-2 import-btn px-1" @click="importCSV">
+                        <v-tooltip content-class="tooltip_styling" color="#999" activator="parent" location="top"><span>
+                                import CSV</span></v-tooltip>
+                        <v-icon size="large">
+                            mdi-import </v-icon>
                     </v-btn>
                 </template>
             </DxDataGrid>
@@ -215,6 +125,7 @@
 <script>
 const dataGridRefKey = "my-data-grid";
 import AdminLayout from "../../layouts/adminLayout.vue";
+import { DxTooltip } from 'devextreme-vue/tooltip';
 import {
     DxDataGrid,
     DxColumn,
@@ -261,6 +172,7 @@ export default {
         DxButton,
         AddStudent,
         DxTexts,
+        DxTooltip
     },
     data() {
         return {
@@ -399,7 +311,6 @@ export default {
             this.file = event.target.files[0];
         },
         updateFile() {
-            console.log(this.selectedCustomer,this.selectedCourse);
             let formData = new FormData();
             let input = this.$refs.fileInput;
             let file = input.files[0];
@@ -415,8 +326,6 @@ export default {
                 this.message = "Please upload valid CSV file";
                 return;
             }
-            formData.append("customer_id", this.selectedCustomer);
-            formData.append("course_id", this.selectedCourse);
             formData.append("file", file);
             this.axios
                 .post("/api/upload-student-csv", formData)
@@ -504,4 +413,21 @@ span.v-select__selection-text {
     white-space: nowrap;
     overflow: hidden;
 }
+
+.tooltip_styling {
+    padding: 3px 5px !important;
+    background-color: #FFF !important;
+    border: 1px solid black !important;
+    border-radius: unset !important;
+    font-size: 10px !important;
+    color: #000 !important;
+
+}
+
+#studentinputFeld v-input__control {
+    border: 5px solid black !important;
+
+}
+
 </style>
+

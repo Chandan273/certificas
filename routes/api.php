@@ -39,6 +39,8 @@ Route::middleware("auth:api")->group(function(){
     Route::get("all-courses", [App\Http\Controllers\Api\CourseController::class, 'index']);
     Route::post('update-course', [App\Http\Controllers\Api\CourseController::class, 'update']);
     Route::post('delete-course', [App\Http\Controllers\Api\CourseController::class, 'destroy']);
+    Route::post('create-tenant-courses', [App\Http\Controllers\Api\CourseController::class, 'createTenantCourses']);
+    Route::post("tenant-course", [App\Http\Controllers\Api\CourseController::class, 'tenantCourse']);
     Route::get("student-courses", [App\Http\Controllers\Api\StudentController::class, 'studentCourses']);
     Route::post('create-student', [App\Http\Controllers\Api\StudentController::class, 'store']);
     Route::get("all-students", [App\Http\Controllers\Api\StudentController::class, 'index']);
@@ -49,6 +51,5 @@ Route::middleware("auth:api")->group(function(){
     Route::get("all-certificates", [App\Http\Controllers\Api\CertificateController::class, 'index']);
     Route::post('update-certificate', [App\Http\Controllers\Api\CertificateController::class, 'update']);
     Route::post('delete-certificate', [App\Http\Controllers\Api\CertificateController::class, 'destroy']);
-    Route::post('get-students', [App\Http\Controllers\Api\StudentController::class, 'getStudents']);
-    Route::post('create-tenant-courses', [App\Http\Controllers\Api\StudentController::class, 'createTenantCourses']);
+    Route::post('student-record', [App\Http\Controllers\Api\CertificateController::class, 'studentInfo']);
 });

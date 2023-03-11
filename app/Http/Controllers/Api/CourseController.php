@@ -76,4 +76,32 @@ class CourseController extends Controller
 
         return response()->json(CourseService::destroy($request));
     }
+
+    /**
+     * Store a newly tenant courses resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */  
+    public static function createTenantCourses(Request $request){
+        $validator = Validator::make($request->all(), [
+            'course_id' => 'required',
+            'students' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 422);
+        }
+        return CourseService::createTenantCourses($request);
+    }
+
+    /**
+     * List of tenant student courses.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function tenantCourse(Request $request){
+        return response()->json(CourseService::tenantCourse($request));
+    }
 }

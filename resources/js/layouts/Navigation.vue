@@ -7,15 +7,16 @@
         ></v-app-bar-nav-icon>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" :mini-variant="miniVariant" permanent>
+    <v-navigation-drawer v-model="drawer"  id="sidebar_head" :mini-variant="miniVariant" permanent>
         <v-list density="compact" nav>
             <template v-for="(items, i) in adminItems" :key="i">
-                <v-list-item
+                <v-list-item 
                     :prepend-icon="items.icon"
                     :title="items.title"
                     :class="{ active: isActive }"
                     :value="items.title"
-                    :to="items.to"
+                    :to="items.to" 
+                    
                 ></v-list-item>
             </template>
         </v-list>
@@ -79,3 +80,8 @@ export default {
     },
 };
 </script>
+<style>
+
+
+
+</style>

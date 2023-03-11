@@ -1,15 +1,6 @@
 <template>
     <AdminLayout>
-        <v-snackbar
-            v-model="snackbar"
-            :value="true"
-            absolute
-            right
-            top
-            location="top right"
-            :color="color"
-            timeout="3000"
-        >
+        <v-snackbar v-model="snackbar" :value="true" absolute right top location="top right" :color="color" timeout="3000">
             <v-icon icon="mdi-check-circle"> </v-icon> {{ message }}
         </v-snackbar>
         <v-breadcrumbs class="ps-0" :items="breadcrumbsItems"></v-breadcrumbs>
@@ -76,6 +67,12 @@
                     alignment="left"
                     :caption="$t('action')"
                 >
+                    <DxButton
+                        name="Edit Tenant Course"
+                        hint="Edit Tenant Course"
+                        icon="columnchooser"
+                        @click="editTenantCourse"
+                    />
                     <DxButton
                         name="edit"
                         hint="Edit"
@@ -150,6 +147,9 @@ export default {
             this.color = data.color;
             this.message = data.message;
             this.dataGrid.refresh();
+        },
+        editTenantCourse(params){
+            this.$router.push(`/update-assign-course/`+params.row.data.id);
         },
         editCourse(params) {
             this.courseDialog = true;
@@ -228,3 +228,12 @@ export default {
     },
 };
 </script>
+<style>
+
+a.dx-link.dx-icon-trash.dx-link-icon {
+    color:#ff00009c;
+}
+
+
+
+</style>

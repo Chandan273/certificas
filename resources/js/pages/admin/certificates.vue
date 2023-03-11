@@ -76,17 +76,20 @@
                 <DxColumn
                     data-field="Action"
                     type="buttons"
+                    alignment="left" 
                     :caption="$t('action')"
                 >
                     <DxButton
-                        name="edit"
-                        hint="Edit"
+                        name="e"
+                        hint="Edit Details"
+                        color="red"
+                        class="tableContent_tooltip"
                         icon="edit"
                         @click="editCertificate"
                     />
-                    <DxButton name="delete" />
+                    <DxButton name="delete " icon="trash" />
                     <DxButton
-                        hint="Download Certificate"
+                        hint="Download Certificate Information"
                         icon="download"
                         @click="downloadPdf"
                     />

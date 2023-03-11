@@ -36,19 +36,8 @@
                       hide-details
                       @change="selCustomer"
                     >
-                      <template v-slot:selection="{ item, index }">
-                        <v-chip v-if="index < 2">
-                          <span>{{ item.title }}</span>
-                        </v-chip>
-                        <span
-                          v-if="index === 2"
-                          class="text-grey text-caption align-self-center"
-                        >
-                          (+{{ selectedCustomer.length - 2 }} others)
-                        </span>
-                      </template></v-select
+                    </v-select
                     >
-
                     <div class="text-start">
                       <span
                         v-if="select_student_error"
@@ -57,34 +46,6 @@
                       >
                     </div>
                   </div>
-                </v-col>
-                <v-col lg="9">
-                  <v-form ref="addForm">
-                    <v-row align-items-right class="align-items-right">
-                      <v-col lg="12">
-                        <div class="mb-4 text-right">
-                          <v-btn
-                            class="primary-btn add-btn"
-                            elevation="0"
-                            @click="studentDialog = true"
-                          >
-                            <v-icon icon="mdi-plus"></v-icon>
-                            {{ $t("addStudent") }}
-                          </v-btn>
-                          <v-dialog
-                            v-model="studentDialog"
-                            persistent
-                            max-width="700px"
-                          >
-                            <AddNewStudent
-                              @close="closeModal"
-                              @data-passed="refreshPage"
-                            ></AddNewStudent>
-                          </v-dialog>
-                        </div>
-                      </v-col>
-                    </v-row>
-                  </v-form>
                 </v-col>
               </v-row>
             </v-form>
@@ -97,6 +58,7 @@
               :selected-row-keys="selectedRowKeys"
               key-expr="id"
               @selection-changed="onSelectionChanged"
+              :selection-filter="selectionFilter"
             >
               <DxScrolling mode="infinite" />
               <DxSelection
@@ -123,7 +85,7 @@
                   v-on:click="assignCourse"
                   class="primary-btn px-6"
                 >
-                  {{ $t("save") }}
+                  {{ $t("update") }}
                 </v-btn>
               </v-col>
             </v-row>
@@ -137,7 +99,6 @@
 <script>
 const dataGridRefKey = "my-data-grid";
 import AdminLayout from "../../layouts/adminLayout.vue";
-import AddNewStudent from "../../components/modals/AddNewStudent.vue";
 import {
   DxDataGrid,
   DxColumn,
@@ -150,7 +111,6 @@ export default {
   data() {
     return {
       dataGridRefKey,
-      studentDialog: false,
       snackbar: false,
       message: "",
       color: "success",
@@ -162,11 +122,11 @@ export default {
       selectedCustomer: [],
       selectedStudent: [],
       selectedRowsData: [],
+      selectionFilter: null,
     };
   },
   components: {
     AdminLayout,
-    AddNewStudent,
     DxDataGrid,
     DxColumn,
     DxItem,
@@ -182,9 +142,9 @@ export default {
           href: "dashboard",
         },
         {
-          text: "Assign Course",
+          text: "Update Assign Course",
           disabled: false,
-          href: "/assign-course",
+          href: "/update-assign-course",
         },
       ];
     },
@@ -196,35 +156,43 @@ export default {
     },
   },
   methods: {
-    closeModal() {
-      this.studentDialog = false;
-    },
-    refreshPage(data) {
-      this.snackbar = data.snackbar;
-      this.color = data.color;
-      this.message = data.message;
-      this.$router.go(this.$router.currentRoute);
-      this.dataGrid.refresh();
-    },
     async getCustomers() {
       const result = await this.axios.get(`/api/all-customers`);
       this.customers = result.data.data;
     },
     async getStudents() {
       try {
-        const { data } = await this.axios.get(`/api/all-students`);
-        this.students = data.data;
+        const params = {course_id: this.$route.params.id};
+        const { data } = await this.axios.get(`/api/all-students`, {params}); 
+        const students = data.data;
+        this.students = students;
+        const selectedRow = [1, 3, 4]; // get List of students for the course and it is will be selected // Thank you sir, Here I am alreay assigning courses to the tenant_id in table relation 
+        this.dataGrid.selectRows(selectedRow)
+      } catch (error) {
+        console.log("Error", error)
+      }
+    },
+    async getTenantCourse(){ // getCourseStudents
+      try {
+        const payload = {
+          course_id: this.$route.params.id, //HardCoded for testing
+          };
+        const { data } = await this.axios.post(`/api/tenant-course`, payload);
+       // fix this later on
+       const selectedRow = ["1", "3"];
+         const studentsToSelect = this.students.filter((row) => selectedRow.indexOf(row.id) > -1);
+         console.log("here 3", studentsToSelect, this.students) 
+        this.selectionFilter = ['id', 'in', data.students.map(s => s.id)];
+        this.selectedRowsData = data.students;
       } catch (error) {}
     },
     async assignCourse() {
       this.select_course_error = "";
-      this.select_customer_error = "";
       this.select_student_error = "";
       try {
-        const studentArray = this.selectedStudent.map((student) => student.id);
         const payload = {
-          course_id: localStorage.getItem("selectedCourseID"),
-          students: studentArray,
+          course_id: this.$route.params.id, // why you are using localstorage? //Sir I want to auto select checkbox based on the API response and I am getting [1,2] as student ID in getTenantCourse() function
+          students: this.selectedStudent,
         };
         const result = await this.axios.post(
           "/api/create-tenant-courses",
@@ -235,16 +203,9 @@ export default {
           this.snackbar = true;
           this.message = result.data.message;
           localStorage.removeItem("selectedCourseID");
-          setTimeout(() => this.$router.push({ path: "/students" }), 3000);
+          setTimeout(() => this.$router.push({ path: "/courses" }), 3000);
         }
       } catch (error) {
-        if (
-          error.response.data &&
-          error.response.data.error &&
-          error.response.data.error.course_id
-        ) {
-          this.select_course_error = "The Course field is required.";
-        }
         if (
           error.response.data &&
           error.response.data.error &&
@@ -260,20 +221,29 @@ export default {
       );
     },
     onSelectionChanged() {
+      const selectedStudent = [];
       this.dataGrid.getSelectedRowsData().then((selectedRowsData) => {
         this.select_student_error = "";
-        this.selectedStudent = selectedRowsData;
+         selectedRowsData.forEach((row) => {
+            selectedStudent.push(row.id)
+        });
+        this.selectedStudent = selectedStudent;
       });
+     
     },
+    getSelectedData() {
+      this.selectedRowsData = [1,2];
+    }
   },
   mounted() {
+    this.getTenantCourse();
     this.getCustomers();
     this.getStudents();
     this.selCustomer(this.selectedCustomer);
-    let selectedCourseID = localStorage.getItem("selectedCourseID");
-    if (selectedCourseID == null) {
-      this.$router.push("/courses");
-    }
+    // let selectedCourseID = localStorage.getItem("selectedCourseID");
+    // if (selectedCourseID == null) {
+    //   this.$router.push("/courses");
+    // }
   },
   watch: {
     selectedCustomer(selectedCustomerIds) {

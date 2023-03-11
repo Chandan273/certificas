@@ -31,7 +31,7 @@ class StudentService
             $customer_id = $request->get('customer_id');
             $course_id = $request->get('course_id');
 
-            if(auth()->user()->hasRole('superadmin')) {
+            if(auth()->user()->hasRole('superadmin')) {  // You can't do everything with same function, 
                 $students = Student::all();
             }
             else {
@@ -44,7 +44,7 @@ class StudentService
                     if ($customer_id) {
                         $students->where('students.customer_id', $customer_id);
                     }
-                    if ($course_id) {
+                    if ($course_id) {  // I need data for both cases, all students as well as by course in singel calle
                         $students->where('students.course_id', $course_id);
                     }
                 }
@@ -216,7 +216,10 @@ class StudentService
 
                     if ($i == 0) {
 
-                        if ($filedata[0] == "Name" || $filedata[1] == "Email" || $filedata[2] == "Birth Date" || $filedata[3] == "Birth place") {
+                        if ($filedata[0] == "Klanten ID" || $filedata[1] == "Cursus-ID" || $filedata[2] == "Naam" || $filedata[3] == "E-mail" || $filedata[4] == "Geboortedatum" || $filedata[5] == "Geboorte plaats") {
+                            $i++;
+                            continue;
+                        } else if ($filedata[0] == "Customer ID" || $filedata[1] == "Course ID" || $filedata[2] == "Name" || $filedata[3] == "Email" || $filedata[4] == "Birth date" || $filedata[5] == "Birth place") {
                             $i++;
                             continue;
                         } else {
@@ -225,13 +228,13 @@ class StudentService
                     }
 
                     // Check if any field is empty
-                    if (empty($filedata[0]) || empty($filedata[1]) || empty($filedata[2]) || empty($filedata[3])) {
+                    if (empty($filedata[0]) || empty($filedata[1]) || empty($filedata[2]) || empty($filedata[3]) || empty($filedata[4]) || empty($filedata[5])) {
                         fclose($file);
                         unlink($filepath);
                         return ['success' => false, 'message' => "Please ensure all fields are filled in the CSV file", 'statusCode' => 401];
                     }
 
-                    $student = Student::withTrashed()->where('course_id', $request->course_id)->where('email', $filedata[1])->first();
+                    $student = Student::withTrashed()->where('course_id', $filedata[1])->where('email', $filedata[3])->first();
 
                     if ($student) {
                         // If the student is soft deleted, restore it
@@ -240,23 +243,23 @@ class StudentService
                         }
 
                         // Update the student data
-                        $student->customer_id = $request->customer_id;
+                        $student->customer_id = $filedata[0];
                         //$student->course_id = $filedata[1];
-                        $student->name = $filedata[0];
-                        $student->birth_date = date('Y-m-d', strtotime($filedata[2]));
-                        $student->birth_place = $filedata[3];
+                        $student->name = $filedata[2];
+                        $student->birth_date = date('Y-m-d', strtotime($filedata[4]));
+                        $student->birth_place = $filedata[5];
                         $student->save();
                         
                     } else {
 
                         $importData_arr[] = [
                             'tenant_id' => auth()->user()->id,
-                            'customer_id' => $request->customer_id,
-                            'course_id' => $request->course_id,
-                            'name' => $filedata[0],
-                            'email' => $filedata[1],
-                            'birth_date' => date('Y-m-d', strtotime($filedata[2])),
-                            'birth_place' => $filedata[3],
+                            'customer_id' => $filedata[0],
+                            'course_id' => $filedata[1],
+                            'name' => $filedata[2],
+                            'email' => $filedata[3],
+                            'birth_date' => date('Y-m-d', strtotime($filedata[4])),
+                            'birth_place' => $filedata[5],
                             'created_at' => date('Y-m-d H:i:s'),
                             'updated_at' => date('Y-m-d H:i:s'),
                         ];
@@ -318,99 +321,6 @@ class StudentService
 
         return $response;
     }
-
-    public static function getStudents(Request $request)
-    {
-        try {
-            $totalCount = 0;
-            $customer_ids = $request->get('customer_id');
-            $course_id = $request->get('course_id');
-
-            if(auth()->user()->hasRole('superadmin')) {
-                $students = Student::all();
-            }
-            else {
-                $tenant = User::where('id', auth()->user()->id)->first();
-                if($tenant) {
-                    $students = Student::join('courses', 'students.course_id', '=', 'courses.id')
-                        ->where('courses.tenant_id', $tenant->id)
-                        ->whereNull('courses.deleted_at')
-                        ->select('students.*');
-
-                    // Add filter based on customer_id
-                    if ($customer_ids) {
-                        $students->whereIn('students.customer_id', $customer_ids);
-                    }
-                    if ($course_id) {
-                        $students->where('students.course_id', $course_id);
-                    }
-                }
-                else {
-                    $response = ['success' => false, 'message' => 'No data found', 'statusCode' => 401];
-                }
-            }
-
-            if ($request->has('requireTotalCount')) {
-                $totalCount = $students->count();
-            }
-
-            if ($request->has('skip') && $request->has('take')) {
-                $students->skip($request->skip)->take($request->take);
-            }
-
-            if ($request->has('sort')) {
-                $sort = json_decode($request->sort, 1);
-                if (count($sort)) {
-                    $students->orderBy(
-                        $sort[0]['selector'],
-                        $sort[0]['desc'] ? 'DESC' : 'ASC'
-                    );
-                }
-            }
-
-            $students = $students->get();
-
-            if ($students) {
-                $response = ['success' => true, 'data' => $students, 'totalCount' => $totalCount, 'statusCode' => 200];
-            } else {
-                $response = ['success' => false, 'data' => [], 'totalCount' => $totalCount, 'message' => 'No Data Found!!', 'statusCode' => 401];
-            }
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-
-            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
-        }
-
-        return $response;
-    }
-
-    public static function createTenantCourses(Request $request){
-        try {
-            $tenant_course = Tenant_course::withTrashed()
-                ->where('course_id', $request->course_id)
-                ->where('tenant_id', auth()->user()->id)
-                ->first();
-
-            if ($tenant_course) {
-                $tenant_course->fill($request->all())->save();
-
-                $response = ['success' => true, 'message' => "Tenant Course updated successfully!", 'statusCode' => 200];
-            } else {
-                $tenant_course = Tenant_course::create(array_merge($request->all(), [
-                    'tenant_id' => auth()->user()->id,
-                    'students' => json_encode($request->students),
-                ]));
-
-                $response = ['success' => true, 'message' => "Tenant Course created successfully!", 'statusCode' => 200];
-            }
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-
-            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
-        }
-
-        return $response;
-    } 
 
 }
 

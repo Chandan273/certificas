@@ -1,16 +1,18 @@
 <template>
     <v-app>
         <v-navigation-drawer
+    
             v-model="drawer"
             :rail="rail"
             permanent
             class="left-sidebar"
+     
         >
-            <v-list class="sidebar-logo pt-2 pb-2">
+            <v-list class="sidebar-logo  pt-2 pb-2">
                 <v-list-item class="justify-center">
                     <router-link to="/" class="text-center mainPrimary">
                         <h1 v-if="rail == true">C</h1>
-                        <h1 v-if="rail == false">
+                        <h1 v-if="rail == false" class="sidebar-text">
                             {{ $t("certificates") }}
                         </h1>
                     </router-link>
@@ -50,7 +52,7 @@
             <!-- profile dropdown  -->
             <v-menu class="profile-dropdown-menu">
                 <template v-slot:activator="{ props }">
-                    <v-btn v-bind="props" class="px-0 px-1" :ripple="false">
+                    <v-btn v-bind="props" class="header_button px-0 px-1" :ripple="false">
                         <div class="nav-profile d-flex">
                             <v-icon size="30" class="mr-1">
                                 mdi-account-circle
@@ -105,6 +107,7 @@ export default {
             { title: "courses", icon: "mdi-school", to: "/courses" },
             {
                 title: "customers",
+                color:"#FFF",
                 icon: "mdi-account-multiple",
                 to: "/customers",
             },
@@ -149,3 +152,5 @@ export default {
     },
 };
 </script>
+
+

@@ -94,4 +94,8 @@ class CertificateController extends Controller
         return CertificateService::generatePdf($request);
     }
 
+    public function studentInfo(Request $request){
+        return response()->json(CertificateService::studentInfo($request));
+    }
+
 }

@@ -1,159 +1,252 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title  >Certificate</title>
+<!doctype html><html class="no-js" lang="nl-NL"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="author" content="W. Diepeveen">
+    <meta name="keywords" content="">
+    <title>Certificaat</title>
     <style>
-        html {
-            height: 100%;
-        }
-
-        body {
-            height: 100%;
-            border: 1px solid #ddd;
-            font-family: "Poppins", "Open Sans", sans-serif;
-            padding: 16px
-        }
-        table.subject-table, .subject-table th, .subject-table td {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }   
+    * {
+        font-family: "DejaVu Sans", sans-serif;
+        padding: 0;
+        margin: 0;
+    }
+    body {
+        font-size: 12pt;
+    }
+    table {
+        border-collapse: collapse;
+    }
+    h1 {
+        font-size: 14pt;
+        font-weight: normal;
+    }
+    h2 {
+        font-size: 13pt;
+        font-weight: normal;
+    }
+    h3 {
+        font-size: 11pt;
+        text-decoration: underline;
+    }
+    a {
+        color: black;
+        text-decoration: none;
+    }
+    
+    .alignright {
+        text-align: right;
+    }
+    .page, #background {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .page {
+        z-order: 2;
+    }
+    #background {
+        z-order: 1;
+    }
+    
+    .info {
+        position: absolute;
+        display: none;
+    }
+    
+    #label_uitgereikt_aan {
+        display: block;
+        top: 510px;
+        left: 220px;
+        width:400px;
+    }
+    #label_geboortedatum {
+        display: block;
+        top: 550px;
+        left: 220px;
+         width:400px;
+    }
+    #label_datum_toetsing {
+        display: block;
+        top: 590px;
+        left: 220px;
+         width:400px;
+    }
+    #label_geldig_tot {
+        display: block;
+        top: 630px;
+        left: 220px;
+         width:400px;
+    }
+    #label_company {
+        display: block;
+        top: 800px;
+        left: 220px;
+        width:300px;
+    }
+    #label_naam {
+        display: block;
+        top: 900px;
+        left: 220px;
+        width:300px
+    }
+    
+    #p_naam {
+        display: block;
+        top: 510px;
+        left: 400px;
+    }
+    #p_geboortedatum {
+        display: block;
+        top: 550px;
+        left: 400px;
+        width:300px;
+    }
+    #d_toetsingsdatum {
+        display: block;
+        top: 590px;
+        left: 400px;
+         width:300px;
+    }
+    #d_geldig_tot {
+        display: block;
+        top: 630px;
+        left: 400px;
+         width:300px;
+    }
+    
+    #footer_left {
+        display: block;
+        top: 1040px;
+        left: 50px;
+        line-height: 90%;
+        width:300px;
+    }
+    #footer_right {
+        display: block;
+        top: 1040px;
+        left: 500px;
+        line-height: 90%;
+    }
+    #certificaathouder {
+        display: block;
+        top: 900px;
+        left: 500px;
+    }
+    #certificate_url {
+    color: rgb(255, 181, 158);
+        display: block;
+        top: 455px;
+        left: -200px;
+        font-size: 10px;
+        width: 700px;
+        transform: rotate(270deg);
+    }
+    #certificate_created{
+            color: rgb(255, 181, 158);
+        display: block;
+        top: 455px;
+        left: -188px;
+        font-size: 9px;
+        width: 700px;
+        transform: rotate(270deg);
+    }
+    #certificate_expired {
+        color: rgb(240, 240, 240);
+        opacity: 0.5;
+        display: block;
+        top: 440px;
+        left: -71px;
+        font-size: 220px;
+        transform: rotate(310deg);
+        text-transform: uppercase;
+    }
+    
+    #c_titel {
+        display: block;
+        top: 270px;
+        left: 220px;
+        font-size: 24pt;
+        line-height: 0.8em;
+        width:500px;
+    }
+    #c_subtitel {
+        display: block;
+        top: 320px;
+        left: 220px;
+        font-size: 17pt;
+        line-height: 1em;
+        width:500px;
+    }
+    img#QRcode {
+        position: absolute;
+        display: block;
+        top: 830px;
+        left: 650px;
+        font-size: 18px;
+        line-height: 0.8em;
+        width: 70px;
+    }
     </style>
-</head>
+    </head><body>
+    <img id="background" src="https://certificate.psalltrain.nl/includes/templates/ps-alltrain/certificate-front.jpg" width="100%" />
+    <img id="QRcode" src="{{ $qrCodePath }}" alt="QR Code" />
+    <div class="page">
+    
+    <?php
+    $data=array();
+    $data['p_naam'] = $name;
+    $data['p_geboortedatum'] = $birth_date;
+    $data['d_toetsingsdatum'] = $valid_from;
+    $data['d_geldig_tot'] = $valid_untill;
+    $setup = array(
+        'label_uitgereikt_aan' => 'Uitgereikt aan',
+        'label_datum_toetsing' => 'Datum toetsing',
+        'label_geldig_tot' => 'Geldig tot',
+        'label_certificaathouder' => 'Certificaathouder',
+        'label_company' => 'PS Alltrain',
+        'label_naam' => 'W. Diepeveen',
+        'footer_left' => 'PS Alltrain<br>Snoeksloot 52<br>3993 HM Houten',
+        'footer_right' => '085-2736434<br>info@psalltrain.nl<br>www.psalltrain.nl'
+    );
+    
+    if( $data['p_geboortedatum'] != '' ) {
+        $setup['label_geboortedatum'] = 'Geboortedatum';
+    }
+    
+    if( $data['p_naam'] != '' ) {
+        $data['p_naam'] = $name;
+    }
 
-<body  style="background-color:#f1f3f4;" >
-    <table width="100%" cellspacing="2" cellpadding="2">
-        <tr>
-            <td colspan="2">
-            <p style="text-decoration: underline;" ><b> Date</b> <span> 24/02/2023 </span>  </p>
-            </td>
-        </tr>
-        <tr style="vertical-align:top">            
-            <td width="100%" colspan="2" rowspan="1">
-                <table width="100%">
-                    <td width="80%">
-                        <h2
-                            style="font-family: Arial, sans-serif, 'Open Sans';margin: 0px 0px 10px; line-height: 1.6rem;text-align:left;text-transform: uppercase;color:#008cff">
-                           Certificate</h2>
-                        <h3
-                            style="font-family: Arial, sans-serif, 'Open Sans';margin: 10px 0px; line-height: 1.6rem;text-align:left;">
-                            Academic Session - Aug 2023</h3>
-                    </td>
-                    <td width="20%" style="vertical-align:top;text-align: right;">
-                        <img src="{{ $qrCodePath }}" alt="QR Code" width="100px" />
-                    </td>
-                </table>
-            </td>
-        </tr>
-        <tr style="vertical-align:top;">
-            <td width="50%">
-                <table width="100%">
-                    <tr>
-                        <td>
-                            <p
-                                style="font-family: Arial, sans-serif, 'Open Sans';font-size: 0.875rem; margin: 0; line-height: 1.6rem;">
-                                <b>Student Name:</b><span style="border-bottom: 1px dotted #000;" >{{ $name }}</span> 
-                            </p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <p
-                                style="font-family: Arial, sans-serif, 'Open Sans';font-size: 0.875rem; margin: 0; line-height: 1.6rem;">
-                                <b>Student Email:</b>
-                                <span style="border-bottom: 1px dotted #000;" >  {{ $email }}</span>
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td width="50%">
-                <table width="100%">
-                    <tr>
-                        <td>
-                            <p
-                                style="font-family: Arial, sans-serif, 'Open Sans';font-size: 0.875rem; margin: 0; line-height: 1.6rem;">
-                                <b>Student DOB:</b>   <span style="border-bottom: 1px dotted #000;" >{{ $birth_date }}</span>
+    if( $data['p_geboortedatum'] != '' ) {
+        $data['p_geboortedatum'] = date( 'd-m-Y', strtotime($birth_date));
+    }
+    
+    if( $data['d_toetsingsdatum'] != '' ) {
+        $data['d_toetsingsdatum'] = date( 'd-m-Y', strtotime($valid_from));
+    }
+    if( $data['d_geldig_tot'] != '' ) {
+        $data['d_geldig_tot'] = date( 'd-m-Y', strtotime( $valid_untill ));
+    }
+    
+    foreach( $setup as $key=>$value ) {
+        echo '<div class="info" id="' .$key .'">' .$value .'</div>';
+    }
+    
+    foreach( $data as $key=>$value ) {
+        echo '<div class="info" id="' .strtolower($key) .'">' .$value .'</div>';
+    }
+    
+    ?>
+    <div class="info" id="c_titel">{{$company_name}}</div>
+    <div class="info" id="c_subtitel">{{$course_name}}</div>
 
-                            </p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <p
-                                style="font-family: Arial, sans-serif, 'Open Sans';font-size: 0.875rem; margin: 0; line-height: 1.6rem;">
-                                <b>Student Birth Place:</b> <span style="border-bottom: 1px dotted #000;" >{{ $birth_place }}</span>
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+    @if(date('Y-m-d H:i:s', strtotime($expired_date)) < date('Y-m-d H:i:s'))
+        <div class="info" id="certificate_expired">Expired</div>
+    @endif
 
-    <table style="margin:10px auto 20px;;width:100%;" class="subject-table">
-        <tr>
-            <th style="text-align:center;">Sr. No</th>
-            <th style="text-align:center;">Subject Name</th>
-            <th style="text-align:center;">Obtained Grades</th>
-            <th style="text-align:center;">Exam Status</th>
-            
-        </tr>
-        <tr>
-            <td style="text-align:center;">1.</td>
-            <td style="text-align:center;">English</td>
-            <td style="text-align:center;">C</td>
-            <td style="text-align:center;">Good</td>
-            
-        </tr>
-        <tr>
-            <td style="text-align:center;">2.</td>
-            <td style="text-align:center;">Math</td>
-            <td style="text-align:center;">C</td>
-            <td style="text-align:center;">Good</td>
-        </tr>
-        <tr>
-            <td style="text-align:center;">3.</td>
-            <td style="text-align:center;">I.T</td>
-            <td style="text-align:center;">A</td>
-            <td style="text-align:center;">Excellent</td>
-        </tr>
-        <tr>
-            <td style="text-align:center;">4.</td>
-            <td style="text-align:center;">Chemistry</td>
-            <td style="text-align:center;">B</td>
-            <td style="text-align:center;">V Good</td>
-        </tr>
-        <tr>
-            <td style="text-align:center;">5.</td>
-            <td style="text-align:center;">Physics</td>
-            <td style="text-align:center;">B</td>
-            <td style="text-align:center;">V Good</td>
-        </tr>
-        <tr>
-            <td style="text-align:center;"></td>
-            <td style="text-align:center;"><b>Over All Performance</b></td>
-            <td style="text-align:center;"> <b>B</b></td>
-            <td style="text-align:center;"></td>
-        </tr>
-    </table>
-
- <table style="width:100%">
-   <tr>
-     <td> <p><B>Issue Date </B> <span > 24 February 2022 </span></p></td>
-     <td>
-     <h4 style="float:right;"> Signature </h4>
-     </td>
-     
-   </tr>
-
- </table>
-    <p><b>Note :</b>industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.<br><br> <i> A  stands for “Excellent” performance in all the areas<br>
-B - Very good ( 85 and above )<br>
-C - Good (70 and above)<br>
-D - Fairly good or Satisfactory (60 and above)    <br> 
-E - Sufficient (45 and above ) <br>
-F - Fail (below 40 "performance that does not meet the minimum academic criteria." ) </i> </p>
-</body>
+    <div class="info" id="certificate_url">{{ $url }}</div>
+    <div class="info" id="certificate_created">{{ date('y-m-d H:i:s', strtotime($valid_from))}}</div>
+    </body>
 </html>
+    
