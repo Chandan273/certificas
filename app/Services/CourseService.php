@@ -145,6 +145,32 @@ class CourseService
     }
 
     /**
+     * Delete record with the course id in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public static function destroy(Request $request)
+    {
+        try {
+            $course = Course::where('id', $request->id)->first();
+            $course->delete();
+
+            // Student::where('course_id', $request->id)->delete();
+            // Certificate::where('course_id', $request->id)->delete();
+
+            $response = ['success' => true, 'message' => 'Course has been deleted successfully!', 'statusCode' => 200 ];
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
+        }
+
+        return $response;
+    }
+
+    /**
      * Store a newly tenant courses resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -177,32 +203,6 @@ class CourseService
 
         return $response;
     } 
-
-    /**
-     * Delete record with the course id in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public static function destroy(Request $request)
-    {
-        try {
-            $course = Course::where('id', $request->id)->first();
-            $course->delete();
-
-            // Student::where('course_id', $request->id)->delete();
-            // Certificate::where('course_id', $request->id)->delete();
-
-            $response = ['success' => true, 'message' => 'Course has been deleted successfully!', 'statusCode' => 200 ];
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-
-            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
-        }
-
-        return $response;
-    }
 
     /**
      * List of tenant student courses.

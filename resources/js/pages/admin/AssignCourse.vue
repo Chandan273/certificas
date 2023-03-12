@@ -89,7 +89,8 @@
               </v-row>
             </v-form>
             <DxDataGrid
-            class="assign-course-table"
+              class="assign-course-table"
+              id="gridContainer"
               :ref="dataGridRefKey"
               :data-source="students"
               :remote-operations="true"
@@ -115,7 +116,7 @@
             </DxDataGrid>
           </div>
 
-          <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 personal-info">
+          <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6">
             <v-row>
               <v-col class="text-end pt-0 mb-6" sm="12">
                 <v-btn
@@ -287,5 +288,8 @@ export default {
 select {
   border: 1px solid #ccc;
   padding: 6px 12px;
+}
+#gridContainer {
+  height: 440px;
 }
 </style>
