@@ -348,7 +348,6 @@ export default {
             let formData = new FormData();
             let input = this.$refs.fileInput;
             let file = input.files[0];
-            console.log(this.selectedCustomer);
             if(this.selectedCustomer == null && this.selectedCourse == null){
                 this.snackbar = true;
                 this.color = "error";
