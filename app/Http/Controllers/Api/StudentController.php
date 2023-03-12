@@ -103,13 +103,4 @@ class StudentController extends Controller
         return StudentService::courses($request);
     }
 
-
-    // public function getStudentByCourse(Request $request){
-    //     try{
-    //         $allStudents = StudentService::index($request);
-    //         $courseStudents = StudentService::index();
-    //     }catch(\Exception $e){
-
-    //     }
-    // }
 }

@@ -67,6 +67,7 @@
               class="mt-2"
               type="date"
               required
+              :min="courseData.date_from"
             ></v-text-field>
             <div class="text-start">
               <span

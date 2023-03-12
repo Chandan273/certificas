@@ -96,7 +96,7 @@ class CourseController extends Controller
     }
 
     /**
-     * List of tenant student courses.
+     * List of Tenant courses.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response

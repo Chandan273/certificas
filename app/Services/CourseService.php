@@ -186,6 +186,21 @@ class CourseService
             if ($tenant_course) {
                 $tenant_course->fill($request->all())->save();
 
+                // $studentIds = $tenant_course->students;
+                // $data = [];
+                // foreach ($studentIds as $studentId) {
+                //     $data[] = [
+                //         'customer_id' => $studentId,
+                //         'tenant_id' => $tenant_id,
+                //         'course_id' => $tenant_course->course_id,
+                //         'created_at' => now(),
+                //         'updated_at' => now(),
+                //         'deleted_at' => null,
+                //     ];
+                // }
+
+                // Student::upsert($data, ['customer_id', 'tenant_id', 'course_id'], ['name', 'email', 'birth_date', 'birth_place', 'info', 'created_at', 'updated_at', 'deleted_at']);
+
                 $response = ['success' => true, 'message' => "Tenant Course updated successfully!", 'statusCode' => 200];
             } else {
                 $tenant_course = Tenant_course::create(array_merge($request->all(), [
@@ -201,17 +216,27 @@ class CourseService
             $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
 
-        return $response;
+        //return $response;
     } 
 
     /**
-     * List of tenant student courses.
+     * List of Tenant courses.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public static function tenantCourse(Request $request){
-        return $tenantCourse = Tenant_course::where('course_id',  $request->course_id)->first();
+        try {
+            $tenantCourse = Tenant_course::where('course_id',  $request->course_id)->first();
+
+            $response = ['success' => true, "tenantCourse" => $tenantCourse, 'statusCode' => 200];
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+
+            $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
+        }
+
+        return $response;
     }
 }
 
