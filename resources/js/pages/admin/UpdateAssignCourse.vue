@@ -50,7 +50,8 @@
               </v-row>
             </v-form>
             <DxDataGrid
-            class="assign-course-table"
+              class="assign-course-table"
+              id="gridContainer"
               :ref="dataGridRefKey"
               :data-source="students"
               :remote-operations="true"
@@ -77,7 +78,7 @@
             </DxDataGrid>
           </div>
 
-          <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6 personal-info">
+          <div class="pa-8 pa-sm-4 pa-md-4 pa-lg-6">
             <v-row>
               <v-col class="text-end pt-0 mb-6" sm="12">
                 <v-btn
@@ -85,7 +86,7 @@
                   v-on:click="assignCourse"
                   class="primary-btn px-6"
                 >
-                  {{ $t("update") }}
+                  {{ "update" }}
                 </v-btn>
               </v-col>
             </v-row>
@@ -114,8 +115,6 @@ export default {
       snackbar: false,
       message: "",
       color: "success",
-      select_course_error: "",
-      select_customer_error: "",
       select_student_error: "",
       customers: [],
       students: [],
@@ -158,32 +157,29 @@ export default {
   methods: {
     async getCustomers() {
       const result = await this.axios.get(`/api/all-customers`);
+      console.log(result.data.data);
       this.customers = result.data.data;
     },
     async getStudents() {
       try {
         const params = {course_id: this.$route.params.id};
-        const { data } = await this.axios.get(`/api/all-students`, {params}); 
+        const { data } = await this.axios.get(`/api/all-students`); 
         const students = data.data;
         this.students = students;
-        const selectedRow = [1, 3, 4]; // get List of students for the course and it is will be selected // Thank you sir, Here I am alreay assigning courses to the tenant_id in table relation 
+        const selectedRow = this.selectionFilter.split(',').map(Number);
         this.dataGrid.selectRows(selectedRow)
       } catch (error) {
         console.log("Error", error)
       }
     },
-    async getTenantCourse(){ // getCourseStudents
+    async getTenantCourse(){ 
       try {
         const payload = {
-          course_id: this.$route.params.id, //HardCoded for testing
+          course_id: this.$route.params.id,
           };
         const { data } = await this.axios.post(`/api/tenant-course`, payload);
-       // fix this later on
-       const selectedRow = ["1", "3"];
-         const studentsToSelect = this.students.filter((row) => selectedRow.indexOf(row.id) > -1);
-         console.log("here 3", studentsToSelect, this.students) 
-        this.selectionFilter = ['id', 'in', data.students.map(s => s.id)];
-        this.selectedRowsData = data.students;
+
+        this.selectionFilter = data.students;
       } catch (error) {}
     },
     async assignCourse() {
@@ -191,7 +187,7 @@ export default {
       this.select_student_error = "";
       try {
         const payload = {
-          course_id: this.$route.params.id, // why you are using localstorage? //Sir I want to auto select checkbox based on the API response and I am getting [1,2] as student ID in getTenantCourse() function
+          course_id: this.$route.params.id,
           students: this.selectedStudent,
         };
         const result = await this.axios.post(
@@ -231,19 +227,12 @@ export default {
       });
      
     },
-    getSelectedData() {
-      this.selectedRowsData = [1,2];
-    }
   },
   mounted() {
     this.getTenantCourse();
     this.getCustomers();
     this.getStudents();
     this.selCustomer(this.selectedCustomer);
-    // let selectedCourseID = localStorage.getItem("selectedCourseID");
-    // if (selectedCourseID == null) {
-    //   this.$router.push("/courses");
-    // }
   },
   watch: {
     selectedCustomer(selectedCustomerIds) {
@@ -257,5 +246,8 @@ export default {
 select {
   border: 1px solid #ccc;
   padding: 6px 12px;
+}
+#gridContainer {
+  height: 440px;
 }
 </style>
