@@ -251,10 +251,11 @@ export default {
             this.certificateData = params.row.data;
         },
         downloadPdf(params) {
+            let tenant_id = params.row.data.student.tenant_id;
             let student_id = params.row.data.student_id;
             let link = document.createElement("a");
             let url = window.location.origin;
-            link.href = `${url}/api/generate-pdf?student_id=${student_id}`;
+            link.href = `${url}/api/generate-pdf?tenant_id=${tenant_id}&student_id=${student_id}`;
             link.click();
         },
     },

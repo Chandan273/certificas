@@ -20,6 +20,7 @@ Route::group(['middleware'=>'guest'], function(){
     Route::post("forgot-password", [App\Http\Controllers\Api\AuthController::class, 'forgotPassword']);
     Route::post("reset-password", [App\Http\Controllers\Api\AuthController::class, 'resetPassword']);
     Route::get('generate-pdf', [App\Http\Controllers\Api\CertificateController::class, 'generatePdf']);
+    Route::post('student-record', [App\Http\Controllers\Api\CertificateController::class, 'studentInfo']);
 });
 
 Route::middleware("auth:api")->group(function(){
@@ -51,5 +52,4 @@ Route::middleware("auth:api")->group(function(){
     Route::get("all-certificates", [App\Http\Controllers\Api\CertificateController::class, 'index']);
     Route::post('update-certificate', [App\Http\Controllers\Api\CertificateController::class, 'update']);
     Route::post('delete-certificate', [App\Http\Controllers\Api\CertificateController::class, 'destroy']);
-    Route::post('student-record', [App\Http\Controllers\Api\CertificateController::class, 'studentInfo']);
 });

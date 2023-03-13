@@ -103,7 +103,7 @@
         class="tenant-checkbox"
         v-if="!courseData.id"
         v-model="selectTenantCourse"
-        label="Click To Assign Course to Tenant"
+        label="Click here to assign course to tenant"
         value="1"
         hide-details
         color="#008cff"

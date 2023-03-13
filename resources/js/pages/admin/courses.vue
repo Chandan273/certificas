@@ -68,8 +68,8 @@
                     :caption="$t('action')"
                 >
                     <DxButton
-                        name="Edit Tenant Course"
-                        hint="Edit Tenant Course"
+                        name="Update Tenant Course"
+                        hint="Update Tenant Course"
                         icon="columnchooser"
                         @click="editTenantCourse"
                     />

@@ -222,10 +222,10 @@ export default {
       this.select_customer_error = "";
       this.select_student_error = "";
       try {
-        const studentArray = this.selectedStudent.map((student) => student.id);
+        let selectedStudentString = this.selectedStudent.join(',');
         const payload = {
           course_id: localStorage.getItem("selectedCourseID"),
-          students: studentArray,
+          students: selectedStudentString,
         };
         const result = await this.axios.post(
           "/api/create-tenant-courses",
@@ -261,9 +261,13 @@ export default {
       );
     },
     onSelectionChanged() {
+      const selectedStudent = [];
       this.dataGrid.getSelectedRowsData().then((selectedRowsData) => {
-        this.select_student_error = "";
-        this.selectedStudent = selectedRowsData;
+          this.select_student_error = "";
+          selectedRowsData.forEach((row) => {
+              selectedStudent.push(row.id)
+          });
+          this.selectedStudent = selectedStudent;
       });
     },
   },

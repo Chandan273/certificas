@@ -41,18 +41,7 @@
                     data-field="tenant.paid_untill"
                     data-type="date"
                     :caption="$t('paidUntill')"
-                    :validation-rules="[
-                        {
-                            type: 'required',
-                            message: 'Paid Untill is Required',
-                        },
-                        {
-                            type: 'custom',
-                            validationCallback: paid_untill,
-                            message:
-                                'Paid Untill must be today or a future date',
-                        },
-                    ]"
+                    :filter-value="new Date()"
                 />
 
                 <DxSearchPanel :visible="true" :placeholder="$t('search')" />

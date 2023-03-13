@@ -88,6 +88,7 @@
                             class="mt-2"
                             type="datetime-local"
                             required
+                            :min="certificateData.valid_from"
                         ></v-text-field>
                         <div class="text-start">
                             <span
