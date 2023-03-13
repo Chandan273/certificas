@@ -31,6 +31,11 @@ const routes = [
         path: "/:pathMatch(.*)",
         component: () => import("./pages/PageNotFound.vue"),
     },
+    {
+        name: "student-info",
+        path: "/student-info/:id",
+        component: () => import("./pages/admin/StudentInfo.vue"),
+    },
 
     // Auth Routes
     {
@@ -86,12 +91,6 @@ const routes = [
         path: "/update-assign-course/:id",
         meta: { requiresAuth: true },
         component: () => import("./pages/admin/UpdateAssignCourse.vue"),
-    },
-    {
-        name: "student-info",
-        path: "/student-info/:id",
-        meta: { requiresAuth: true },
-        component: () => import("./pages/admin/StudentInfo.vue"),
     },
 ];
 

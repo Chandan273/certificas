@@ -184,22 +184,23 @@ class CourseService
                 ->first();
 
             if ($tenant_course) {
-                $tenant_course->fill($request->all())->save();
+                $tenant_course->update(array_merge($request->all(), [
+                    'tenant_id' => auth()->user()->id,
+                    'students' => json_encode($request->students),
+                ]));
 
-                // $studentIds = $tenant_course->students;
-                // $data = [];
-                // foreach ($studentIds as $studentId) {
-                //     $data[] = [
-                //         'customer_id' => $studentId,
-                //         'tenant_id' => $tenant_id,
-                //         'course_id' => $tenant_course->course_id,
-                //         'created_at' => now(),
-                //         'updated_at' => now(),
-                //         'deleted_at' => null,
-                //     ];
-                // }
+                $tenant_course->students = trim($tenant_course->students, '"');
+                $tenant_course->students = explode(',', $tenant_course->students);
 
-                // Student::upsert($data, ['customer_id', 'tenant_id', 'course_id'], ['name', 'email', 'birth_date', 'birth_place', 'info', 'created_at', 'updated_at', 'deleted_at']);
+                $students = array();
+
+                foreach ($tenant_course->students as $studentId) {
+                    $student = Student::find($studentId);
+                    if ($student) {
+                        $students[] = $student;
+                        Student::updateOrInsert(['id' => $studentId], ['course_id' => $tenant_course->course_id]);
+                    }
+                }
 
                 $response = ['success' => true, 'message' => "Tenant Course updated successfully!", 'statusCode' => 200];
             } else {
@@ -207,6 +208,18 @@ class CourseService
                     'tenant_id' => auth()->user()->id,
                     'students' => json_encode($request->students),
                 ]));
+
+                $students = array();
+                $tenant_course->students = trim($tenant_course->students, '"');
+                $tenant_course->students = explode(',', $tenant_course->students);
+
+                foreach ($tenant_course->students as $studentId) {
+                    $student = Student::find($studentId);
+                    if ($student) {
+                        $students[] = $student;
+                        Student::updateOrInsert(['id' => $studentId], ['course_id' => $tenant_course->course_id]);
+                    }
+                }
 
                 $response = ['success' => true, 'message' => "Tenant Course created successfully!", 'statusCode' => 200];
             }
@@ -216,7 +229,7 @@ class CourseService
             $response = ['success' => false, 'message' => $e->getMessage(), 'statusCode' => 500];
         }
 
-        //return $response;
+        return $response;
     } 
 
     /**

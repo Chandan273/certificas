@@ -239,6 +239,22 @@ export default {
                             .catch((error) => {
                                 throw new Error("Data Loading Error");
                             });
+                    } else if (this.selectedCustomer === "Select All Courses") {
+                        return this.axios
+                            .get(`/api/all-students`, {})
+                            .then(({
+                                data
+                            }) => {
+                                this.students = data.data;
+                                this.totalCount = data.totalCount;
+                                return {
+                                    data: data.data,
+                                    totalCount: data.totalCount,
+                                };
+                            })
+                            .catch((error) => {
+                                throw new Error("Data Loading Error");
+                            });
                     } else {
                         return this.axios
                             .get(`/api/all-students`, {
@@ -328,7 +344,7 @@ export default {
                 }));
                 customers.unshift({
                     id: "",
-                    name: "Select all Customers"
+                    name: "Select All Customers"
                 });
                 this.customers = customers;
             }
@@ -338,6 +354,10 @@ export default {
                 const {
                     data
                 } = await this.axios.get(`/api/student-courses`);
+                data.courses.unshift({
+                    id: "",
+                    name: "Select All Courses"
+                });
                 this.Courses = data.courses;
             } catch (err) {}
         },
@@ -348,22 +368,7 @@ export default {
             let formData = new FormData();
             let input = this.$refs.fileInput;
             let file = input.files[0];
-            if(this.selectedCustomer == null && this.selectedCourse == null){
-                this.snackbar = true;
-                this.color = "error";
-                this.message = "Please select customer & course from dropdown";
-                return;
-            }else if(this.selectedCustomer == null){
-                this.snackbar = true;
-                this.color = "error";
-                this.message = "Please select customer";
-                return;
-            }else if(this.selectedCourse == null){
-                this.snackbar = true;
-                this.color = "error";
-                this.message = "Please select course";
-                return;
-            }
+            
             if (!file) {
                 this.snackbar = true;
                 this.color = "error";

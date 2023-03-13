@@ -198,7 +198,7 @@
     $data['p_naam'] = $name;
     $data['p_geboortedatum'] = $birth_date;
     $data['d_toetsingsdatum'] = $valid_from;
-    $data['d_geldig_tot'] = $valid_untill;
+    $data['d_geldig_tot'] = $expired_date;
     $setup = array(
         'label_uitgereikt_aan' => 'Uitgereikt aan',
         'label_datum_toetsing' => 'Datum toetsing',
@@ -226,7 +226,7 @@
         $data['d_toetsingsdatum'] = date( 'd-m-Y', strtotime($valid_from));
     }
     if( $data['d_geldig_tot'] != '' ) {
-        $data['d_geldig_tot'] = date( 'd-m-Y', strtotime( $valid_untill ));
+        $data['d_geldig_tot'] = date( 'd-m-Y', strtotime( $expired_date ));
     }
     
     foreach( $setup as $key=>$value ) {

@@ -231,35 +231,65 @@ class StudentService
                         return ['success' => false, 'message' => "Please ensure all fields are filled in the CSV file", 'statusCode' => 401];
                     }
 
-                    $student = Student::withTrashed()->where('course_id', $request->course_id)->where('email', $filedata[1])->first();
+                    if($request->course_id == "null" || $request->customer_id == "null"){
+                        $student = Student::withTrashed()->where('email', $filedata[1])->first();
 
-                    if ($student) {
-                        // If the student is soft deleted, restore it
-                        if ($student->trashed()) {
-                            $student->restore();
+                        if ($student) {
+                            // If the student is soft deleted, restore it
+                            if ($student->trashed()) {
+                                $student->restore();
+                            }
+    
+                            // Update the student data
+                            $student->name = $filedata[0];
+                            $student->birth_date = date('Y-m-d', strtotime($filedata[2]));
+                            $student->birth_place = $filedata[3];
+                            $student->save();
+                            
+                        } else {
+                            
+                            $importData_arr[] = [
+                                'tenant_id' => auth()->user()->id,
+                                'name' => $filedata[0],
+                                'email' => $filedata[1],
+                                'birth_date' => date('Y-m-d', strtotime($filedata[2])),
+                                'birth_place' => $filedata[3],
+                                'created_at' => date('Y-m-d H:i:s'),
+                                'updated_at' => date('Y-m-d H:i:s'),
+                            ];
                         }
+                    }else{
+                        $student = Student::withTrashed()->where('course_id', $request->course_id)->where('email', $filedata[1])->first();
 
-                        // Update the student data
-                        $student->customer_id = $request->customer_id;
-                        $student->name = $filedata[0];
-                        $student->birth_date = date('Y-m-d', strtotime($filedata[2]));
-                        $student->birth_place = $filedata[3];
-                        $student->save();
-                        
-                    } else {
-
-                        $importData_arr[] = [
-                            'tenant_id' => auth()->user()->id,
-                            'customer_id' => $request->customer_id,
-                            'course_id' => $request->course_id,
-                            'name' => $filedata[0],
-                            'email' => $filedata[1],
-                            'birth_date' => date('Y-m-d', strtotime($filedata[2])),
-                            'birth_place' => $filedata[3],
-                            'created_at' => date('Y-m-d H:i:s'),
-                            'updated_at' => date('Y-m-d H:i:s'),
-                        ];
-                    }
+                        if ($student) {
+                            // If the student is soft deleted, restore it
+                            if ($student->trashed()) {
+                                $student->restore();
+                            }
+    
+                            // Update the student data
+                            $student->customer_id = $request->customer_id;
+                            $student->name = $filedata[0];
+                            $student->birth_date = date('Y-m-d', strtotime($filedata[2]));
+                            $student->birth_place = $filedata[3];
+                            $student->save();
+                            
+                        } else {
+    
+                            $importData_arr[] = [
+                                'tenant_id' => auth()->user()->id,
+                                'customer_id' => $request->customer_id,
+                                'course_id' => $request->course_id,
+                                'name' => $filedata[0],
+                                'email' => $filedata[1],
+                                'birth_date' => date('Y-m-d', strtotime($filedata[2])),
+                                'birth_place' => $filedata[3],
+                                'created_at' => date('Y-m-d H:i:s'),
+                                'updated_at' => date('Y-m-d H:i:s'),
+                            ];
+                        }
+                    }    
+                    
 
                     $i++;
                 }

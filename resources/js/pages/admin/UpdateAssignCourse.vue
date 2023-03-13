@@ -64,6 +64,7 @@ import {
     DxSelection,
     DxScrolling,
 } from "devextreme-vue/data-grid";
+
 export default {
     name: "AssignCourse",
     data() {
@@ -126,12 +127,10 @@ export default {
                 if(data.statusCode = 200){
                     const students = data.data;
                     this.students = students;
-                    const selectedRow = this.selectionFilter.split(',').map(Number);
+                    const selectedRow = this.selectionFilter;
                     this.dataGrid.selectRows(selectedRow);
                 }
-            } catch (error) {
-                console.log("Error", error)
-            }
+            } catch (error) { }
         },
         async getTenantCourse() {
             try {
@@ -141,8 +140,10 @@ export default {
                 const {
                     data
                 } = await this.axios.post(`/api/tenant-course`, payload);
-                if (data.statusCode == 200) {
-                    this.selectionFilter = data.tenantCourse.students;
+                if (data.statusCode == 200) {   
+                    const selectedArr = data.tenantCourse.students;
+                    var selectedIntArr = selectedArr.replace(/"/g, '').split(',').map(value => parseInt(value));
+                    this.selectionFilter = selectedIntArr;
                     this.courseAssign = true;
                 } else {
                     this.courseAssign = false;
@@ -153,9 +154,10 @@ export default {
             this.select_course_error = "";
             this.select_student_error = "";
             try {
+                let selectedStudentString = this.selectedStudent.join(',');
                 const payload = {
                     course_id: this.$route.params.id,
-                    students: this.selectedStudent,
+                    students: selectedStudentString,
                 };
                 const result = await this.axios.post(
                     "/api/create-tenant-courses",
@@ -167,7 +169,7 @@ export default {
                     this.message = result.data.message;
                     localStorage.removeItem("selectedCourseID");
                     setTimeout(() => this.$router.push({
-                        path: "/courses"
+                        path: "/students"
                     }), 3000);
                 }
             } catch (error) {
@@ -194,7 +196,6 @@ export default {
                 });
                 this.selectedStudent = selectedStudent;
             });
-
         },
     },
     mounted() {

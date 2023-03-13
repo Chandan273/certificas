@@ -169,7 +169,7 @@ class CertificateService
                 $response = ['success' => false, 'message' => 'Student ID is missing', 'statusCode' => 400];
             }
             
-            $student = Student::where("id", $request->student_id)->first();
+            $student = Student::where('tenant_id', $request->tenant_id)->where("id", $request->student_id)->first();
             $tenant = Tenant::where("id", $student->tenant_id)->first();
             $course = Course::where("id", $student->course_id)->first();
             $certificate = Certificate::where("student_id", $student->id)->first();

@@ -3042,7 +3042,7 @@ const countries = [
         "intermediate-region-code": "",
     },
     {
-        name: "United Kingdom of Great Britain and Northern Ireland",
+        name: "United Kingdom",
         alpha_2: "GB",
         "alpha-3": "GBR",
         "country-code": "826",
